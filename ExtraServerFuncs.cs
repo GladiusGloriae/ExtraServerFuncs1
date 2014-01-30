@@ -10,12 +10,28 @@ Roadmap:
 
   - Funktionen sortieren
   - Docu schreiben
+  - du findest dir sicher arbeit ;)
   
   
   
  - BUGFIXING
 			- Beim wechseln des modes soll er die erste karte in der Maplist laden  
 			- evtl. OnLevelLoaded nutzen um Map zu setzen und neu zu laden.
+    
+            - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
+            - readconfig funktioniert nicht ordnungsgemäß
+ 
+  
+- MapLists
+  - Dem user die möglichkeit geben eigene Maplists zu erzeugen
+  - Dafür eigene Liste mit den Maplist namen erzeuen
+  - Dynamich je Maplistname eine Liste mit den Maps erzeugen
+  
+ - PlayerDB Classe umschreiben
+    - Die Speicherung soll in einer Liste erfolgen nicht in vielen
+  
+ - Der Battlelog Client soll in einem eigenen thread laufen da der abruf der daten einige zeit in anspruch nimmt
+ 
 
 - Plugin USER SETTINGS
 	- Always prohibited weapons Enable 
@@ -26,34 +42,37 @@ Roadmap:
  
 - Routine FriendlyWeaponName schreiben ( siehe Insane Limits )
 
-
-  
-- Flagrun Mode Aktivieren
-    - WarnRoutine Schreiben
-    - Usersetting ( WarnCount, Kick/TBan/PBan )
-    - Warn Message
-    - Message Banner
+ 
  
 - Knife Only Mode Aktivieren
     - WarnRoutine Erweitern
-    - Usersetting ( WarnCount, Kick/TBan/PBan )
+    - Usersetting ( WarnCount, Kick/TBan/PBan/pb_tBan/pb_pBan )
     - Warn Message
- 
+
+
 - Pistol Only Mode Aktivieren
     - Warnroutine Erweitern
     - Usersettings ( WarnCount, Kick/TBan/PBan, Allowed Pistols )
     - Warn Message
 
-   		
+
+  
 - ServerMeldung hinzufügen die jede Minute anzeigt in Welchem Modus sich der Server befindet
   alle Anzeigen ausser dem Normalen Modus
+    - gleich mit einem Task erledigen
  
-    
+
+- SendSwitchMessage() Funktion umschreiben
+    diese soll in Zukunft nicht mehr in einem Thread laufen
+    sondern über einen Task angesprochen werden, = mehr performanche
+ 
 		
 - Weitere Servervariablen in Config aufnehmen
 		- Die Auslesefunktion umbauen so das nur auf Aufforderung zum Varupdate ausgelesen wird
 		- Server Message
 		- Server Slots
+        - Commander
+        - 
 
 - Auto Spectator Funktion
 		- Spectatorports
@@ -1114,11 +1133,11 @@ public string GetPluginVersion() {
 }
 
 public string GetPluginAuthor() {
-	return "MarkusSR1984";
+	return "MarkusSR1984 / Koerai3";
 }
 
 public string GetPluginWebsite() {
-	return "none";
+    return "github.com/GladiusGloriae/ExtraServerFuncs1.git";
 }
 
 public string GetPluginDescription() {
@@ -1134,9 +1153,15 @@ public string GetPluginDescription() {
 
 
 <h2>Commands</h2>
-<p>
-!normal         Select NORMAL MODE as next Servermode.<br/>
-!private		Select PRIVATE MODE as next Servermode.<br/>
+
+<blockquote><h4>!normal</h4>
+Select NORMAL MODE as next Servermode.<br/>
+</blockquote>
+
+<blockquote><h4>!private</h4>
+Select PRIVATE MODE as next Servermode.<br/>
+</blockquote>
+
 !switchnow		Switch to next Servermode now.<br/>
 !rules			Show the Servermode specific rules.<br/>
 </p>
@@ -1145,16 +1170,7 @@ public string GetPluginDescription() {
 <p>coming soon....</p>
 
 
-<h2>Development</h2>
-
-<h3>Roadmap</h3>
-
-<p>Flagrun Mode</p>
-<p>Infantry only Mode</p>
-<p>Knife Only Mode</p>
-<p>Pistol Only mode</p>
-
-<h3>Changelog</h3>
+<h2>Changelog</h2>
 
 <blockquote><h4>0.0.0.1 (15-NOV-2013)</h4>
 	- PRE ALPHA<br/>
