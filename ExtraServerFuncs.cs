@@ -27,7 +27,7 @@ Roadmap:
   - Dafür eigene Liste mit den Maplist namen erzeuen
   - Dynamich je Maplistname eine Liste mit den Maps erzeugen
   
- - PlayerDB Classe umschreiben
+ - PlayerDB Class umschreiben
     - Die Speicherung soll in einer Liste erfolgen nicht in vielen
   
  - Der Battlelog Client soll in einem eigenen thread laufen da der abruf der daten einige zeit in anspruch nimmt
@@ -125,6 +125,9 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 // Threads
 Thread delayed_message;
 
+// Classes
+
+TextDatei files;
 PlayerDB players;
 // GENERAL VARS    
 private volatile bool readconfig;
@@ -211,9 +214,9 @@ private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
 private string msg_FlagrunKick =        "kicked %Killer% for Kill";
-private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN! KNIFE ONLY!!!";
+private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
-private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN! PISTOL ONLY!!!";
+private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_PistolLastWarn =     "NEXT TIME %kickban%!!!";
 private string msg_ActionTypeKick =     "KICK";
 private string msg_ActionTypeBan =      "BAN";    
@@ -320,8 +323,11 @@ public ExtraServerFuncs() {
 	pm_PlayerWhitelist = new List<string>();	// PRIVATE MODE Player Whitelist
     fm_ClanWhitelist = new List<string>();		// FLAGRUN MODE Clan Whitelist
     fm_PlayerWhitelist = new List<string>();	// FLAGRUN MODE Player Whitelist
-         
-        
+
+
+
+    
+
 
 
 }
@@ -412,11 +418,46 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         {
             
             WritePluginConsole("Start test...Class PlayerDB", "TRY", 0);
-            WritePluginConsole("Get Player Info", "TRY", 0);
+            WritePluginConsole("Write a csv file", "TRY", 0);
 
-            //players.Suicide("MarkusSR1984");
+            string lf = "\r\n";
+            try
+            {
+                files.WriteLine(@"Logs\testdatei2.csv", "PlayerName;Score;Kills;Death;Time");
+                files.WriteLine(@"Logs\testdatei2.csv", "MarkusSR1984;8000;100;200;193");
+                files.WriteLine(@"Logs\testdatei2.csv", "Koerai3;9000;101;201;194");
+                files.WriteLine(@"Logs\testdatei2.csv", "gubba;10000;102;202;195");
+                files.WriteLine(@"Logs\testdatei2.csv", "testPlayer;11000;103;203;196");
+
+
+            }
+            catch (Exception ex)
+            {
+                ConsoleError("unable to dump information to file");
+                ConsoleException("" + ex.GetType() + ": " + ex.Message);
+            }
+
+
+
+            List<string> Lines = files.ReadLines(@"Logs\testdatei2.csv");
+
+
             
+            for (int i = 0; i < Lines.Count; i++)
+            {
 
+                if (Lines[i] == "") return;
+                string[] line = Lines[i].Split(';');
+                WritePluginConsole("Read line from file: " + i + "    " + Lines[i], "TRY", 0);
+                foreach (string col in line)
+                {
+                WritePluginConsole("Col 1 : " + col, "TRY", 0);
+                }
+
+            }
+            
+            
+            /*
             tmpvar1 = new PlayerInfo();
             List<string> currplayers = new List<string>();
 
@@ -448,6 +489,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             //public int Kills;
             //public int Death;
             //public int Warns;
+        */
             return;
         }
 
@@ -459,6 +501,36 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
     }
 	
 }
+
+
+#region TESTROUTINEN
+
+public void WriteData(string path, string s)
+{
+    try
+    {
+        //if (File.Exists(path))
+        //    File.Delete(path);
+
+        using (FileStream fs = File.Open(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.ReadWrite))
+        {
+            Byte[] info = new UTF8Encoding(true).GetBytes(s);
+            fs.Write(info, 0, info.Length);
+        }
+    }
+    catch (Exception ex)
+    {
+        ConsoleError("unable to dump information to file");
+        ConsoleException("" + ex.GetType() + ": " + ex.Message);
+    }
+}
+
+
+#endregion
+
+
+
+
 
 private void ReadServerConfig()
 {
@@ -983,6 +1055,33 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes müss
 			}
 		}
 
+        // Flagrun Mode Whitelist
+        if (serverMode == "flagrun") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check FLAGRUN MODE Player Whitelist...", "Info", 5);
+            if (fm_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in PRIVATE MODE Player Whitelist", "Info", 2);
+                return true;
+            }
+
+            if (fm_ClanWhitelist.Count >= 1 && fm_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
+                this.blClient = new BattlelogClient();
+                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check FLAGRUN MODE Clan Whitelist...", "Info", 5);
+                if (fm_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in FLAGRUN MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
+
+
+
+
+
+
 
 
 	WritePluginConsole(wlPlayer + " is not in Whitelist", "Info", 2);
@@ -1015,6 +1114,9 @@ public bool ListsEqual(List<MaplistEntry> a, List<MaplistEntry> b) // Vergleich 
 			{
 				if (serverMode == "normal") SetPluginVariable("NM_MapList", tmp_mapList );  // SAVE MAPLIST TO NORMAL MODE
 				if (serverMode == "private") SetPluginVariable("PM_MapList", tmp_mapList );  // SAVE MAPLIST TO PRIVATE MODE
+                if (serverMode == "flagrun") SetPluginVariable("FM_MapList", tmp_mapList);  // SAVE MAPLIST TO FLAGRUN MODE
+                if (serverMode == "knife") SetPluginVariable("KOM_MapList", tmp_mapList);  // SAVE MAPLIST TO KNIFE ONLY MODE
+                if (serverMode == "pistol") SetPluginVariable("POM_MapList", tmp_mapList);  // SAVE MAPLIST TO PISTOL ONLY MODE
 			}
 		
 			
@@ -1777,7 +1879,7 @@ public void OnPluginEnable() {
         plugin_enabled = true;
         fIsEnabled = true;
         players = new PlayerDB();
-       
+        files = new TextDatei();
 
         WritePluginConsole("ENABLED - Thanks for using :)", "Info", 0);
         Thread.Sleep(1000);
@@ -2165,7 +2267,7 @@ public class PlayerDB
 {
     private volatile ExtraServerFuncs plugin = new ExtraServerFuncs();
     private volatile BattlelogClient blClient = new BattlelogClient();
-
+    private volatile CSV_Database csv_db = new CSV_Database();
     private volatile List<string> PlayerQ = new List<string>();
     private volatile List<string> Players = new List<string>();
     private volatile Dictionary<String, String> Player_Tag = new Dictionary<string, string>();
@@ -2232,22 +2334,65 @@ private void AddPlayer(string name, string tag)
     Player_Death.Add(name, 0);
     Player_Warns.Add(name, 0);
     Player_Suicides.Add(name, 0);
+
+    if (!csv_db.isInit()) csv_db.Init(@"Logs\PlayerDB.csv");
+    if (!csv_db.isPlayerInDatabase(name))
+    {
+        CSV_PlayerInfo new_player = new CSV_PlayerInfo();
+        new_player.PlayerName = name;
+        new_player.ClanTag = tag;
+        csv_db.AddPlayer(new_player);
+    }
+
+
+
+
 }
 
-public void ResetData()
+public void ResetData() // Store Data in CSV Database and reset Round Data
 {
     foreach (string name in Players)
     {
-
-        Player_Kills[name] = 0;
-        Player_Death[name] = 0;
-        Player_Warns[name] = 0;
-        Player_Suicides[name] = 0;
+        CSV_PlayerInfo tmp_player = csv_db.GetPlayerData(name); 
+        if (tmp_player.PlayerName == name)
+        {
+            tmp_player.ClanTag = Player_Tag[name];
+            tmp_player.Kills = tmp_player.Kills + Player_Kills[name];
+            tmp_player.Death = tmp_player.Death + Player_Death[name];
+            tmp_player.Warns = tmp_player.Warns + Player_Warns[name];
+            tmp_player.Suicides = tmp_player.Suicides + Player_Suicides[name];
+            tmp_player.Endrounds = tmp_player.Endrounds + 1;
+            tmp_player.Visits = tmp_player.Visits + 1;
+            tmp_player.LastSeen = DateTime.Now;
+            csv_db.SetPlayerData(tmp_player);
+        }
+                
     }
+    csv_db.SaveToFile();
+
+    Players.Clear();
+    Player_Kills.Clear();
+    Player_Death.Clear();
+    Player_Warns.Clear();
+    Player_Suicides.Clear();
+
+
 }
 
-public void Remove(string name)
+public void Remove(string name) // Remove Player from DB and save him to CSV_Database
 {
+    CSV_PlayerInfo tmp_player = csv_db.GetPlayerData(name);
+    if (tmp_player.PlayerName == name)
+    {
+        tmp_player.ClanTag = Player_Tag[name];
+        tmp_player.Kills = tmp_player.Kills + Player_Kills[name];
+        tmp_player.Death = tmp_player.Death + Player_Death[name];
+        tmp_player.Warns = tmp_player.Warns + Player_Warns[name];
+        tmp_player.Suicides = tmp_player.Suicides + Player_Suicides[name];
+        tmp_player.Visits = tmp_player.Visits + 1;
+        tmp_player.LastSeen = DateTime.Now;
+        csv_db.SetPlayerData(tmp_player);
+    }
   
     Players.Remove(name);
     Player_Tag.Remove(name);
@@ -2300,15 +2445,6 @@ private void GetPlayerData()
 }
 }
 
-public struct PlayerInfo
-{
-    public string Name;
-    public string Tag;
-    public int Kills;
-    public int Death;
-    public int Warns;
-    public int Suicides;
-}
 
 public class BattlelogClient
     {
@@ -2367,6 +2503,358 @@ public class BattlelogClient
         return String.Empty;
       }
     }
+
+
+
+
+
+class TextDatei
+{
+
+        
+    ///<summary>
+    /// Liefert den Inhalt der Datei zurück.
+    ///</summary>
+    ///<param name="sFilename">Dateipfad</param>
+    public string ReadFile(String sFilename)
+    {
+        string sContent = "";
+
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            sContent = myFile.ReadToEnd();
+            myFile.Close();
+        }
+        return sContent;
+    }
+
+    ///<summary>
+    /// Schreibt den übergebenen Inhalt in eine Textdatei.
+    ///</summary>
+    ///<param name="sFilename">Pfad zur Datei</param>
+    ///<param name="sLines">zu schreibender Text</param>
+    public void WriteFile(String sFilename, String sLines)
+    {
+        StreamWriter myFile = new StreamWriter(sFilename);
+        myFile.Write(sLines);
+        myFile.Close();
+    }
+
+    ///<summary>
+    /// Fügt den übergebenen Text an das Ende einer Textdatei an.
+    ///</summary>
+    ///<param name="sFilename">Pfad zur Datei</param>
+    ///<param name="sLines">anzufügender Text</param>
+    public void Append(string sFilename, string sLines)
+    {
+        StreamWriter myFile = new StreamWriter(sFilename, true);
+        myFile.Write(sLines);
+        myFile.Close();
+    }
+
+    ///<summary>
+    /// Liefert den Inhalt der übergebenen Zeilennummer zurück.
+    ///</summary>
+    ///<param name="sFilename">Pfad zur Datei</param>
+    ///<param name="iLine">Zeilennummer</param>
+    public string ReadLine(String sFilename, int iLine)
+    {
+        string sContent = "";
+        float fRow = 0;
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            while (!myFile.EndOfStream && fRow < iLine)
+            {
+                fRow++;
+                sContent = myFile.ReadLine();
+            }
+            myFile.Close();
+            if (fRow < iLine)
+                sContent = "";
+        }
+        return sContent;
+    }
+
+
+    public List<string> ReadLines(String sFilename)
+    {
+        List<string> sContent = new List<string>();
+        
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            while (!myFile.EndOfStream)
+            {
+              sContent.Add(myFile.ReadLine());
+            }
+            myFile.Close();
+            
+        }
+        return sContent;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// Schreibt den übergebenen Text in eine definierte Zeile.
+    ///</summary>
+    ///<param name="sFilename">Pfad zur Datei</param>
+    ///<param name="iLine">Zeilennummer</param>
+    ///<param name="sLines">Text für die übergebene Zeile</param>
+    ///<param name="bReplace">Text in dieser Zeile überschreiben (t) oder einfügen (f)</param>
+    
+    
+    public void WriteLine(String sFilename, string sLines)
+    {
+        string sContent = "";
+        string[] delimiterstring = { "\r\n" };
+
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            sContent = myFile.ReadToEnd();
+            myFile.Close();
+        }
+
+        string[] sCols = sContent.Split(delimiterstring, StringSplitOptions.None);
+                       
+            
+        
+
+        sContent = "";
+        for (int x = 0; x < sCols.Length - 1; x++)
+        {
+            sContent += sCols[x] + "\r\n";
+        }
+        sContent += sCols[sCols.Length - 1];
+        sContent += sLines + "\r\n";
+
+        StreamWriter mySaveFile = new StreamWriter(sFilename);
+        mySaveFile.Write(sContent);
+        mySaveFile.Close();
+    }
+
+
+
+    
+    public void WriteLine(String sFilename, int iLine, string sLines, bool bReplace)
+    {
+        string sContent = "";
+        string[] delimiterstring = { "\r\n" };
+
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            sContent = myFile.ReadToEnd();
+            myFile.Close();
+        }
+
+        string[] sCols = sContent.Split(delimiterstring, StringSplitOptions.None);
+
+        if (sCols.Length >= iLine)
+        {
+            if (!bReplace)
+                sCols[iLine - 1] = sLines + "\r\n" + sCols[iLine - 1];
+            else
+                sCols[iLine - 1] = sLines;
+
+            sContent = "";
+            for (int x = 0; x < sCols.Length - 1; x++)
+            {
+                sContent += sCols[x] + "\r\n";
+            }
+            sContent += sCols[sCols.Length - 1];
+
+        }
+        else
+        {
+            for (int x = 0; x < iLine - sCols.Length; x++)
+                sContent += "\r\n";
+
+            sContent += sLines;
+        }
+
+
+        StreamWriter mySaveFile = new StreamWriter(sFilename);
+        mySaveFile.Write(sContent);
+        mySaveFile.Close();
+    }
+}
+
+class CSV_Database
+{
+List<CSV_PlayerInfo> csv_Players;
+TextDatei files;
+private string CSV_Filename;
+private const string csv_header = "Player Name;Clan Tag;Visits;Score;Kills;Death;Suicides;Warns;Kicks;Endrounds;Last Seen;Played Time";
+private bool db_fileinit = false;
+
+
+public bool isInit()
+{
+    return db_fileinit;
+}
+
+
+public void Init(string Filename)
+    {
+        CSV_Filename = Filename;
+        csv_Players = new List<CSV_PlayerInfo>();
+        CSV_PlayerInfo csv_Player;
+        files = new TextDatei();
+
+
+        if (File.Exists(Filename))
+        {
+            List<string> tmpList = files.ReadLines(Filename);
+            int lineCount = 0;
+            foreach (string line in tmpList)
+            {
+                lineCount++;
+                string[] row = line.Split(';');
+                if (lineCount > 1) // Erste Zeile überspringen, da es sich um den Header handelt
+                {
+                    csv_Player.PlayerName = row[0];
+                    csv_Player.ClanTag = row[1];
+                    csv_Player.fileline = lineCount;
+                    csv_Player.Visits = Convert.ToInt32(row[2]);
+                    csv_Player.Score = Convert.ToInt32(row[3]);
+                    csv_Player.Kills = Convert.ToInt32(row[4]);
+                    csv_Player.Death = Convert.ToInt32(row[5]);
+                    csv_Player.Suicides = Convert.ToInt32(row[6]);
+                    csv_Player.Warns = Convert.ToInt32(row[7]);
+                    csv_Player.Kicks = Convert.ToInt32(row[8]);
+                    csv_Player.Endrounds = Convert.ToInt32(row[9]);
+                    csv_Player.LastSeen = Convert.ToDateTime(row[10]);
+                    csv_Player.PlayedTime = Convert.ToDateTime(row[11]);
+
+                    csv_Players.Add(csv_Player);
+                }
+            }
+        }
+        if (!File.Exists(Filename)) files.WriteLine(Filename, csv_header); // Wenn CSV Datei nicht existiert dann schreibe den Header in die erste Zeile
+        db_fileinit = true;    
+    }
+
+public CSV_PlayerInfo GetPlayerData(string name) // Lese SpielerDaten aus der Liste
+{
+    
+    for (int pl = 0; pl < csv_Players.Count; pl++)
+    {
+
+        if (csv_Players[pl].PlayerName == name) return csv_Players[pl];
+    }
+    CSV_PlayerInfo empty_value = new CSV_PlayerInfo();
+    return empty_value;
+}
+
+public void SetPlayerData(CSV_PlayerInfo set_data) // Lese SpielerDaten aus der Liste
+{
+    
+    for (int pl = 0; pl < csv_Players.Count; pl++)
+    {
+        if (csv_Players[pl].PlayerName == set_data.PlayerName) csv_Players[pl] = set_data;
+    }
+    
+}
+
+
+public bool isPlayerInDatabase(string name)
+{
+    for (int pl = 0; pl < csv_Players.Count; pl++)
+    {
+        if (csv_Players[pl].PlayerName == name) return true;
+    }
+    return false;
+}
+
+
+public void AddPlayer(string name)
+{
+    if (!isPlayerInDatabase(name))
+    {
+        CSV_PlayerInfo new_player = new CSV_PlayerInfo();
+        new_player.PlayerName = name;
+        csv_Players.Add(new_player);
+    }
+}
+
+public void AddPlayer(CSV_PlayerInfo new_player)
+{
+    if (!isPlayerInDatabase(new_player.PlayerName))
+    {
+        csv_Players.Add(new_player);
+    }
+}
+
+
+public void SaveToFile()
+{
+    string Savestring;
+    if (!db_fileinit) return; // Breche Schreibvorgng ab wenn die Datenbank nicht Initialisiert wurde
+    foreach (CSV_PlayerInfo player in csv_Players)
+    {
+        Savestring = player.PlayerName + ";" + player.ClanTag + ";" + Convert.ToString(player.Visits) + ";" + Convert.ToString(player.Score) + ";" + Convert.ToString(player.Kills) + ";" + Convert.ToString(player.Death) + ";" + Convert.ToString(player.Suicides) + ";" + Convert.ToString(player.Warns) + ";" + Convert.ToString(player.Kicks) + ";" + Convert.ToString(player.Endrounds) + ";" + Convert.ToString(player.LastSeen) + ";" + Convert.ToString(player.PlayedTime);
+
+        if (player.fileline == 0) files.WriteLine(CSV_Filename, Savestring); // Spieler ist neu aus dem Server und in der Datei nicht vorhanden. Schreibe neuen Datensatz
+        if (player.fileline > 1) files.WriteLine(CSV_Filename, player.fileline, Savestring, true); // Datensatz des Spieler in der CSV Datei überschreien
+    }
+
+    csv_Players.Clear();
+    db_fileinit = false;
+    return;
+}
+
+
+
+}
+
+public struct PlayerInfo
+{
+    public string Name;
+    public string Tag;
+    public int Kills;
+    public int Death;
+    public int Warns;
+    public int Suicides;
+    public DateTime JoinTime;
+    public DateTime LeaveTime;
+}
+
+public struct CSV_PlayerInfo
+{
+   public string PlayerName;
+   public string ClanTag;
+   public int fileline;
+   public int Visits;
+   public int Score;
+   public int Kills;
+   public int Death;
+   public int Suicides;
+   public int Warns;
+   public int Kicks;
+   public int Endrounds;
+   public DateTime LastSeen;
+   public DateTime PlayedTime;
+
+}
+
+
+
+
+
+
+
 
 
 } // end namespace PRoConEvents
