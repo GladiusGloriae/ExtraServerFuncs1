@@ -5,7 +5,15 @@ by MarkusSR1984 & Koerai3
 
 Roadmap:
 =================================
-- BUGFIXING
+
+ Arbeit für Rainer:
+
+  - Funktionen sortieren
+  - Docu schreiben
+  
+  
+  
+ - BUGFIXING
 			- Beim wechseln des modes soll er die erste karte in der Maplist laden  
 			- evtl. OnLevelLoaded nutzen um Map zu setzen und neu zu laden.
 
