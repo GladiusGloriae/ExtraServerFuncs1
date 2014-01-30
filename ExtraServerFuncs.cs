@@ -1,6 +1,6 @@
 /* ExtraServerFuncs.cs
 
-by MarkusSR1984
+by MarkusSR1984 & Koerai3
 
 
 Roadmap:
