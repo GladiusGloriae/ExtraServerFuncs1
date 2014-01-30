@@ -396,7 +396,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Get Player Info", "TRY", 0);
 
             //players.Suicide("MarkusSR1984");
-            tbanPlayer("MarkusSR1984", 5, "Testmessage");
+            
 
             tmpvar1 = new PlayerInfo();
             List<string> currplayers = new List<string>();
@@ -1816,7 +1816,9 @@ public void OnServerName(string serverName)  // Server Name was changed
         {
             if (serverMode == "normal") SetPluginVariable("NM_Server Name", serverName); // SAVE SERVERNAME TO NORMAL MODE CONFIG
             if (serverMode == "private") SetPluginVariable("PM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
-
+            if (serverMode == "flagrun") SetPluginVariable("FM_Server Name", serverName); // SAVE SERVERNAME TO FLAGRUN MODE CONFIG
+            if (serverMode == "knife") SetPluginVariable("KOM_Server Name", serverName); // SAVE SERVERNAME TO KNIFE ONLY MODE CONFIG
+            if (serverMode == "pistol") SetPluginVariable("POM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
         }
     }
 }
