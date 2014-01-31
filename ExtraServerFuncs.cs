@@ -8,8 +8,10 @@ Roadmap:
 
  Arbeit für Rainer:
 
-  - Funktionen sortieren
+  - Funktionen sortieren ( Bitte aufpassen das du die Funktionen in der selben Klasse lässt ) !!!!!
   - Docu schreiben
+  - Die ServerEvents auf alle Servermodes erweitern. Siehe dazu die "OnServerName" Funktion die ist ein Muster
+  - direkt darunter findest du die anderen Funktionen z.B. "OnServerMessage"
   - du findest dir sicher arbeit ;)
   
   
