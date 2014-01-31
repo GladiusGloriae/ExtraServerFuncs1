@@ -145,7 +145,11 @@ private volatile string tmp_mapList;
 private volatile string SwitchInitiator;
 private volatile string lastcmdspeaker;
 private int wait;
+private enumBoolYesNo g_prohibitedWeapons_enable = enumBoolYesNo.No;
+private List<string> g_prohibitedWeapons;
 
+private int g_ActionTbanTime = 60;
+private string g_PlayerAction = "kick";
 
 private int adminMsgCount;
 private BattlelogClient blClient; // BL Client try
@@ -210,6 +214,10 @@ private string msg_knifemode =          "KNIFE ONLY MODE";
 private string msg_pistolmode =         "PISTOL ONLY MODE";
 private string msg_warnBanner =         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 private string msg_prohibitedWeapon =   "%Killer%, DO NOT USE %Weapon% AGAIN!";
+private string msg_prohibitedWeaponLastWarn = "NEXT TIME %kickban%";
+private string msg_prohibitedWeaponKick = "KICKED %Killer for using %Weapon%";
+private string msg_prohibitedWeaponKickPlayer = "%kickban%ED you for using %Weapon%";
+
 private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
@@ -264,7 +272,8 @@ private int nm_VehicleSpawnCount = 100;
 private int nm_PlayerSpawnCount = 100;
 private List<string> nm_Rules;
 private List<string> nm_MapList;
-private int nm_max_Warns = 2;
+
+private int g_max_Warns = 2;
 
 
 
@@ -291,6 +300,9 @@ public ExtraServerFuncs() {
     fm_Rules.Add("NO FLAGCAMPING");
 
 
+    g_prohibitedWeapons = new List<string>();
+    g_prohibitedWeapons.Add("READ PLUGIN DESCRIPTION");
+    g_prohibitedWeapons.Add("TO KNOW HOW U GET THE WEAPONCODES EASY");
 
     nm_MapList = new List<string>();			// NORMAL MODE MAPLIST
     nm_MapList.Add("MP_Prison Domination0 2");
@@ -529,8 +541,75 @@ public void WriteData(string path, string s)
 #endregion
 
 
+public string FWeaponName(String killWeapon)  // Returns Returns a String with the Used Weapon
+{
+    KillWeaponDetails r = new KillWeaponDetails();
+    r.Name = killWeapon;
 
 
+    if (killWeapon.StartsWith("U_"))
+    {
+        String[] tParts = killWeapon.Split(new[] { '_' });
+
+        if (tParts.Length == 2)
+        { // U_Name
+            r.Name = tParts[1];
+        }
+        else if (tParts.Length == 3)
+        { // U_Name_Detail
+            r.Name = tParts[1];
+            r.Detail = tParts[2];
+        }
+        else if (tParts.Length == 4)
+        { // U_AttachedTo_Name_Detail
+            r.Name = tParts[2];
+            r.Detail = tParts[3];
+            r.AttachedTo = tParts[1];
+        }
+        else
+        {
+            DebugWrite("Warning: unrecognized weapon code: " + killWeapon, 5);
+        }
+    }
+    return r.Name;
+}
+
+
+
+
+
+public KillWeaponDetails FriendlyWeaponName(String killWeapon)  // Returns all parts of Killweapon String
+{
+    KillWeaponDetails r = new KillWeaponDetails();
+    r.Name = killWeapon;
+
+   
+    if (killWeapon.StartsWith("U_"))
+    {
+        String[] tParts = killWeapon.Split(new[] { '_' });
+
+        if (tParts.Length == 2)
+        { // U_Name
+            r.Name = tParts[1];
+        }
+        else if (tParts.Length == 3)
+        { // U_Name_Detail
+            r.Name = tParts[1];
+            r.Detail = tParts[2];
+        }
+        else if (tParts.Length == 4)
+        { // U_AttachedTo_Name_Detail
+            r.Name = tParts[2];
+            r.Detail = tParts[3];
+            r.AttachedTo = tParts[1];
+        }
+        else
+        {
+            DebugWrite("Warning: unrecognized weapon code: " + killWeapon, 5);
+        }
+    }
+    return r;
+}
 
 private void ReadServerConfig()
 {
@@ -790,7 +869,7 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (text.Contains("%cmdspeaker%")) text = text.Replace("%cmdspeaker%", lastcmdspeaker);
 
     if (text.Contains("%Killer%")) text = text.Replace("%Killer%", lastKiller);
-    if (text.Contains("%Weapon%")) text = text.Replace("%Weapon%", lastWeapon);
+    if (text.Contains("%Weapon%")) text = text.Replace("%Weapon%", FWeaponName(lastWeapon));
     if (text.Contains("%Victim%")) text = text.Replace("%Victim%", lastVictim);
 
 
@@ -804,7 +883,17 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
-   
+    if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(FWeaponName(lastWeapon)))
+    {
+        if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+        if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+        if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+        if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+        if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+
+    }
+    
+
     return text;
 
 
@@ -831,7 +920,21 @@ private void fm_Action(string name)
     if (fm_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_fmKick));
 	
 }
-    
+
+private void g_Action(string name)
+{
+    WritePluginConsole("Called g_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("fm_PlayerAction = " + g_PlayerAction + " name = "+ name , "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+    if (g_PlayerAction == "tban") tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+	
+}    
+
+
+
 public String E(String text)
         {
             text = Regex.Replace(text, @"\\n", "\n");
@@ -1309,6 +1412,15 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Knife Only Mode", typeof(enumBoolYesNo), kom_isEnabled));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Pistol Only Mode", typeof(enumBoolYesNo), pom_isEnabled));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Whitelist", typeof(enumBoolYesNo), mWhitelist_isEnabled));
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Prohibited Weapons", typeof(enumBoolYesNo), g_prohibitedWeapons_enable));
+            if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+            {
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|General Prohibited Weapons List", typeof(string[]), g_prohibitedWeapons.ToArray()));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|G_Max Player Warns", typeof(int), g_max_Warns));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|G_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
+                if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|G_TBan Minutes", typeof(int), g_ActionTbanTime));
+            }
+
 
             startup_mode_def = "enum.startup_mode(normal";
             if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
@@ -1316,6 +1428,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knifeonly";
             if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistolonly";
             startup_mode_def = startup_mode_def + ")";
+
 
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
             
@@ -1328,7 +1441,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 			}
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", typeof(string), ""));
             // lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", "enum.plugin_command(...|normal|private|switchnow|readconfig)", ""));
-
+            
 
             // NORMAL MODE SETTING ##################################################################################################################
 
@@ -1493,7 +1606,23 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
     }
 	
-	if (Regex.Match(strVariable, @"Clan_Whitelist").Success)
+        if (Regex.Match(strVariable, @"Use General Prohibited Weapons").Success)
+    {
+
+        if (strValue == "Yes") g_prohibitedWeapons_enable = enumBoolYesNo.Yes;
+        if (strValue == "No") g_prohibitedWeapons_enable = enumBoolYesNo.No;
+
+    }
+
+
+        if (Regex.Match(strVariable, @"General Prohibited Weapons List").Success)
+    {
+		g_prohibitedWeapons = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+        
+    
+    if (Regex.Match(strVariable, @"Clan_Whitelist").Success)
     {
 		m_ClanWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     }
@@ -1502,7 +1631,21 @@ public void SetPluginVariable(string strVariable, string strValue) {
     {
 		m_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     }
-	
+
+    if (Regex.Match(strVariable, @"G_Max Player Warns").Success)
+    {
+        g_max_Warns = Convert.ToInt32(strValue);
+    }
+
+    if (Regex.Match(strVariable, @"G_Player Action").Success)
+    {
+        g_PlayerAction = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"G_TBan Minutes").Success)
+    {
+        g_ActionTbanTime = Convert.ToInt32(strValue);
+    }
 
 
 
@@ -2101,7 +2244,7 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
     
      DebugWrite("[OnPlayerKilled] Killer:     " + lastKiller, 6);
      DebugWrite("[OnPlayerKilled] Victim:     " + lastVictim, 6);
-     DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
+     DebugWrite("[OnPlayerKilled] DamageType: " + FWeaponName(lastWeapon), 6);
     
    
     
@@ -2123,7 +2266,7 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
     if (lastKiller != "" && lastWeapon != "Suicide")
     {
 
-    if (isprohibitedWeapon(lastWeapon)) PlayerWarn(lastKiller);
+        if (isprohibitedWeapon(FWeaponName(lastWeapon))) PlayerWarn(lastKiller, FWeaponName(lastWeapon));
     
     }
 
@@ -2132,17 +2275,55 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
 
 private bool isprohibitedWeapon(string weapon)
 {
-if (serverMode == "flagrun") return true;
+if (serverMode == "flagrun") return true; // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
+if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon)) return true;  // GENERELL VERBOTENE WAFFEN
+    
 
     
 return false;
 
 }
     
-private void PlayerWarn(string name)
+private void PlayerWarn(string name,string weapon)
 {
     int warns = players.Warns(name);
     players.Warn(name);
+
+    if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes)  // GENERELL VERBOTENE WAFFEN
+    {
+        if (g_prohibitedWeapons.Contains(weapon))
+        {
+            KillPlayer(name);
+            if (warns < g_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_prohibitedWeapon));
+                SendGlobalMessage(msg_warnBanner);
+            }
+            
+
+            if (warns == g_max_Warns - 1) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_prohibitedWeapon));
+                SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns >= g_max_Warns) // Maximale Warnungen erreicht
+            {
+                g_Action(name);
+                SendGlobalMessage(R(msg_prohibitedWeaponKick));
+
+            }
+
+
+        }
+    
+
+    
+
+    }
 
     if (serverMode == "flagrun")// && !isInWhitelist(name))
     {
@@ -2180,7 +2361,7 @@ private void PlayerWarn(string name)
 
 
     // NEEDED VARS
-    /* nm_max_Warns
+    /* g_max_Warns
      * pm_max_Warns
       
      * kom_max_Warns
@@ -2849,7 +3030,12 @@ public struct CSV_PlayerInfo
 
 }
 
-
+public struct KillWeaponDetails
+{
+ public String Name;  // weapon name or reason, like "Suicide"
+ public String Detail;  // BF4: ammo or attachment
+ public String AttachedTo;  // BF4: main weapon when Name is a secondary attachment, like M320
+}
 
 
 
