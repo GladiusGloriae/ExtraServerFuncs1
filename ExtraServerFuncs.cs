@@ -449,7 +449,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         {
             if (IsSwitchDefined())
             {
-                if (SwitchInitiator == cmdspeaker) SwitchNow();
+                if (SwitchInitiator == cmdspeaker) StartSwitchCountdown();
                 if (SwitchInitiator != cmdspeaker) SendPlayerMessage(cmdspeaker, R(msg_notInitiator));
                 return;
             }
@@ -485,11 +485,12 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Write a csv file", "TRY", 0);
 
 
-            this.ExecuteCommand("procon.protected.tasks.add", "try", "10", "10", "-1", "procon.protected.send", "admin.yell", "Dies ist ein Test", "3" , "all");
+            //this.ExecuteCommand("procon.protected.tasks.add", "try", "10", "10", "-1", "procon.protected.send", "admin.yell", "Dies ist ein Test", "3" , "all");
+            
+            this.ExecuteCommand("procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered", "TRY");
 
-
-
-
+            
+            this.ExecuteCommand("procon.protected.tasks.add", "try", "30", "10", "-1", "procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered");
             
             /*
             tmpvar1 = new PlayerInfo();
@@ -698,9 +699,9 @@ public String ExtractCommandPrefix(String text)
             return String.Empty;
         }
 
-private void SwitchNow() // Switch to NEW SERVERMODE INSTANTLY         
+public void SwitchNow() // Switch to NEW SERVERMODE INSTANTLY         
 				{
-                    WritePluginConsole("Called SwitchNow(): serverMode= "+serverMode+" next_serverMode = " +next_serverMode , "Warn", 6);
+                    WritePluginConsole("Called SwitchNow(): serverMode= "+serverMode+" next_serverMode = " + next_serverMode , "Warn", 6);
                     if (plugin_enabled)
                     {
                         SendPlayerMessage(SwitchInitiator, R(msg_switchnow));
@@ -1066,6 +1067,17 @@ public void StartSwitchCountdown()
             timer++;
             counter--;
         }
+
+        this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString() , "1", "1", "procon.protected.plugins.call", "ExtraServerFuncs", "SwitchNow");
+        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 5).ToString(), "1", "1", "procon.protected.send", "mapList.getMapIndices");
+        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 6).ToString(), "6", "1", "procon.protected.send", "mapList.setNextMapIndex", "0");
+        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 7).ToString(), "7", "1", "procon.protected.send", "mapList.runNextRound");
+        
+        
+        
+
+
+
     }
     catch (Exception ex)
     {
@@ -2106,6 +2118,19 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              );
 }
 
+
+public void OnCommandTest(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope) // Funktion zum Testcommand
+{
+    WritePluginConsole("^1^b[OnCommandTest]^0^n Speaker was: "+strSpeaker+" text was: "+strText , "Info", 0);
+}
+
+public void OnTaskTriggered() // Example
+{
+    WritePluginConsole("^1^b[OnTaskTriggered]^0^n was Called", "Info", 0);
+
+}
+
+
 public void OnPluginEnable() {
 
     Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
@@ -2121,7 +2146,36 @@ public void OnPluginEnable() {
             next_serverMode = "normal";
         }
         
+        /// TRY COMMAND
+        this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommandTest",
+                        this.Listify<string>("@", "!", "#"),
+                        "testcommand",
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.All),
+                        "ONLY A TEST"
+                    ));
         
+        /*this.RegisterCommand(
+                        new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnTaskTriggered",
+                        new List<string>(),
+                        "Triggertest",
+                        //new List<MatchArgumentFormat>(),
+                        new ExecutionRequirements(ExecutionScope.None),
+                        "ONLY A TEST TRIGGERED BY A TASK"
+                        ));
+        */
+        
+
+
+
+        /// TRY COMMAND
+
         plugin_enabled = true;
         fIsEnabled = true;
         players = new PlayerDB();
@@ -2145,6 +2199,24 @@ public void OnPluginDisable() {
 	plugin_enabled = false;
 	fIsEnabled = false;
 	ConsoleWrite("Disabled :(");
+
+    /// TRY COMMAND
+    this.UnregisterCommand(
+                new MatchCommand(
+                    "Extra Server Funcs",
+                    "OnCommandTest",
+                    this.Listify<string>("@", "!", "#"),
+                    "testcommand",
+                    this.Listify<MatchArgumentFormat>(),
+                    new ExecutionRequirements(
+                        ExecutionScope.All),
+                    "ONLY A TEST"
+                ));
+    /// TRY COMMAND
+
+
+
+
 }
 
 public override void OnVersion(string serverType, string version) { }
@@ -2478,6 +2550,7 @@ private void PlayerWarn(string name,string weapon)
             {
                 SendGlobalMessage(msg_warnBanner);
                 SendGlobalMessage(R(msg_FlagrunWarn));
+                SendPlayerYellV(name, (R(msg_FlagrunWarn)), yell_Time);
                 SendGlobalMessage(msg_warnBanner);
             }
 
@@ -2488,6 +2561,7 @@ private void PlayerWarn(string name,string weapon)
                 SendGlobalMessage(msg_warnBanner);
                 SendGlobalMessage(R(msg_FlagrunWarn));
                 SendGlobalMessage(R(msg_FlagrunLastWarn));
+                SendPlayerYellV(name, (R(msg_FlagrunWarn + " " + msg_FlagrunLastWarn)), yell_Time);
                 SendGlobalMessage(msg_warnBanner);
             }
 
@@ -2619,6 +2693,12 @@ public void Add(string name)
       }
   }
 
+public int Count()
+{
+    return Players.Count;
+}   
+    
+
 public void Kill(string name)
 {
     int k = Player_Kills[name];
@@ -2698,18 +2778,15 @@ public void ResetData() // Store Data in CSV Database and reset Round Data
             tmp_player.Visits = tmp_player.Visits + 1;
             tmp_player.LastSeen = DateTime.Now;
             csv_db.SetPlayerData(tmp_player);
+            Player_Kills[name] = 0;
+            Player_Death[name] = 0;
+            Player_Warns[name] = 0;
+            Player_Suicides[name] = 0;    
+
+        
         }
-                
     }
     csv_db.SaveToFile();
-
-    Players.Clear();
-    Player_Kills.Clear();
-    Player_Death.Clear();
-    Player_Warns.Clear();
-    Player_Suicides.Clear();
-
-
 }
 
 public void Remove(string name) // Remove Player from DB and save him to CSV_Database
