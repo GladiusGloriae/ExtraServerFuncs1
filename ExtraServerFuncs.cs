@@ -22,6 +22,11 @@ Roadmap:
     
             - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
             - readconfig funktioniert nicht ordnungsgemäß
+
+ - StartSwitchCountdown()
+    Registered Commends !!!!!
+    - Endround oder runNextLevel nach ablauf der Zeit
+  
  
   
 - MapLists
@@ -40,10 +45,13 @@ Roadmap:
 	- Always prohibited weapons List
 	
 	- Sort Current Variables
-- 
  
-- Routine FriendlyWeaponName schreiben ( siehe Insane Limits )
 
+- Show WeaponCode Funktion
+   - Variable yes/No hinzufügen
+   - Ausgabe Farblich hervorheben
+  
+  
  
  
 - Knife Only Mode Aktivieren
@@ -58,6 +66,10 @@ Roadmap:
     - Warn Message
 
 
+- Hardcorde Mode Schreiben
+  
+  
+ 
   
 - ServerMeldung hinzufügen die jede Minute anzeigt in Welchem Modus sich der Server befindet
   alle Anzeigen ausser dem Normalen Modus
@@ -126,7 +138,7 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 
 // Threads
 Thread delayed_message;
-
+Thread countdown_message;
 // Classes
 
 TextDatei files;
@@ -139,10 +151,11 @@ private enumBoolYesNo fm_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo kom_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo pom_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo mWhitelist_isEnabled  = enumBoolYesNo.No;
+private enumBoolYesNo showweaponcode = enumBoolYesNo.No;
 private List<string> m_ClanWhitelist;
 private List<string> m_PlayerWhitelist;
 private volatile string startup_mode_def;
-private volatile string startup_mode = "normal";
+private volatile string startup_mode = "none";
 private volatile string tmp_mapList;
 private volatile string SwitchInitiator;
 private volatile string lastcmdspeaker;
@@ -172,9 +185,14 @@ private volatile bool fIsEnabled;
 private volatile int fDebugLevel = 2;
 private volatile enumBoolYesNo autoconfig = enumBoolYesNo.No;
 private volatile string tmp_autoconfig;
-private volatile string lastKiller; // %Killer%
-private volatile string lastWeapon; // %Weapon%
-private volatile string lastVictim; // %Victim%
+private volatile string lastKiller = "none";  // %Killer%
+private volatile string lastWeapon = "none"; // %Weapon%
+private volatile string lastVictim = "none"; // %Victim%
+private volatile string lastUsedWeapon = "none"; // Weapon
+
+
+private int countdown_time = 60;
+
 
     // Commands
 private volatile string nm_commandEnable = "normal";     // NORMAL MODE Command
@@ -210,7 +228,7 @@ private volatile string msg_normalmode =        "NORMAL MODE";
 private volatile string msg_privatemode =       "PRIVATE MODE";
 
 // MSG NOT IN SETTINGS
-    
+  
 private string msg_flagrunmode =        "FLAGRUN MODE";
 private string msg_knifemode =          "KNIFE ONLY MODE";
 private string msg_pistolmode =         "PISTOL ONLY MODE";
@@ -219,7 +237,7 @@ private string msg_prohibitedWeapon =   "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_prohibitedWeaponLastWarn = "NEXT TIME %kickban%";
 private string msg_prohibitedWeaponKick = "KICKED %Killer for using %Weapon%";
 private string msg_prohibitedWeaponKickPlayer = "%kickban%ED you for using %Weapon%";
-
+private string msg_countdown =           "SERVER SWITCH TO %nextServermode% IN";
 private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
@@ -229,8 +247,19 @@ private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
 private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_PistolLastWarn =     "NEXT TIME %kickban%!!!";
 private string msg_ActionTypeKick =     "KICK";
-private string msg_ActionTypeBan =      "BAN";    
+private string msg_ActionTypeBan =      "BAN";
 
+
+// NORMAL MODE VARS
+private string nm_Servername = "Your Server Name";
+private string nm_Serverdescription = "Your Server Description";
+private string nm_ServerMessage = "Your Server Message";
+private enumBoolYesNo nm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int nm_VehicleSpawnCount = 100;
+private int nm_PlayerSpawnCount = 100;
+private List<string> nm_Rules;
+private List<string> nm_MapList;
+private int g_max_Warns = 2;
 
 
 // PRIVATE MODE VARS
@@ -252,36 +281,57 @@ private int pm_max_Warns = 2;
 private List<string> fm_ClanWhitelist;
 private List<string> fm_PlayerWhitelist;
 private string fm_Servername = "Servername - FLAGFUN";
-private string fm_Serverdescription = "Server is in Flagrun mode! DO NOT KILL! KILL = KICK or BAN";
+private string fm_Serverdescription = "Server is in Flagrun mode! DO NOT KILL! KILL = KICK or BAN! Play fair and have fun.";
 private string fm_ServerMessage = "Your Server Message";
 private enumBoolYesNo fm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
 private int fm_VehicleSpawnCount = 100;
 private int fm_PlayerSpawnCount = 100;
 private List<string> fm_Rules;
 private List<string> fm_MapList;
-
 private int fm_max_Warns = 2;
 private string fm_PlayerAction = "pb_tban";
 private int fm_ActionTbanTime = 60;
 
 
-// NORMAL MODE VARS
-private string nm_Servername = "Your Server Name";
-private string nm_Serverdescription = "Your Server Description";
-private string nm_ServerMessage = "Your Server Message";
-private enumBoolYesNo nm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
-private int nm_VehicleSpawnCount = 100;
-private int nm_PlayerSpawnCount = 100;
-private List<string> nm_Rules;
-private List<string> nm_MapList;
-
-private int g_max_Warns = 2;
-
-
-
-// VARS for future MODES
-private int pom_max_Warns = 2;
+// KNIFE ONLY VARS
+private string kom_Servername = "Servername - KNIFE ONLY";
+private string kom_Serverdescription = "Server is in KNIFE ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string kom_ServerMessage = "Your Server Message";
+private enumBoolYesNo kom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int kom_VehicleSpawnCount = 100;
+private int kom_PlayerSpawnCount = 100;
+private List<string> kom_Rules;
+private List<string> kom_MapList;
 private int kom_max_Warns = 2;
+
+// PISTOL ONLY VARS
+private string pom_Servername = "Servername - PISTOL ONLY";
+private string pom_Serverdescription = "Server is in KNIFE ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string pom_ServerMessage = "Your Server Message";
+private enumBoolYesNo pom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int pom_VehicleSpawnCount = 100;
+private int pom_PlayerSpawnCount = 100;
+private List<string> pom_Rules;
+private List<string> pom_MapList;
+private int pom_max_Warns = 2;
+private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
+private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
+private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
+private enumBoolYesNo pom_allowPistol_Shorty = enumBoolYesNo.No;            //SHORTY 12G
+private enumBoolYesNo pom_allowPistol_Glock18 = enumBoolYesNo.Yes;          //G18
+private enumBoolYesNo pom_allowPistol_FN57 = enumBoolYesNo.Yes;             //FN57
+private enumBoolYesNo pom_allowPistol_M1911 = enumBoolYesNo.Yes;            //M1911
+private enumBoolYesNo pom_allowPistol_93R = enumBoolYesNo.Yes;              //93R
+private enumBoolYesNo pom_allowPistol_CZ75 = enumBoolYesNo.Yes;             //CZ-75
+private enumBoolYesNo pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;         //.44 MAGNUM
+private enumBoolYesNo pom_allowPistol_HK45C = enumBoolYesNo.Yes;            //COMPACT 45
+private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P226
+private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
+private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
+
+
+
+
 
 
 public ExtraServerFuncs() {
@@ -422,8 +472,8 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 
         if (cmd == "start")
         {
-            
-                       
+
+            StartSwitchCountdown();           
             return;
         }
 
@@ -434,42 +484,12 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Start test...Class PlayerDB", "TRY", 0);
             WritePluginConsole("Write a csv file", "TRY", 0);
 
-            string lf = "\r\n";
-            try
-            {
-                files.WriteLine(@"Logs\testdatei2.csv", "PlayerName;Score;Kills;Death;Time");
-                files.WriteLine(@"Logs\testdatei2.csv", "MarkusSR1984;8000;100;200;193");
-                files.WriteLine(@"Logs\testdatei2.csv", "Koerai3;9000;101;201;194");
-                files.WriteLine(@"Logs\testdatei2.csv", "gubba;10000;102;202;195");
-                files.WriteLine(@"Logs\testdatei2.csv", "testPlayer;11000;103;203;196");
 
-
-            }
-            catch (Exception ex)
-            {
-                ConsoleError("unable to dump information to file");
-                ConsoleException("" + ex.GetType() + ": " + ex.Message);
-            }
+            this.ExecuteCommand("procon.protected.tasks.add", "try", "10", "10", "-1", "procon.protected.send", "admin.yell", "Dies ist ein Test", "3" , "all");
 
 
 
-            List<string> Lines = files.ReadLines(@"Logs\testdatei2.csv");
 
-
-            
-            for (int i = 0; i < Lines.Count; i++)
-            {
-
-                if (Lines[i] == "") return;
-                string[] line = Lines[i].Split(';');
-                WritePluginConsole("Read line from file: " + i + "    " + Lines[i], "TRY", 0);
-                foreach (string col in line)
-                {
-                WritePluginConsole("Col 1 : " + col, "TRY", 0);
-                }
-
-            }
-            
             
             /*
             tmpvar1 = new PlayerInfo();
@@ -871,7 +891,7 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (text.Contains("%cmdspeaker%")) text = text.Replace("%cmdspeaker%", lastcmdspeaker);
 
     if (text.Contains("%Killer%")) text = text.Replace("%Killer%", lastKiller);
-    if (text.Contains("%Weapon%")) text = text.Replace("%Weapon%", FWeaponName(lastWeapon));
+    if (text.Contains("%Weapon%")) text = text.Replace("%Weapon%", lastUsedWeapon);
     if (text.Contains("%Victim%")) text = text.Replace("%Victim%", lastVictim);
 
 
@@ -885,7 +905,7 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
-    if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(FWeaponName(lastWeapon)))
+    if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(lastUsedWeapon))
     {
         if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
         if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
@@ -963,6 +983,24 @@ private void SendPlayerMessage(string name, string message) // Chatnachricht an 
             ServerCommand("admin.say", StripModifiers(E(message)), "player", name);
         }
 
+private void SendPlayerYellV(string name, string message, int duration)
+{
+    if (name == null)
+        return;
+
+    ServerCommand("admin.yell", StripModifiers(E(message)), duration.ToString(), "player", name);
+}
+
+private bool SendGlobalYellV(String message, int duration)
+{
+    ServerCommand("admin.yell", StripModifiers(E(message)), duration.ToString(), "all");
+    return true;
+}
+
+
+
+
+
 public void PreSwitchServerMode(string MarkNewServerMode) // Define a Server Mode Switch
 {
     WritePluginConsole("Called PreSwitchServerMode: serverMode= " + serverMode + " next_serverMode = " + next_serverMode, "Warn", 10);
@@ -996,6 +1034,54 @@ public void SendSwitchMessage()
 
 
 }
+
+public void StartSwitchCountdown()
+{
+    try
+    {
+        if (!plugin_enabled) return;
+        WritePluginConsole("Called StartSwitchCountdown()", "INFO", 10);
+        string countdown_message = (R(msg_countdown));
+        //string countdown_message = (msg_countdown);
+        int counter = countdown_time;
+        int timer = 0;
+        
+
+
+
+        while (counter >= 0)
+        {
+
+
+            string msg_Count = countdown_message + " " + counter.ToString() + " SECONDS";
+
+            //procon.protected.tasks.add <int: delay> <int: interval> <int: repeat> [[vars: commandwords] ...]
+
+            this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsYell", timer.ToString(), "1", "1", "procon.protected.send", "admin.yell", msg_Count, "2", "all");
+           // this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsSay", timer.ToString(), "1", "1", "procon.protected.send", "admin.say", msg_Count, "1", "all");
+            this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsCon", timer.ToString(), "1", "1", "procon.protected.pluginconsole.write", msg_Count, "2", "all");
+
+
+
+            timer++;
+            counter--;
+        }
+    }
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^bStartSwitchCountdown returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+    }
+        //}
+    
+    return;
+    
+    
+
+
+}
+
+
+
 
 public void SwitchServerMode(string newServerMode)  // Switch the current Server Mode
 {
@@ -1424,7 +1510,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             }
 
 
-            startup_mode_def = "enum.startup_mode(normal";
+            startup_mode_def = "enum.startup_mode(none|normal";
             if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
             if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
             if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knifeonly";
@@ -1432,7 +1518,9 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             startup_mode_def = startup_mode_def + ")";
 
 
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
+            if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Waponcodes", typeof(enumBoolYesNo), showweaponcode));			
+
             
             
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Autoconfig", typeof(enumBoolYesNo), autoconfig));			
@@ -1591,6 +1679,12 @@ public void SetPluginVariable(string strVariable, string strValue) {
         startup_mode = strValue;
     }
 
+
+    if (Regex.Match(strVariable, @"Show Waponcodes").Success)
+    {
+        if (strValue == "Yes") showweaponcode = enumBoolYesNo.Yes;
+        if (strValue == "No") showweaponcode = enumBoolYesNo.No;
+    }
 
 
 
@@ -2021,6 +2115,13 @@ public void OnPluginEnable() {
         WritePluginConsole("Set Startup Vars...", "Info", 2);
         serverMode = "plugin_init";
         next_serverMode = startup_mode;
+        if (startup_mode == "none")
+        {
+            serverMode = "normal";
+            next_serverMode = "normal";
+        }
+        
+        
         plugin_enabled = true;
         fIsEnabled = true;
         players = new PlayerDB();
@@ -2028,7 +2129,7 @@ public void OnPluginEnable() {
 
         WritePluginConsole("ENABLED - Thanks for using :)", "Info", 0);
         Thread.Sleep(1000);
-        SwitchServerMode(next_serverMode);
+        if (startup_mode != "none")SwitchServerMode(next_serverMode);
         WritePluginConsole("LOADED Startup Server Mode", "Info", 0);
         return;
     }));
@@ -2188,7 +2289,11 @@ public void OnMaplistList(List<MaplistEntry> lstMaplist)
 
 }
 
-public override void OnResponseError(List<string> requestWords, string error) { }
+public override void OnResponseError(List<string> requestWords, string error)
+{
+    WritePluginConsole("^1^b PROCON ERROR: "+ error, "error", 2);
+
+}
 
 public override void OnListPlayers(List<CPlayerInfo> playerlist, CPlayerSubset subset) {
     List<string> playerdb = new List<string>();
@@ -2239,20 +2344,33 @@ public override void OnPlayerLeft(CPlayerInfo playerInfo)
 
 public override void OnPlayerKilled(Kill kKillerVictimDetails)
  {
+    
+    try
+    {
+    
+    
     lastKiller = kKillerVictimDetails.Killer.SoldierName;
     lastVictim = kKillerVictimDetails.Victim.SoldierName;
     lastWeapon = kKillerVictimDetails.DamageType;
+    lastUsedWeapon = FWeaponName(lastWeapon);
+
+    if (showweaponcode == enumBoolYesNo.Yes) WritePluginConsole("^2^n" + lastKiller + "^1^b  [ " + lastUsedWeapon + " ]^7^n " + lastVictim, "KILL", 0); // Zeige Die Waffen in der Konsole Farblich hervorgehoben
     
     
      DebugWrite("[OnPlayerKilled] Killer:     " + lastKiller, 6);
      DebugWrite("[OnPlayerKilled] Victim:     " + lastVictim, 6);
-     DebugWrite("[OnPlayerKilled] DamageType: " + FWeaponName(lastWeapon), 6);
+     DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
     
    
+    if (lastKiller != "" && lastWeapon != "Suicide")
+    {
+
+        if (isprohibitedWeapon(lastUsedWeapon)) PlayerWarn(lastKiller, lastUsedWeapon);
     
-    
-    
-    if (lastKiller == lastVictim) 
+    }
+
+
+    if (lastKiller == lastVictim)
     {
         players.Suicide(lastVictim);
     }
@@ -2261,140 +2379,172 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
 
     if (lastKiller != lastVictim)
     {
-        players.Kill(lastKiller);
-        players.Death(lastVictim);
+        if (lastKiller != "") players.Kill(lastKiller);
+        if (lastVictim != "") players.Death(lastVictim);
     }
 
-    if (lastKiller != "" && lastWeapon != "Suicide")
-    {
-
-        if (isprohibitedWeapon(FWeaponName(lastWeapon))) PlayerWarn(lastKiller, FWeaponName(lastWeapon));
+    
+    
     
     }
-
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^bOnPlayerKilled returs an Error: ^0^n"+ ex.ToString(), "ERROR", 9);
+    }
 
  }
 
 private bool isprohibitedWeapon(string weapon)
 {
-if (serverMode == "flagrun") return true; // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
-if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon)) return true;  // GENERELL VERBOTENE WAFFEN
-    
+    try
+    {
+        WritePluginConsole("Called isprohibitedWeapon()", "DEBUG", 10);
 
-    
-return false;
+        if (serverMode == "flagrun")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
+        {
+            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  FLAGRUN MODE!", "DEBUG", 10);
+            return true;
+        }
 
+        if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon))   // GENERELL VERBOTENE WAFFEN
+        {
+            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  General prohibited Weapon match", "DEBUG", 10);
+            return true;
+        }
+
+
+        
+    }
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^bisprohibitedWeapon returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+    }
+    return false;
 }
     
 private void PlayerWarn(string name,string weapon)
 {
-    int warns = players.Warns(name);
-    players.Warn(name);
-
-    if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes)  // GENERELL VERBOTENE WAFFEN
+    try
     {
-        if (g_prohibitedWeapons.Contains(weapon))
+        int yell_Time = 10;
+        players.Warn(name);
+        int warns = players.Warns(name);
+
+
+        if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes)  // GENERELL VERBOTENE WAFFEN
+        {
+            if (g_prohibitedWeapons.Contains(weapon))
+            {
+                KillPlayer(name);
+                WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + g_max_Warns.ToString(), "KILL", 2);
+                if (warns < g_max_Warns)
+                {
+                    SendGlobalMessage(msg_warnBanner);
+                    SendGlobalMessage(R(msg_prohibitedWeapon));
+                    SendPlayerYellV(name, (R(msg_prohibitedWeapon)), yell_Time);
+                    SendGlobalMessage(msg_warnBanner);
+                }
+
+
+                if (warns == g_max_Warns) // Maximale Warnungen erreicht
+                {
+                    SendGlobalMessage(msg_warnBanner);
+                    SendGlobalMessage(R(msg_prohibitedWeapon));
+                    SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
+                    SendPlayerYellV(name, (R(msg_prohibitedWeapon + " " + msg_prohibitedWeaponLastWarn)), yell_Time);
+                    SendGlobalMessage(msg_warnBanner);
+                }
+
+                if (warns > g_max_Warns) // Maximale Warnungen erreicht
+                {
+                    g_Action(name);
+                    SendGlobalMessage(R(msg_prohibitedWeaponKick));
+
+                }
+
+
+            }
+
+
+
+
+        }
+
+        if (serverMode == "flagrun")// && !isInWhitelist(name))
         {
             KillPlayer(name);
-            if (warns < g_max_Warns)
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + g_max_Warns.ToString(), "KILL", 2);
+            if (warns < fm_max_Warns)
             {
                 SendGlobalMessage(msg_warnBanner);
-                SendGlobalMessage(R(msg_prohibitedWeapon));
-                SendGlobalMessage(msg_warnBanner);
-            }
-            
-
-            if (warns == g_max_Warns - 1) // Maximale Warnungen erreicht
-            {
-                SendGlobalMessage(msg_warnBanner);
-                SendGlobalMessage(R(msg_prohibitedWeapon));
-                SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
+                SendGlobalMessage(R(msg_FlagrunWarn));
                 SendGlobalMessage(msg_warnBanner);
             }
 
-            if (warns >= g_max_Warns) // Maximale Warnungen erreicht
+
+
+            if (warns == fm_max_Warns) // Maximale Warnungen erreicht
             {
-                g_Action(name);
-                SendGlobalMessage(R(msg_prohibitedWeaponKick));
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_FlagrunWarn));
+                SendGlobalMessage(R(msg_FlagrunLastWarn));
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > fm_max_Warns) // Maximale Warnungen erreicht
+            {
+                fm_Action(name);
+                SendGlobalMessage(R(msg_FlagrunKick));
 
             }
 
 
-        }
-    
 
-    
 
-    }
-
-    if (serverMode == "flagrun")// && !isInWhitelist(name))
-    {
-        KillPlayer(name);
-        if (warns < fm_max_Warns)
-        {
-            SendGlobalMessage(msg_warnBanner);
-            SendGlobalMessage(R(msg_FlagrunWarn));
-            SendGlobalMessage(msg_warnBanner);
-        }
-        
-        
-        
-        if (warns == fm_max_Warns - 1) // Maximale Warnungen erreicht
-        {
-            SendGlobalMessage(msg_warnBanner);
-            SendGlobalMessage(R(msg_FlagrunWarn));
-            SendGlobalMessage(R(msg_FlagrunLastWarn));
-            SendGlobalMessage(msg_warnBanner);
-        }
-
-        if (warns >= fm_max_Warns) // Maximale Warnungen erreicht
-        {
-            fm_Action(name);
-            SendGlobalMessage(R(msg_FlagrunKick));
-            
         }
 
 
 
 
-    }
-    
-
-
-
-    // NEEDED VARS
-    /* g_max_Warns
-     * pm_max_Warns
+        // NEEDED VARS
+        /* g_max_Warns
+         * pm_max_Warns
       
-     * kom_max_Warns
-     * pom_max_Warns
-     * 
-     * msg_warnBanner
-     * msg_prohibitedWeapon
-     * msg_FlagrunWarn
-     * msg_FlagrunLastWarn
-     * msg_KnifeWarn
-     * msg_KnifeLastWarn
-     * msg_PistolWarn
-     * msg_PistolLastWarn
-     * 
-     * %kickban%
-     */
-    
-    
-    
-    if (serverMode == "normal") { }
-    if (serverMode == "private") { }
-    
-    if (serverMode == "knife") { }
-    if (serverMode == "pistol") { }
+         * kom_max_Warns
+         * pom_max_Warns
+         * 
+         * msg_warnBanner
+         * msg_prohibitedWeapon
+         * msg_FlagrunWarn
+         * msg_FlagrunLastWarn
+         * msg_KnifeWarn
+         * msg_KnifeLastWarn
+         * msg_PistolWarn
+         * msg_PistolLastWarn
+         * 
+         * %kickban%
+         */
+
+
+
+        if (serverMode == "normal") { }
+        if (serverMode == "private") { }
+
+        if (serverMode == "knife") { }
+        if (serverMode == "pistol") { }
+    }
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^bWarnPlayer returns an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+    }
+
 }
  
 public override void OnPlayerSpawned(string soldierName, Inventory spawnedInventory) {
 
 // if (serverMode == "private" && !isInWhitelist(soldierName)) kickPlayer(soldierName, msg_pmKick);  // Kick player if not in Whitelist when PRIVATE MODE IS ACTIVE
 
-
+players.Add(soldierName);
 DebugWrite("Player spawn detected. Playername = " + soldierName, 6);
 
 
