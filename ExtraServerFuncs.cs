@@ -25,9 +25,8 @@ Roadmap:
   
  
  - Infantry Only Mode
-  
- 
  - Hardcore Mode
+ - Shootgun only mode
  
    
  - On Map prohibited Weapons
@@ -521,8 +520,11 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             return;
         }
 
-
-
+        if (cmd == "update")
+        {
+            UpdateSettingPage();
+            return;
+        }
         
         if (cmd == "try")
         {
@@ -534,16 +536,20 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             List<string> item;
                 
             item = new List<string>();
-            item.Add("MP_Journy_Weapon1");
-            item.Add("MP_Journy_Weapon2");
-            item.Add("MP_Journy_Weapon3");
-            MapProhibitedWeapons.Add("MP_Journy", item);
+            item.Add("MP_Journey_Weapon1");
+            item.Add("MP_Journey_Weapon2");
+            item.Add("MP_Journey_Weapon3");
+            MapProhibitedWeapons.Add("MP_Journey", item);
 
             item = new List<string>();
             item.Add("MP_Prison_Weapon1");
             item.Add("MP_Prison_Weapon2");
             item.Add("MP_Prison_Weapon3");
             MapProhibitedWeapons.Add("MP_Prison", item);
+
+
+            item = new List<string>();
+            MapProhibitedWeapons.Add("MP_Resort", item);
 
 
             foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
@@ -1221,6 +1227,33 @@ public void StartSwitchCountdown()
 
 
 }
+
+
+//Calling this method will make the settings window refresh with new data
+public void UpdateSettingPage() {
+	SetExternalPluginSetting("ExtraServerFuncs", "UpdateSettings", "Update");
+}
+
+
+public void SetPluginSetting(string key, string value)
+{
+    SetExternalPluginSetting("ExtraServerFuncs", key, value);
+}
+    
+    
+//Calls setVariable with the given parameters
+public void SetExternalPluginSetting(String pluginName, String settingName, String settingValue)
+{
+    if (String.IsNullOrEmpty(pluginName) || String.IsNullOrEmpty(settingName) || settingValue == null)
+    {
+        ConsoleError("Required inputs null or empty in setExternalPluginSetting");
+        return;
+    }
+    ExecuteCommand("procon.protected.plugins.setVariable", pluginName, settingName, settingValue);
+}
+
+
+
 
 
 
@@ -1946,20 +1979,19 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
             // Debugkonfig
-            lstReturn.Add(new CPluginVariable("6.Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
+            lstReturn.Add(new CPluginVariable("7. Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
             
-            //Try to get a dynamic list
-           
-                //foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
-                //{
-                //    string tmpvar = "10. On Map prohibited Weapons|" + entry.Key;
-                //    lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+            // Map Prohibited Weapons
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", typeof(string), ""));
 
-                //}
-            string key = "TestMap";
-            string[] value = new string[1] { "Test Value" };
-            lstReturn.Add(new CPluginVariable("10. Test|" + key, value.GetType(), value ));
            
+                foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+                {
+                    string tmpvar = "6.1 On Map prohibited Weapons|" + entry.Key;
+                    lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                }
+                      
 
 		}
 		return lstReturn;
@@ -1979,7 +2011,7 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 public void SetPluginVariable(string strVariable, string strValue) {
 
     DebugWrite("[VARNAME] " + strVariable + " [VALUE] " + strValue, 5);
-    UpdateStartupMode(); //Update Valus in Startup mode
+   
 
     if (Regex.Match(strVariable, @"I have read the Terms of Use YES / NO").Success)
     {               
@@ -2718,22 +2750,29 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
 
+    if ((Regex.Match(strVariable, @"Add Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "")
+    {
+        
+        List<string> item = new List<string>();
+        if (!MapProhibitedWeapons.ContainsKey(strValue))
+        {
+            MapProhibitedWeapons.Add(strValue, item);
+        }
 
+    }
+
+    if (MapProhibitedWeapons.ContainsKey(strVariable))
+    {
+        MapProhibitedWeapons[strVariable] = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+
+    
 
 
 } // Speichern der von User eingegebenen Variablen
 
 
-
-private void UpdateStartupMode() // Modes shown at Startup Mode in Pugin settings
-{
-    startup_mode_def = "enum.startup_mode(none|normal";
-    if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
-    if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
-    if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knife";
-    if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistol";
-    startup_mode_def = startup_mode_def + ")";
-}
 
 public void OnPluginLoaded(string strHostName, string strPort, string strPRoConVersion) {
     
@@ -2899,11 +2938,11 @@ public void OnServerName(string serverName)  // Server Name was changed
     {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
-            if (serverMode == "normal") SetPluginVariable("NM_Server Name", serverName); // SAVE SERVERNAME TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
-            if (serverMode == "flagrun") SetPluginVariable("FM_Server Name", serverName); // SAVE SERVERNAME TO FLAGRUN MODE CONFIG
-            if (serverMode == "knife") SetPluginVariable("KOM_Server Name", serverName); // SAVE SERVERNAME TO KNIFE ONLY MODE CONFIG
-            if (serverMode == "pistol") SetPluginVariable("POM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "normal") SetPluginSetting("NM_Server Name", serverName); // SAVE SERVERNAME TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Server Name", serverName); // SAVE SERVERNAME TO FLAGRUN MODE CONFIG
+            if (serverMode == "knife") SetPluginSetting("KOM_Server Name", serverName); // SAVE SERVERNAME TO KNIFE ONLY MODE CONFIG
+            if (serverMode == "pistol") SetPluginSetting("POM_Server Name", serverName); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
         }
     }
 }
@@ -2914,9 +2953,11 @@ public void OnServerMessage(string Message)  // Server Name was changed
     {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
-            if (serverMode == "normal") SetPluginVariable("NM_Server Message", Message); // SAVE SERVERNAME TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Server Message", Message); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
-
+            if (serverMode == "normal") SetPluginSetting("NM_Server Message", Message); // SAVE SERVERNAME TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Server Message", Message); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Server Message", Message); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "knife") SetPluginSetting("KOM_Server Message", Message); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "pistol") SetPluginSetting("POM_Server Message", Message); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
         }
     }
 }
@@ -2927,8 +2968,13 @@ public void OnServerDescription(string serverDescription)
     {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
-            if (serverMode == "normal") SetPluginVariable("NM_Server Description", serverDescription); // SAVE SERVERNAME TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Server Description", serverDescription); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "normal") SetPluginSetting("NM_Server Description", serverDescription); // SAVE SERVERNAME TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Server Description", serverDescription); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Server Description", serverDescription); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "knife") SetPluginSetting("KOM_Server Description", serverDescription); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+            if (serverMode == "pistol") SetPluginSetting("POM_Server Description", serverDescription); // SAVE SERVERNAME TO PRIVATE MODE CONFIG
+
+
 
         }
     }
