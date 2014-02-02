@@ -24,12 +24,12 @@ Roadmap:
             - Manuelles Update der Angezeigten Vriablen in der Plugin Config
   
  
+ - Infantry Only Mode
+  
  
- - Pistol Only Mode
-  
-  
- - Knife Only Mode
-  
+ - Hardcore Mode
+ 
+   
  - On Map prohibited Weapons
    -evtl über Dictionary lösen
   
@@ -51,8 +51,6 @@ Roadmap:
  
 
 - Plugin USER SETTINGS
-	- Always prohibited weapons Enable 
-	- Always prohibited weapons List
 	
 	- Sort Current Variables
  
@@ -250,10 +248,15 @@ private string msg_prohibitedWeaponKickPlayer = "%kickban%ED you for using %Weap
 private string msg_countdown =           "SERVER SWITCH TO %nextServermode% IN";
 private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
+private string msg_FlagrunKick = "kicked %Killer% for Kill";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
-private string msg_FlagrunKick =        "kicked %Killer% for Kill";
+private string msg_KnifeKick = "KICKED %Killer for using %Weapon%";
+private string msg_komKick = "kicked you for kills with %Weapon% on KNIFE ONLY MODE";
 private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
+
+private string msg_pomKick = "kicked you for kills with %Weapon% on PISTOL ONLY MODE";
+private string msg_PistolKick = "KICKED %Killer for using %Weapon%";
 private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_PistolLastWarn =     "NEXT TIME %kickban%!!!";
 private string msg_ActionTypeKick =     "KICK";
@@ -322,8 +325,10 @@ private int kom_ActionTbanTime = 60;
 
 
 // PISTOL ONLY VARS
+private List<string> pom_ClanWhitelist;
+private List<string> pom_PlayerWhitelist;
 private string pom_Servername = "Servername - PISTOL ONLY";
-private string pom_Serverdescription = "Server is in KNIFE ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string pom_Serverdescription = "Server is in PISTOL ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
 private string pom_ServerMessage = "Your Server Message";
 private enumBoolYesNo pom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
 private int pom_VehicleSpawnCount = 100;
@@ -331,6 +336,9 @@ private int pom_PlayerSpawnCount = 100;
 private List<string> pom_Rules;
 private List<string> pom_MapList;
 private int pom_max_Warns = 2;
+private string pom_PlayerAction = "pb_tban";
+private int pom_ActionTbanTime = 60;
+
 private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
 private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
 private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
@@ -416,6 +424,8 @@ public ExtraServerFuncs() {
     fm_PlayerWhitelist = new List<string>();	// FLAGRUN MODE Player Whitelist
     kom_ClanWhitelist = new List<string>();		// KNIFE ONLY MODE Clan Whitelist
     kom_PlayerWhitelist = new List<string>();	// KNIFE MODE Player Whitelist
+    pom_ClanWhitelist = new List<string>();		// KNIFE ONLY MODE Clan Whitelist
+    pom_PlayerWhitelist = new List<string>();	// KNIFE MODE Player Whitelist
 
 
 
@@ -470,8 +480,19 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             return;
         }
 
-        
-        
+        if (cmd == kom_commandEnable)
+        {
+            SwitchInitiator = cmdspeaker;
+            PreSwitchServerMode("knife");
+            return;
+        }
+
+        if (cmd == pom_commandEnable)
+        {
+            SwitchInitiator = cmdspeaker;
+            PreSwitchServerMode("pistol");
+            return;
+        }
         
         
         if (cmd == switchnow_cmd)
@@ -942,6 +963,23 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
     if (serverMode == "flagrun" && fm_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
+    if (serverMode == "knife" && kom_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    if (serverMode == "knife" && kom_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "knife" && kom_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "knife" && kom_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "knife" && kom_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+
+    if (serverMode == "pistol" && pom_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    if (serverMode == "pistol" && pom_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "pistol" && pom_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "pistol" && pom_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "pistol" && pom_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+
+
+
+
+
+
     if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(lastUsedWeapon))
     {
         if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
@@ -990,8 +1028,39 @@ private void g_Action(string name)
     if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
     if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
 	
-}    
+}
 
+private void kom_Action(string name)
+{
+    WritePluginConsole("Called kom_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("kom_PlayerAction = " + kom_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_komKick));
+    if (g_PlayerAction == "tban") tbanPlayer(name, kom_ActionTbanTime, R(msg_komKick));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_komKick));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, kom_ActionTbanTime, R(msg_komKick));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_komKick));
+
+}
+
+private void pom_Action(string name)
+{
+    WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("pom_PlayerAction = " + pom_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_pomKick));
+    if (g_PlayerAction == "tban") tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_pomKick));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_pomKick));
+
+}
+   
+
+
+    
+    
+//        private string msg_komKick = "kicked you for kills with %Weapon% on KNIFE ONLY MODE";
+//private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
+//private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
 
 
 public String E(String text)
@@ -1190,6 +1259,45 @@ if (newServerMode == "flagrun")
     );
 
 }
+
+if (newServerMode == "pistol")
+{
+    serverMode = "pistol";
+
+    WriteServerConfig
+    (
+        pom_Servername,
+        pom_Serverdescription,
+        pom_ServerMessage,
+        pom_MapList,
+        pom_VehicleSpawnAllowed,
+        pom_VehicleSpawnCount,
+        pom_PlayerSpawnCount
+
+    );
+
+}
+
+if (newServerMode == "knife")
+{
+    serverMode = "knife";
+
+    WriteServerConfig
+    (
+        kom_Servername,
+        kom_Serverdescription,
+        kom_ServerMessage,
+        kom_MapList,
+        kom_VehicleSpawnAllowed,
+        kom_VehicleSpawnCount,
+        kom_PlayerSpawnCount
+
+    );
+
+}
+
+
+
 
 }
 
@@ -1742,6 +1850,54 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
 
+
+
+            // PISTOL ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+            if (pom_isEnabled == enumBoolYesNo.Yes) // PISTOL ONLY MODE
+            {
+
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Rules", typeof(string[]), pom_Rules.ToArray()));
+
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Name", typeof(string), pom_Servername));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Description", typeof(string), pom_Serverdescription));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Message", typeof(string), pom_ServerMessage));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), pom_VehicleSpawnAllowed));
+
+                if (pom_VehicleSpawnAllowed == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Time", typeof(int), pom_VehicleSpawnCount));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Spawn Time", typeof(int), pom_PlayerSpawnCount));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_MapList", typeof(string[]), pom_MapList.ToArray()));
+
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_ClanWhitelist", typeof(string[]), pom_ClanWhitelist.ToArray()));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PlayerWhitelist", typeof(string[]), pom_PlayerWhitelist.ToArray()));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
+                if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
+                //PISTOLS
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+
+
+            }
+
+
+
             // COMMANDS ##################################################################################################################
             lstReturn.Add(new CPluginVariable("4.Plugin Commands|NM_Command Enable", typeof(string), nm_commandEnable));
             if (pm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|PM_Command Enable", typeof(string), pm_commandEnable));
@@ -1771,10 +1927,16 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 		return lstReturn;
 	}
 
+
+
+
 public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 {
 	return GetDisplayPluginVariables();
 } 
+
+
+
 
 public void SetPluginVariable(string strVariable, string strValue) {
 
@@ -2308,10 +2470,214 @@ public void SetPluginVariable(string strVariable, string strValue) {
         kom_ActionTbanTime = Convert.ToInt32(strValue);
     }
 
-     
-    
- 
-     
+
+
+
+    // PISTOL ONLY MODE VARIABLEN
+    if (Regex.Match(strVariable, @"Pistol Only Mode").Success)
+    {
+        if (strValue == "Yes") pom_isEnabled = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_isEnabled = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Command Enable").Success)
+    {
+        if (strValue == "") strValue = "flagrun"; // Standardwert setzen
+        pom_commandEnable = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Rules").Success)
+    {
+        pom_Rules = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"POM_ClanWhitelist").Success)
+    {
+        pom_ClanWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"POM_PlayerWhitelist").Success)
+    {
+        pom_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"POM_Server Name").Success)
+    {
+        pom_Servername = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Server Description").Success)
+    {
+        pom_Serverdescription = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Server Message").Success)
+    {
+        pom_ServerMessage = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Vehicle Spawn Allowed").Success)
+    {
+        if (strValue == "Yes") pom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_VehicleSpawnAllowed = enumBoolYesNo.No;
+        if (strValue == "True") pom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "False") pom_VehicleSpawnAllowed = enumBoolYesNo.No;
+
+
+    }
+
+    if (Regex.Match(strVariable, @"POM_Vehicle Spawn Time").Success)
+    {
+
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            ConsoleWrite("Incorrect Value of POM_Vehicle Spawn Time");
+            ConsoleWrite("this Setting have to be between 5 and 100");
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            ConsoleWrite("Incorrect Value of POM_Vehicle Spawn Time");
+            ConsoleWrite("this Setting have to be between 5 and 100");
+        }
+        pom_VehicleSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Player Spawn Time").Success)
+    {
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
+            ConsoleWrite("this Setting have to be between 5 and 100");
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            ConsoleWrite("Incorrect Value of POM_Player Spawn Time");
+            ConsoleWrite("this Setting have to be between 5 and 100");
+        }
+
+
+        pom_PlayerSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_MapList").Success)
+    {
+        pom_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"POM_Max Player Warns").Success)
+    {
+        pom_max_Warns = Convert.ToInt32(strValue);
+    }
+
+    if (Regex.Match(strVariable, @"POM_Player Action").Success)
+    {
+        pom_PlayerAction = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"POM_TBan Minutes").Success)
+    {
+        pom_ActionTbanTime = Convert.ToInt32(strValue);
+    }
+
+
+    if (Regex.Match(strVariable, @"POM_Allow M9").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_M9 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_M9 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow QSZ-92").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_QSZ92 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow MP-443").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_MP443 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_MP443 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow SHORTY 12G").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_Shorty = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_Shorty = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow G18").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_Glock18 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_Glock18 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow FN57").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_FN57 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_FN57 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow M1911").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_M1911 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_M1911 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow 93R").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_93R = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_93R = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow CZ-75").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_CZ75 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_CZ75 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow .44 MAGNUM").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_Taurus44 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow COMPACT 45").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_HK45C = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_HK45C = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow P226").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_P226 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_P226 = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"POM_Allow M412 REX").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_MP412Rex = enumBoolYesNo.No;
+    }
+
+
+    if (Regex.Match(strVariable, @"POM_Allow KNIFE").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_Meele = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_Meele = enumBoolYesNo.No;
+    }
+
+
 
 
 
@@ -2326,8 +2692,8 @@ private void UpdateStartupMode() // Modes shown at Startup Mode in Pugin setting
     startup_mode_def = "enum.startup_mode(none|normal";
     if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
     if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
-    if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knifeonly";
-    if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistolonly";
+    if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knife";
+    if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistol";
     startup_mode_def = startup_mode_def + ")";
 }
 
@@ -2731,12 +3097,41 @@ private bool isprohibitedWeapon(string weapon)
 
         if (serverMode == "knife" && weapon != "Melee")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  FLAGRUN MODE!", "DEBUG", 10);
+            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 10);
             return true;
         }
 
 
+        if (serverMode == "pistol")  // PISTOL ONLY MODE
+        {
+            WritePluginConsole("isprohibitedWeapon() Check Weapon: " + weapon, "DEBUG", 10);
+            List<string> tmp_pistols = new List<string>();
+            
+            if ( pom_allowPistol_M9 == enumBoolYesNo.Yes ) tmp_pistols.Add("M9");             //M9
+            if ( pom_allowPistol_QSZ92 == enumBoolYesNo.Yes ) tmp_pistols.Add("QSZ92");           //QSZ-92
+            if ( pom_allowPistol_MP443 == enumBoolYesNo.Yes ) tmp_pistols.Add("MP443");            //MP-443
+            if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
+            if ( pom_allowPistol_Glock18 == enumBoolYesNo.Yes ) tmp_pistols.Add("Glock18");          //G18
+            if ( pom_allowPistol_FN57 == enumBoolYesNo.Yes ) tmp_pistols.Add("FN57");             //FN57
+            if ( pom_allowPistol_M1911 == enumBoolYesNo.Yes ) tmp_pistols.Add("M1911");            //M1911
+            if ( pom_allowPistol_93R == enumBoolYesNo.Yes ) tmp_pistols.Add("M93R");              //93R
+            if ( pom_allowPistol_CZ75 == enumBoolYesNo.Yes ) tmp_pistols.Add("CZ75");             //CZ-75
+            if ( pom_allowPistol_Taurus44 == enumBoolYesNo.Yes ) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
+            if ( pom_allowPistol_HK45C == enumBoolYesNo.Yes ) tmp_pistols.Add("HK45C");            //COMPACT 45
+            if ( pom_allowPistol_P226 == enumBoolYesNo.Yes ) tmp_pistols.Add("P226");             //P226
+            if ( pom_allowPistol_MP412Rex == enumBoolYesNo.Yes ) tmp_pistols.Add("MP412Rex");         //M412 REX
+            if ( pom_allowPistol_Meele == enumBoolYesNo.Yes ) tmp_pistols.Add("Melee");            //Knife
 
+
+
+            if (!tmp_pistols.Contains(weapon))
+            {
+                WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  PROHIBITED PISTOL! " + weapon, "DEBUG", 10);
+                return true;
+                
+            }
+
+        }
 
 
 
@@ -2746,6 +3141,7 @@ private bool isprohibitedWeapon(string weapon)
     {
         WritePluginConsole("^1^bisprohibitedWeapon returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
     }
+    WritePluginConsole("isprohibitedWeapon() is ^1^bFALSE^0^n", "DEBUG", 10);
     return false;
 }
     
@@ -2753,11 +3149,11 @@ private void PlayerWarn(string name,string weapon)
 {
     try
     {
-        int yell_Time = 10;
+        int yell_Time = 10;  // In user Settings aufnehmen
         players.Warn(name);
         int warns = players.Warns(name);
 
-        if (serverMode == "private" || serverMode == "normal" || serverMode == "knife")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
+        if (serverMode == "private" || serverMode == "normal")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
         {
             if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes)  // GENERELL VERBOTENE WAFFEN
             {
@@ -2796,6 +3192,83 @@ private void PlayerWarn(string name,string weapon)
 
 
         }
+
+
+        // KNIFE ONLY MODE
+        if (serverMode == "knife")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
+        {
+            KillPlayer(name);
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + kom_max_Warns.ToString(), "KILL", 2);
+            if (warns < kom_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_KnifeWarn));
+                SendPlayerYellV(name, (R(msg_KnifeWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+
+            if (warns == kom_max_Warns) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_KnifeWarn));
+                SendGlobalMessage(R(msg_KnifeLastWarn));
+                SendPlayerYellV(name, (R(msg_KnifeWarn + " " + msg_KnifeLastWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > kom_max_Warns) // Maximale Warnungen überschritten
+            {
+                if (!isInWhitelist(name)) kom_Action(name);
+                SendGlobalMessage(R(msg_KnifeKick));
+
+            }
+
+        }
+
+
+        // KNIFE ONLY MODE
+        if (serverMode == "pistol")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
+        {
+            KillPlayer(name);
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + pom_max_Warns.ToString(), "KILL", 2);
+            if (warns < pom_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_PistolWarn));
+                SendPlayerYellV(name, (R(msg_PistolWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+
+            if (warns == pom_max_Warns) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_PistolWarn));
+                SendGlobalMessage(R(msg_PistolLastWarn));
+                SendPlayerYellV(name, (R(msg_PistolWarn + " " + msg_PistolLastWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > pom_max_Warns) // Maximale Warnungen überschritten
+            {
+                if (!isInWhitelist(name)) pom_Action(name);
+                SendGlobalMessage(R(msg_PistolKick));
+
+            }
+
+        }               
+
+
+        
+
+
+
+
+
+
+
+
 
         if (serverMode == "flagrun")// && !isInWhitelist(name))
         {
@@ -2838,10 +3311,7 @@ private void PlayerWarn(string name,string weapon)
 
 
 
-        if (serverMode == "private") { }
-
-        if (serverMode == "knife") { }
-        if (serverMode == "pistol") { }
+  
     }
     catch (Exception ex)
     {
@@ -3501,6 +3971,7 @@ public struct KillWeaponDetails
  public String Detail;  // BF4: ammo or attachment
  public String AttachedTo;  // BF4: main weapon when Name is a secondary attachment, like M320
 }
+
 
 
 
