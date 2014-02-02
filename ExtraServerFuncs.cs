@@ -142,7 +142,9 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
     this.PunkbusterPlayerInfoList = new Dictionary<string, CPunkbusterInfo>();
     this.FrostbitePlayerInfoList = new Dictionary<string, CPlayerInfo>();
 */
+// VARS TO TRY SOMETHING
 
+    Dictionary<String, List<string>> MapProhibitedWeapons;
 
 // Threads
 Thread delayed_message;
@@ -428,8 +430,8 @@ public ExtraServerFuncs() {
     pom_PlayerWhitelist = new List<string>();	// KNIFE MODE Player Whitelist
 
 
-
-    
+// TRY FOR MAP PROHIBITED WEAPONS
+MapProhibitedWeapons = new Dictionary<string, List<string>>();
 
 
 
@@ -520,12 +522,6 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         }
 
 
-        if (cmd == "start")
-        {
-
-            StartSwitchCountdown();           
-            return;
-        }
 
         
         if (cmd == "try")
@@ -535,12 +531,41 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Write a csv file", "TRY", 0);
 
 
-            //this.ExecuteCommand("procon.protected.tasks.add", "try", "10", "10", "-1", "procon.protected.send", "admin.yell", "Dies ist ein Test", "3" , "all");
+            List<string> item;
+                
+            item = new List<string>();
+            item.Add("MP_Journy_Weapon1");
+            item.Add("MP_Journy_Weapon2");
+            item.Add("MP_Journy_Weapon3");
+            MapProhibitedWeapons.Add("MP_Journy", item);
+
+            item = new List<string>();
+            item.Add("MP_Prison_Weapon1");
+            item.Add("MP_Prison_Weapon2");
+            item.Add("MP_Prison_Weapon3");
+            MapProhibitedWeapons.Add("MP_Prison", item);
+
+
+            foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+            {
+                WritePluginConsole("STRING/LIST: Key = " + entry.Key, "TRY", 0);
+                foreach (string V in entry.Value)
+                {
+                    WritePluginConsole("STRING/LIST: Value = " + V, "TRY", 0);
+                }
+            }
+                
+                //lstReturn.Add(new CPluginVariable("10. On Map prohibited Weapons|" + entry.Key, typeof(string[]), entry.Value));
+                
             
-            this.ExecuteCommand("procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered", "TRY");
+
+
+            ////this.ExecuteCommand("procon.protected.tasks.add", "try", "10", "10", "-1", "procon.protected.send", "admin.yell", "Dies ist ein Test", "3" , "all");
+            
+            //this.ExecuteCommand("procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered", "TRY");
 
             
-            this.ExecuteCommand("procon.protected.tasks.add", "try", "30", "10", "-1", "procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered");
+            //this.ExecuteCommand("procon.protected.tasks.add", "try", "30", "10", "-1", "procon.protected.plugins.call", "ExtraServerFuncs", "OnTaskTriggered");
             
             /*
             tmpvar1 = new PlayerInfo();
@@ -1719,8 +1744,9 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
 
-            UpdateStartupMode();
-
+            
+            startup_mode_def = "enum.startup_mode(none|normal|private|flagrun|knife|pistol)";
+            
             if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Waponcodes", typeof(enumBoolYesNo), showweaponcode));			
 
@@ -1877,7 +1903,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
-                //PISTOLS
+                //PISTOLS8
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
@@ -1922,6 +1948,18 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             // Debugkonfig
             lstReturn.Add(new CPluginVariable("6.Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
             
+            //Try to get a dynamic list
+           
+                //foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+                //{
+                //    string tmpvar = "10. On Map prohibited Weapons|" + entry.Key;
+                //    lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                //}
+            string key = "TestMap";
+            string[] value = new string[1] { "Test Value" };
+            lstReturn.Add(new CPluginVariable("10. Test|" + key, value.GetType(), value ));
+           
 
 		}
 		return lstReturn;
@@ -3620,10 +3658,6 @@ public class BattlelogClient
       }
     }
 
-
-
-
-
 class TextDatei
 {
 
@@ -3972,7 +4006,14 @@ public struct KillWeaponDetails
  public String AttachedTo;  // BF4: main weapon when Name is a secondary attachment, like M320
 }
 
+public class MapListProhibitedWeapons
+{
 
+
+
+
+
+}
 
 
 
