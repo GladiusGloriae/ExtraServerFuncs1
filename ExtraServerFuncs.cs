@@ -20,8 +20,9 @@ Roadmap:
 			    
             - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
             - readconfig funktioniert nicht ordnungsgemäß
-            - Servermodes stehen nach Aktivierung nicht im Startupmode zur Verfügung
-            - Manuelles Update der Angezeigten Vriablen in der Plugin Config
+            - Lister zur speicherung der Keys in der MapListProhibitedWeapons Dictionary
+            - die maps werden von Procon nicht gespeichert
+            
   
  Die whitelists auf alle Modes ausweiten
  * Variable Prevent Admins from kill einfügen
