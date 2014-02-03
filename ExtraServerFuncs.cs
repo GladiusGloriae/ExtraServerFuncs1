@@ -1,7 +1,6 @@
 /* ExtraServerFuncs.cs
 
 by MarkusSR1984 & Koerai3
-HALLÖLE MARKUS!!!!!!!!!!!!
 
 Roadmap:
 =================================
@@ -33,9 +32,18 @@ Roadmap:
  - Hardcore Mode
  - Shootgun only mode
  
-   
+ 
+ - isprohibitedWeapon
+    add an result that gives out the reason why this weapon is currently prohibited
+  
+ 
  - On Map prohibited Weapons
-   -evtl über Dictionary lösen
+   map_PlayerAction
+   counter
+   Messages
+   WhiteLists
+  
+ 
   
   
 -  Registered Commands !!!!!
@@ -148,7 +156,27 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 */
 // VARS TO TRY SOMETHING
 
-    Dictionary<String, List<string>> MapProhibitedWeapons;
+
+    List<string> OnMapProhibitedWeapons_Zavod_311;
+    List<string> OnMapProhibitedWeapons_Lancang_Dam;
+    List<string> OnMapProhibitedWeapons_Flood_Zone;
+    List<string> OnMapProhibitedWeapons_Golmud_Railway;
+    List<string> OnMapProhibitedWeapons_Paracel_Storm;
+    List<string> OnMapProhibitedWeapons_Operation_Locker;
+    List<string> OnMapProhibitedWeapons_Hainan_Resort;
+    List<string> OnMapProhibitedWeapons_Siege_of_Shanghai;
+    List<string> OnMapProhibitedWeapons_Rogue_Transmission;
+    List<string> OnMapProhibitedWeapons_Dawnbreaker;
+    List<string> OnMapProhibitedWeapons_Silk_Road;
+    List<string> OnMapProhibitedWeapons_Altai_Range;
+    List<string> OnMapProhibitedWeapons_Guilin_Peaks;
+    List<string> OnMapProhibitedWeapons_Dragon_Pass;
+
+
+
+
+
+
 
 // Threads
 Thread delayed_message;
@@ -178,7 +206,9 @@ private string currentGamemode = "";
 private int currentRound = 0;
 private int totalRounds = 0;
 private string friendlyenummaplist;
-    
+private int playerCount;
+private int maxPlayerCount;
+
     
     
 private int wait;
@@ -448,17 +478,28 @@ public ExtraServerFuncs() {
     MapFileNames.Add("Guilin Peaks", "XP1_003");
     MapFileNames.Add("Dragon Pass", "XP1_004");
 
-    
-    // Create a ENUM STRING of all Maps
-    
-    friendlyenummaplist = "enum.friendlymaplist(...";
-    
-    foreach (KeyValuePair<string, string> pair in MapFileNames)
-    {
-      friendlyenummaplist = friendlyenummaplist + "|" + pair.Key; 
-    }
-    friendlyenummaplist = friendlyenummaplist + ")";
 
+
+
+    OnMapProhibitedWeapons_Zavod_311 = new List<string>();
+    OnMapProhibitedWeapons_Lancang_Dam = new List<string>();
+    OnMapProhibitedWeapons_Flood_Zone = new List<string>();
+    OnMapProhibitedWeapons_Golmud_Railway = new List<string>();
+    OnMapProhibitedWeapons_Paracel_Storm = new List<string>();
+    OnMapProhibitedWeapons_Operation_Locker = new List<string>();
+    OnMapProhibitedWeapons_Hainan_Resort = new List<string>();
+    OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>();
+    OnMapProhibitedWeapons_Rogue_Transmission = new List<string>();
+    OnMapProhibitedWeapons_Dawnbreaker = new List<string>();
+    OnMapProhibitedWeapons_Silk_Road = new List<string>();
+    OnMapProhibitedWeapons_Altai_Range = new List<string>();
+    OnMapProhibitedWeapons_Guilin_Peaks = new List<string>();
+    OnMapProhibitedWeapons_Dragon_Pass = new List<string>();
+
+
+
+    
+            
 
 
 
@@ -473,9 +514,6 @@ public ExtraServerFuncs() {
     pom_ClanWhitelist = new List<string>();		// KNIFE ONLY MODE Clan Whitelist
     pom_PlayerWhitelist = new List<string>();	// KNIFE MODE Player Whitelist
 
-
-// TRY FOR MAP PROHIBITED WEAPONS
-MapProhibitedWeapons = new Dictionary<string, List<string>>();
 
 
 
@@ -578,36 +616,6 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Write a csv file", "TRY", 0);
 
 
-            List<string> item;
-                
-            item = new List<string>();
-            item.Add("MP_Journey_Weapon1");
-            item.Add("MP_Journey_Weapon2");
-            item.Add("MP_Journey_Weapon3");
-            MapProhibitedWeapons.Add("MP_Journey", item);
-
-            item = new List<string>();
-            item.Add("MP_Prison_Weapon1");
-            item.Add("MP_Prison_Weapon2");
-            item.Add("MP_Prison_Weapon3");
-            MapProhibitedWeapons.Add("MP_Prison", item);
-
-
-            item = new List<string>();
-            MapProhibitedWeapons.Add("MP_Resort", item);
-
-
-            foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
-            {
-                WritePluginConsole("STRING/LIST: Key = " + entry.Key, "TRY", 0);
-                foreach (string V in entry.Value)
-                {
-                    WritePluginConsole("STRING/LIST: Value = " + V, "TRY", 0);
-                }
-            }
-                
-                //lstReturn.Add(new CPluginVariable("10. On Map prohibited Weapons|" + entry.Key, typeof(string[]), entry.Value));
-                
             
 
 
@@ -1799,7 +1807,7 @@ The server runs normaly and public<br/>
 </blockquote>
 
 <blockquote><h4>PRIVATE MODE</h4>
-The server runs in an private mode. Only players you added to the whitelist can join the server. Player who are on your server before u activate this mode do not get kicked automaticly. You can use this mode to train with your clanmates without being distrubt from other players. Or whatever u want.<br/>
+The server runs in an private mode. Only players you added to the whitelist can join the server. Player who are on your server before u activate this mode do not get kicked automaticly. You can use this mode to train with your clanmates without being distrubt from other players. Or whatever u want. This mode disables ALL types of Weapon punishment!!!<br/>
 </blockquote>
 
 <blockquote><h4>PISTOL ONLY MODE</h4>
@@ -1826,7 +1834,7 @@ Select PRIVATE MODE as next Servermode.<br/>
 </blockquote>
 
 <blockquote><h4>!pistol</h4>
-Select PRIVATE MODE as next Servermode.<br/>
+Select PISTOL ONLY MODE as next Servermode.<br/>
 </blockquote>
 
 <blockquote><h4>!knife</h4>
@@ -2108,16 +2116,24 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             lstReturn.Add(new CPluginVariable("7. Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
             
             // Map Prohibited Weapons ####################################################################################################
-            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", friendlyenummaplist, ""));
-            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Remove Map...", friendlyenummaplist, ""));
-           
-                foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
-                {
-                    string tmpvar = "6.1 On Map prohibited Weapons|" + entry.Key;
-                    lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+            
 
-                }
-                      
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Locker", typeof(string[]), OnMapProhibitedWeapons_Operation_Locker.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Zavod 311", typeof(string[]), OnMapProhibitedWeapons_Zavod_311.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Lancang Dam", typeof(string[]), OnMapProhibitedWeapons_Lancang_Dam.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Flood Zone", typeof(string[]), OnMapProhibitedWeapons_Flood_Zone.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golmud Railway", typeof(string[]), OnMapProhibitedWeapons_Golmud_Railway.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Paracel Storm", typeof(string[]), OnMapProhibitedWeapons_Paracel_Storm.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Hainan Resort", typeof(string[]), OnMapProhibitedWeapons_Hainan_Resort.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Siege of Shanghai", typeof(string[]), OnMapProhibitedWeapons_Siege_of_Shanghai.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Rogue Transmission", typeof(string[]), OnMapProhibitedWeapons_Rogue_Transmission.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dawnbreaker", typeof(string[]), OnMapProhibitedWeapons_Dawnbreaker.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Silk Road", typeof(string[]), OnMapProhibitedWeapons_Silk_Road.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Altai Range", typeof(string[]), OnMapProhibitedWeapons_Altai_Range.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Guilin Peaks", typeof(string[]), OnMapProhibitedWeapons_Guilin_Peaks.ToArray()));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dragon Pass", typeof(string[]), OnMapProhibitedWeapons_Dragon_Pass.ToArray()));
+            
+                                  
 
 		}
 		return lstReturn;
@@ -2128,7 +2144,13 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 {
-	return GetDisplayPluginVariables();
+    
+   
+
+    return GetDisplayPluginVariables();
+
+
+
 } 
 
 
@@ -2137,7 +2159,8 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 public void SetPluginVariable(string strVariable, string strValue) {
 
     DebugWrite("[VARNAME] " + strVariable + " [VALUE] " + strValue, 5);
-   
+
+
 
     if (Regex.Match(strVariable, @"I have read the Terms of Use YES / NO").Success)
     {               
@@ -2875,38 +2898,27 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
 
-
-    if ((Regex.Match(strVariable, @"Add Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "" && strValue != "...")
-    {
-        
-        List<string> item = new List<string>();
-        if (!MapProhibitedWeapons.ContainsKey(strValue))
-        {
-            MapProhibitedWeapons.Add(strValue, item);
-        }
-
-    }
-
-
-    if ((Regex.Match(strVariable, @"Remove Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "" && strValue != "...")
-    {
-
-        
-        if (MapProhibitedWeapons.ContainsKey(strValue))
-        {
-            MapProhibitedWeapons.Remove(strValue);
-        }
-
-    }
+    if (Regex.Match(strVariable, @"Operation Locker").Success) OnMapProhibitedWeapons_Operation_Locker = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    
 
 
 
 
-    if (MapProhibitedWeapons.ContainsKey(strVariable))
-    {
-        MapProhibitedWeapons[strVariable] = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    }
 
+
+    if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CPluginVariable.DecodeStringArray(strValue));
 
     
 
@@ -3053,9 +3065,24 @@ public override void OnVersion(string serverType, string version) { }
 public override void OnServerInfo(CServerInfo serverInfo) {
     if (plugin_enabled)
     {
-        ConsoleWrite("Debug level = " + fDebugLevel);
-        ConsoleWrite("Current Server Mode: "+ serverMode);
-        ConsoleWrite("Next Server Mode "+ next_serverMode);
+        currentMapFileName = serverInfo.Map;
+        currentGamemode = serverInfo.GameMode;
+        currentRound = serverInfo.CurrentRound;
+        totalRounds = serverInfo.TotalRounds;
+        playerCount = serverInfo.PlayerCount;
+        maxPlayerCount = serverInfo.MaxPlayerCount;
+            
+        
+            //serverInfo.RoundTime;
+            //serverInfo.ServerUptime
+            
+
+
+        
+        WritePluginConsole("^1^bCurrent Servermode: ^0^n" + serverMode + "^1^b Next Servermode: ^0^n" + next_serverMode, "Info", 2);
+        WritePluginConsole("^4^bCurrent round: ^2^n " + ToFriendlyMapName(currentMapFileName) + "^5 PlayersCount: ^0" + playerCount, "INFO", 2);
+        WritePluginConsole("^1^bDEBUG LEVEL ^4" + fDebugLevel, "Info", 3);
+        
     }
 }
 
@@ -3308,32 +3335,19 @@ private bool isprohibitedWeapon(string weapon)
     {
         WritePluginConsole("Called isprohibitedWeapon()", "DEBUG", 10);
 
+        if (serverMode == "private")
+        {
+            WritePluginConsole("isprohibitedWeapon() is ^1^bFALSE^0^n  PRIVATE MODE DISABLES ALL WEAPON RULES", "DEBUG", 10);
+            return false;
+        }
+
+
+
         if (serverMode == "flagrun")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
             WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  FLAGRUN MODE!", "DEBUG", 10);
             return true;
         }
-
-        if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon))   // GENERELL VERBOTENE WAFFEN
-        {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  General prohibited Weapon match", "DEBUG", 10);
-            return true;
-        }
-
-        if (MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
-        {
-            List<string> tmp_MapWeaponlist = new List<string>();
-            tmp_MapWeaponlist = MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)];
-            if (tmp_MapWeaponlist.Contains(weapon))
-            {
-                WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  Maplist prohibited Weapon match for map:" + ToFriendlyMapName(currentMapFileName), "DEBUG", 10);
-                return true;
-            }
-
-
-        }
-
-
 
 
         if (serverMode == "knife" && weapon != "Melee")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
@@ -3373,6 +3387,36 @@ private bool isprohibitedWeapon(string weapon)
             }
 
         }
+
+
+        //MAP LIST PROHIBITED WEAPONS
+        if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon)))
+        {
+            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 10);
+            return true;
+        }
+
+        //GENERAL PROHIBITED WEAPONS
+        if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon))   // GENERELL VERBOTENE WAFFEN
+        {
+            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  General prohibited Weapon match", "DEBUG", 10);
+            return true;
+        }
+
+
 
 
 
@@ -3433,38 +3477,42 @@ private void PlayerWarn(string name,string weapon)
 
 
         }
-        if (serverMode == "normal" && MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
-        {
-            List<string> tmp_MapWeaponlist = new List<string>();
-            tmp_MapWeaponlist = MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)];
-            if (tmp_MapWeaponlist.Contains(weapon))
-            {
-                KillPlayer(name);
-                WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + mpw_max_Warns.ToString(), "KILL", 2);
-                if (warns < mpw_max_Warns)
-                {
-                    SendGlobalMessage(msg_warnBanner);
-                    SendGlobalMessage(R(msg_prohibitedWeapon));
-                    SendPlayerYellV(name, (R(msg_prohibitedWeapon)), yell_Time);
-                    SendGlobalMessage(msg_warnBanner);
-                }
 
 
-                if (warns == mpw_max_Warns) // Maximale Warnungen erreicht
-                {
-                    SendGlobalMessage(msg_warnBanner);
-                    SendGlobalMessage(R(msg_prohibitedWeapon));
-                    SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
-                    SendPlayerYellV(name, (R(msg_prohibitedWeapon + " " + msg_prohibitedWeaponLastWarn)), yell_Time);
-                    SendGlobalMessage(msg_warnBanner);
-                }
 
-                if (warns > mpw_max_Warns) // Maximale Warnungen erreicht
-                {
-                    if (!isInWhitelist(name)) mpw_Action(name);
-                    SendGlobalMessage(R(msg_prohibitedWeaponKick));
 
-                }
+        //if (serverMode == "normal" && MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
+        //{
+        //    List<string> tmp_MapWeaponlist = new List<string>();
+        //    tmp_MapWeaponlist = MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)];
+        //    if (tmp_MapWeaponlist.Contains(weapon))
+        //    {
+        //        KillPlayer(name);
+        //        WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + mpw_max_Warns.ToString(), "KILL", 2);
+        //        if (warns < mpw_max_Warns)
+        //        {
+        //            SendGlobalMessage(msg_warnBanner);
+        //            SendGlobalMessage(R(msg_prohibitedWeapon));
+        //            SendPlayerYellV(name, (R(msg_prohibitedWeapon)), yell_Time);
+        //            SendGlobalMessage(msg_warnBanner);
+        //        }
+
+
+        //        if (warns == mpw_max_Warns) // Maximale Warnungen erreicht
+        //        {
+        //            SendGlobalMessage(msg_warnBanner);
+        //            SendGlobalMessage(R(msg_prohibitedWeapon));
+        //            SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
+        //            SendPlayerYellV(name, (R(msg_prohibitedWeapon + " " + msg_prohibitedWeaponLastWarn)), yell_Time);
+        //            SendGlobalMessage(msg_warnBanner);
+        //        }
+
+        //        if (warns > mpw_max_Warns) // Maximale Warnungen erreicht
+        //        {
+        //            if (!isInWhitelist(name)) mpw_Action(name);
+        //            SendGlobalMessage(R(msg_prohibitedWeaponKick));
+
+        //        }
           
           
 
@@ -3472,10 +3520,10 @@ private void PlayerWarn(string name,string weapon)
 
 
 
-            }
+        //    }
 
 
-        }
+        //}
 
 
 
