@@ -23,6 +23,10 @@ Roadmap:
             - Servermodes stehen nach Aktivierung nicht im Startupmode zur Verfügung
             - Manuelles Update der Angezeigten Vriablen in der Plugin Config
   
+ Die whitelists auf alle Modes ausweiten
+ * Variable Prevent Admins from kill einfügen
+  
+  
  
  - Infantry Only Mode
  - Hardcore Mode
@@ -168,6 +172,14 @@ private volatile string startup_mode = "none";
 private volatile string tmp_mapList;
 private volatile string SwitchInitiator;
 private volatile string lastcmdspeaker;
+private string currentMapFileName = "";
+private string currentGamemode = "";
+private int currentRound = 0;
+private int totalRounds = 0;
+private string friendlyenummaplist;
+    
+    
+    
 private int wait;
 private enumBoolYesNo g_prohibitedWeapons_enable = enumBoolYesNo.No;
 private List<string> g_prohibitedWeapons;
@@ -175,12 +187,18 @@ private List<string> g_prohibitedWeapons;
 private int g_ActionTbanTime = 60;
 private string g_PlayerAction = "kick";
 
+
+private int mpw_ActionTbanTime = 60;
+private string mpw_PlayerAction = "kick";
+private int mpw_max_Warns = 2;
+
+
 private int adminMsgCount;
 private BattlelogClient blClient; // BL Client try
 
 private PlayerInfo tmpvar1; // ONLY FOR TEST
 private Dictionary<string, PlayerInfo> PlayerDB = new Dictionary<string, PlayerInfo>();
-
+private Dictionary<string, string> MapFileNames;
 
 
 
@@ -412,7 +430,33 @@ public ExtraServerFuncs() {
     fm_MapList = new List<string>(); 			// FLAGRUN MODE MAPLIST
     fm_MapList.Add("MP_Flooded ConquestLarge0 2"); // Floodzone
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
+
+    MapFileNames = new Dictionary<string, string>();
+    MapFileNames.Add("Zavod 311", "MP_Abandoned");
+    MapFileNames.Add("Lancang Dam", "MP_Damage");
+    MapFileNames.Add("Flood Zone", "MP_Flooded");
+    MapFileNames.Add("Golmud Railway", "MP_Journey");
+    MapFileNames.Add("Paracel Storm", "MP_Naval");
+    MapFileNames.Add("Operation Locker", "MP_Prison");
+    MapFileNames.Add("Hainan Resort", "MP_Resort");
+    MapFileNames.Add("Siege of Shanghai", "MP_Siege");
+    MapFileNames.Add("Rogue Transmission", "MP_TheDish");
+    MapFileNames.Add("Dawnbreaker", "MP_Tremors");
+    MapFileNames.Add("Silk Road", "XP1_001");
+    MapFileNames.Add("Altai Range", "XP1_002");
+    MapFileNames.Add("Guilin Peaks", "XP1_003");
+    MapFileNames.Add("Dragon Pass", "XP1_004");
+
     
+    // Create a ENUM STRING of all Maps
+    
+    friendlyenummaplist = "enum.friendlymaplist(...";
+    
+    foreach (KeyValuePair<string, string> pair in MapFileNames)
+    {
+      friendlyenummaplist = friendlyenummaplist + "|" + pair.Key; 
+    }
+    friendlyenummaplist = friendlyenummaplist + ")";
 
 
 
@@ -971,6 +1015,29 @@ if (next_serverMode != serverMode) return true;
 return false;
 }
 
+
+public string ToMapFileName(string friendlyname)
+{
+    if (MapFileNames.ContainsKey(friendlyname)) return MapFileNames[friendlyname];
+    return "";
+}
+
+public string ToFriendlyMapName(string mapfilename)
+{
+    if (MapFileNames.ContainsValue(mapfilename))
+    {
+        foreach (KeyValuePair<string, string> pair in MapFileNames)
+        {
+            if (pair.Value == mapfilename) return pair.Key;
+        }
+    }
+    return "";
+}
+
+
+
+
+
 public String R(string text)  //Replacements for String Text Messages VERBESSERUNGSVORSCHLAG IN INSANE LIMITS !!!
 {
    
@@ -1060,6 +1127,19 @@ private void g_Action(string name)
     if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
 	
 }
+
+private void mpw_Action(string name)
+{
+    WritePluginConsole("Called g_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("mpw_PlayerAction = " + mpw_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (mpw_PlayerAction == "kick") kickPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+    if (mpw_PlayerAction == "tban") tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
+    if (mpw_PlayerAction == "pban") pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+    if (mpw_PlayerAction == "pb_tban") pb_tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
+    if (mpw_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_prohibitedWeaponKickPlayer));
+
+}
+
 
 private void kom_Action(string name)
 {
@@ -1482,6 +1562,51 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes müss
             }
         }
 
+        // Pistol Only Mode Whitelist
+        if (serverMode == "pistol") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check PISTOL ONLY MODE Player Whitelist...", "Info", 5);
+            if (pom_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in PISTOL ONLY MODE Player Whitelist", "Info", 2);
+                return true;
+            }
+
+            if (pom_ClanWhitelist.Count >= 1 && pom_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
+                this.blClient = new BattlelogClient();
+                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check PISTOL ONLY MODE Clan Whitelist...", "Info", 5);
+                if (pom_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in PISTOL ONLY MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
+
+
+        // Knife Only Mode Whitelist
+        if (serverMode == "knife") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check KNIFE ONLY MODE Player Whitelist...", "Info", 5);
+            if (kom_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in KNIFE ONLY MODE Player Whitelist", "Info", 2);
+                return true;
+            }
+
+            if (kom_ClanWhitelist.Count >= 1 && kom_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
+                this.blClient = new BattlelogClient();
+                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check KNIFE ONLY MODE Clan Whitelist...", "Info", 5);
+                if (kom_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in KNIFE ONLY MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
+
 
 
 
@@ -1771,7 +1896,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             {
                 lstReturn.Add(new CPluginVariable("1.Basic Settings|General Prohibited Weapons List", typeof(string[]), g_prohibitedWeapons.ToArray()));
                 lstReturn.Add(new CPluginVariable("1.Basic Settings|G_Max Player Warns", typeof(int), g_max_Warns));
-                lstReturn.Add(new CPluginVariable("1.Basic Settings|G_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|G_Player Action", "enum.g_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
                 if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|G_TBan Minutes", typeof(int), g_ActionTbanTime));
             }
 
@@ -1981,9 +2106,9 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             // Debugkonfig
             lstReturn.Add(new CPluginVariable("7. Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
             
-            // Map Prohibited Weapons
-            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", typeof(string), ""));
-
+            // Map Prohibited Weapons ####################################################################################################
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", friendlyenummaplist, ""));
+            lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Remove Map...", friendlyenummaplist, ""));
            
                 foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
                 {
@@ -2750,7 +2875,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
 
-    if ((Regex.Match(strVariable, @"Add Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "")
+    if ((Regex.Match(strVariable, @"Add Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "" && strValue != "...")
     {
         
         List<string> item = new List<string>();
@@ -2760,6 +2885,21 @@ public void SetPluginVariable(string strVariable, string strValue) {
         }
 
     }
+
+
+    if ((Regex.Match(strVariable, @"Remove Map...").Success) && (!Regex.Match(strValue, @"Add Map...").Success) && strValue != "" && strValue != "...")
+    {
+
+        
+        if (MapProhibitedWeapons.ContainsKey(strValue))
+        {
+            MapProhibitedWeapons.Remove(strValue);
+        }
+
+    }
+
+
+
 
     if (MapProhibitedWeapons.ContainsKey(strVariable))
     {
@@ -3179,6 +3319,22 @@ private bool isprohibitedWeapon(string weapon)
             return true;
         }
 
+        if (MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
+        {
+            List<string> tmp_MapWeaponlist = new List<string>();
+            tmp_MapWeaponlist = MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)];
+            if (tmp_MapWeaponlist.Contains(weapon))
+            {
+                WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  Maplist prohibited Weapon match for map:" + ToFriendlyMapName(currentMapFileName), "DEBUG", 10);
+                return true;
+            }
+
+
+        }
+
+
+
+
         if (serverMode == "knife" && weapon != "Melee")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
             WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 10);
@@ -3276,6 +3432,60 @@ private void PlayerWarn(string name,string weapon)
 
 
         }
+        if (serverMode == "normal" && MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
+        {
+            List<string> tmp_MapWeaponlist = new List<string>();
+            tmp_MapWeaponlist = MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)];
+            if (tmp_MapWeaponlist.Contains(weapon))
+            {
+                KillPlayer(name);
+                WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + mpw_max_Warns.ToString(), "KILL", 2);
+                if (warns < mpw_max_Warns)
+                {
+                    SendGlobalMessage(msg_warnBanner);
+                    SendGlobalMessage(R(msg_prohibitedWeapon));
+                    SendPlayerYellV(name, (R(msg_prohibitedWeapon)), yell_Time);
+                    SendGlobalMessage(msg_warnBanner);
+                }
+
+
+                if (warns == mpw_max_Warns) // Maximale Warnungen erreicht
+                {
+                    SendGlobalMessage(msg_warnBanner);
+                    SendGlobalMessage(R(msg_prohibitedWeapon));
+                    SendGlobalMessage(R(msg_prohibitedWeaponLastWarn));
+                    SendPlayerYellV(name, (R(msg_prohibitedWeapon + " " + msg_prohibitedWeaponLastWarn)), yell_Time);
+                    SendGlobalMessage(msg_warnBanner);
+                }
+
+                if (warns > mpw_max_Warns) // Maximale Warnungen erreicht
+                {
+                    if (!isInWhitelist(name)) mpw_Action(name);
+                    SendGlobalMessage(R(msg_prohibitedWeaponKick));
+
+                }
+          
+          
+
+
+
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
 
 
         // KNIFE ONLY MODE
@@ -3451,8 +3661,14 @@ DebugWrite("[OnLevelStarted]", 5);
 
 public override void OnLevelLoaded(string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal) // BF3
 {
-DebugWrite("[OnLevelLoaded] " + mapFileName, 5);
-
+    WritePluginConsole("^1^b[OnLevelLoaded]", "DEBUG", 5);
+    WritePluginConsole("^4^bStarted next round: ^2^n " + mapFileName + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 4);
+    WritePluginConsole("^4^bStarted next round: ^2^n " + ToFriendlyMapName(mapFileName) + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 2);
+    DebugWrite("[OnLevelLoaded] " + mapFileName, 5);
+    currentMapFileName = mapFileName;
+    currentGamemode = Gamemode;
+    currentRound = roundsPlayed;
+    totalRounds = roundsTotal;
 
 
 }
