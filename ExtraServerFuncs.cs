@@ -19,7 +19,7 @@ Roadmap:
 			    
             - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
             - readconfig funktioniert nicht ordnungsgemäß
-            
+            - startet mit flagrun mode und nicht mit dem eingestellten startupmode
  
  
  - Infantry Only Mode
@@ -175,7 +175,7 @@ private enumBoolYesNo mWhitelist_isEnabled  = enumBoolYesNo.No;
 private enumBoolYesNo showweaponcode = enumBoolYesNo.No;
 private List<string> m_ClanWhitelist;
 private List<string> m_PlayerWhitelist;
-private volatile string startup_mode_def;
+private volatile string startup_mode_def = "enum.startup_mode(none|normal|private|flagrun|knife|pistol)";
 private volatile string startup_mode = "none";
 private volatile string tmp_mapList;
 private volatile string SwitchInitiator;
@@ -768,7 +768,7 @@ private void ReadServerConfig()
 {
     WritePluginConsole("Call ReadServerConfig()", "DEBUG", 10);
     readconfig = true;
-    WritePluginConsole(R("Read ServerVars and save them to %currServermode%"), "Info", 0);
+    WritePluginConsole(R("Read ServerVars and save them to %currServermode%"), "INFO", 0);
        
     
     // Refrech Server Vars to catch them with the ON Funktions
@@ -1281,9 +1281,9 @@ public void StartSwitchCountdown()
         //string countdown_message = (msg_countdown);
         int counter = countdown_time;
         int timer = 0;
-        
 
 
+        WritePluginConsole(countdown_message + " " + counter.ToString() + " SECONDS", "INFO", 1);
 
         while (counter >= 0)
         {
@@ -1293,9 +1293,9 @@ public void StartSwitchCountdown()
 
             //procon.protected.tasks.add <int: delay> <int: interval> <int: repeat> [[vars: commandwords] ...]
 
-            this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsYell", timer.ToString(), "1", "1", "procon.protected.send", "admin.yell", msg_Count, "2", "all");
-           // this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsSay", timer.ToString(), "1", "1", "procon.protected.send", "admin.say", msg_Count, "1", "all");
-            this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncsCon", timer.ToString(), "1", "1", "procon.protected.pluginconsole.write", msg_Count, "2", "all");
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.send", "admin.yell", msg_Count, "2", "all");
+           // this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.send", "admin.say", msg_Count, "1", "all");
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.pluginconsole.write", msg_Count, "2", "all");
 
 
 
@@ -1307,7 +1307,7 @@ public void StartSwitchCountdown()
         this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 5).ToString(), "1", "1", "procon.protected.send", "mapList.getMapIndices");
         this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 6).ToString(), "6", "1", "procon.protected.send", "mapList.setNextMapIndex", "0");
         this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 7).ToString(), "7", "1", "procon.protected.send", "mapList.runNextRound");
-        
+
         
         
 
@@ -1465,7 +1465,7 @@ public void WriteServerConfig(string newName, string Description, string Message
             this.WritePluginConsole("Called WriteServerConfig(): serverMode= " + serverMode + " next_serverMode = " + next_serverMode, "Warn", 10);
             if (autoconfig == enumBoolYesNo.Yes) tmp_autoconfig = "Yes";
             if (autoconfig == enumBoolYesNo.No) tmp_autoconfig = "No";
-            this.SetPluginVariable("Autoconfig", "No" );
+            this.SetPluginSetting("Autoconfig", "No" );
             Thread.Sleep(1000);
             this.ServerCommand("vars.serverName", newName);                 // SET SERVER NAME
             this.ServerCommand("vars.serverDescription", Description);      // SET SERVER DESCRIPTION
@@ -1484,7 +1484,7 @@ public void WriteServerConfig(string newName, string Description, string Message
             Thread.Sleep(1000);
             this.WriteMapList(NewMaplist);
             Thread.Sleep(1000);
-            this.SetPluginVariable("Autoconfig", tmp_autoconfig );
+            this.SetPluginSetting("Autoconfig", tmp_autoconfig );
         }));
 
 thread_writeserverconfig.Start();
@@ -1641,7 +1641,7 @@ public bool ListsEqual(List<MaplistEntry> a, List<MaplistEntry> b) // Vergleich 
 
 
 
-		WritePluginConsole("Current MAPLIST ~~~~~~~~~~~~~~~", "Info", 5);
+		WritePluginConsole("Current MAPLIST ~~~~~~~~~~~~~~~", "INFO", 5);
 
 
 			tmp_mapList = "";
@@ -1658,11 +1658,11 @@ public bool ListsEqual(List<MaplistEntry> a, List<MaplistEntry> b) // Vergleich 
 
 			if (autoconfig == enumBoolYesNo.Yes || readconfig) 
 			{
-				if (serverMode == "normal") SetPluginVariable("NM_MapList", tmp_mapList );  // SAVE MAPLIST TO NORMAL MODE
-				if (serverMode == "private") SetPluginVariable("PM_MapList", tmp_mapList );  // SAVE MAPLIST TO PRIVATE MODE
-                if (serverMode == "flagrun") SetPluginVariable("FM_MapList", tmp_mapList);  // SAVE MAPLIST TO FLAGRUN MODE
-                if (serverMode == "knife") SetPluginVariable("KOM_MapList", tmp_mapList);  // SAVE MAPLIST TO KNIFE ONLY MODE
-                if (serverMode == "pistol") SetPluginVariable("POM_MapList", tmp_mapList);  // SAVE MAPLIST TO PISTOL ONLY MODE
+				if (serverMode == "normal") SetPluginSetting("NM_MapList", tmp_mapList );  // SAVE MAPLIST TO NORMAL MODE
+				if (serverMode == "private") SetPluginSetting("PM_MapList", tmp_mapList );  // SAVE MAPLIST TO PRIVATE MODE
+                if (serverMode == "flagrun") SetPluginSetting("FM_MapList", tmp_mapList);  // SAVE MAPLIST TO FLAGRUN MODE
+                if (serverMode == "knife") SetPluginSetting("KOM_MapList", tmp_mapList);  // SAVE MAPLIST TO KNIFE ONLY MODE
+                if (serverMode == "pistol") SetPluginSetting("POM_MapList", tmp_mapList);  // SAVE MAPLIST TO PISTOL ONLY MODE
 			}
 		
 			
@@ -1689,17 +1689,26 @@ public bool ListsEqual(List<MaplistEntry> a, List<MaplistEntry> b) // Vergleich 
 
 public void WritePluginConsole(string message, string tag, int level)
         {
-            if (tag == "Error")
+            if (tag == "ERROR")
             {
-                tag = "^8" + tag;
+                tag = "^1" + tag;   // RED
             }
-            else if (tag == "Work")
+            else if (tag == "DEBUG")
             {
-                tag = "^4" + tag;
+                tag = "^3" + tag;   // ORAGNE
             }
+            else if (tag == "INFO")
+            {
+                tag = "^2" + tag;   // GREEN
+            }
+            else if (tag == "VARIABLE")
+            {
+                tag = "^6" + tag;   // GREEN
+            }
+
             else
             {
-                tag = "^5" + tag;
+                tag = "^5" + tag;   // BLUE
             }
             string line = "^b[" + this.GetPluginName() + "] " + tag + ": ^0^n" + message;
             
@@ -1777,7 +1786,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.3";
+	return "0.0.1.4";
 }
 
 public string GetPluginAuthor() {
@@ -1871,6 +1880,10 @@ Show the Servermode specific rules.<br/>
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.1.4 (02-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - fixing the bug that Plugin load a random servermode on ProCon_Layer restart</br> 
+</blockquote>
 
 <blockquote><h4>0.0.1.3 (02-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -1946,7 +1959,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
             
-            startup_mode_def = "enum.startup_mode(none|normal|private|flagrun|knife|pistol)";
+            
             
             if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Waponcodes", typeof(enumBoolYesNo), showweaponcode));			
@@ -2188,7 +2201,7 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 
 public void SetPluginVariable(string strVariable, string strValue) {
 
-    DebugWrite("[VARNAME] " + strVariable + " [VALUE] " + strValue, 5);
+    WritePluginConsole("^b" + strVariable + "^n ( " + strValue + " )","VARIABLE", 10);
 
     // COMMANDS
 
@@ -3063,83 +3076,74 @@ public void OnCommandTest(string strSpeaker, string strText, MatchCommand mtcCom
     WritePluginConsole("^1^b[OnCommandTest]^0^n Speaker was: "+strSpeaker+" text was: "+strText , "Info", 0);
 }
 
-public void OnTaskTriggered() // Example
+
+
+public void OnPluginEnable() 
 {
-    WritePluginConsole("^1^b[OnTaskTriggered]^0^n was Called", "Info", 0);
-
+    InitPlugin();
+    
+    
+    
+    
 }
-
-
-public void OnPluginEnable() {
-
+public void InitPlugin()
+{
     Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
     {
-        WritePluginConsole("Init Plugin...", "Info", 0);
-        Thread.Sleep(1000);
-        WritePluginConsole("Set Startup Vars...", "Info", 2);
-        serverMode = "plugin_init";
-        next_serverMode = startup_mode;
-        if (startup_mode == "none")
-        {
-            serverMode = "normal";
-            next_serverMode = "normal";
-        }
-        
-        /// TRY COMMAND
-        this.RegisterCommand(
-                    new MatchCommand(
-                        "ExtraServerFuncs",
-                        "OnCommandTest",
-                        this.Listify<string>("@", "!", "#"),
-                        "testcommand",
-                        this.Listify<MatchArgumentFormat>(),
-                        new ExecutionRequirements(
-                            ExecutionScope.All),
-                        "ONLY A TEST"
-                    ));
-        
-        /*this.RegisterCommand(
-                        new MatchCommand(
-                        "ExtraServerFuncs",
-                        "OnTaskTriggered",
-                        new List<string>(),
-                        "Triggertest",
-                        //new List<MatchArgumentFormat>(),
-                        new ExecutionRequirements(ExecutionScope.None),
-                        "ONLY A TEST TRIGGERED BY A TASK"
-                        ));
-        */
-        
+        WritePluginConsole("Init Plugin...", "INFO", 0);
+        Thread.Sleep(2000);
+        WritePluginConsole("Set Startup Vars...", "INFO", 2);
 
 
-
-        /// TRY COMMAND
-
+       
         plugin_enabled = true;
         fIsEnabled = true;
         players = new PlayerDB();
         files = new TextDatei();
 
-        WritePluginConsole("ENABLED - Thanks for using :)", "Info", 0);
-        Thread.Sleep(1000);
-        if (startup_mode != "none")SwitchServerMode(next_serverMode);
-        WritePluginConsole("LOADED Startup Server Mode", "Info", 0);
+        
+        Thread.Sleep(2000);
+
+        serverMode = "plugin_init";
+        next_serverMode = startup_mode;
+        WritePluginConsole("startup_mode = " + startup_mode, "DEBUG", 10);
+        if (startup_mode == "none")
+        {
+            serverMode = "normal";
+            next_serverMode = "normal";
+        }
+        WritePluginConsole("ENABLED - Thanks for using :)", "INFO", 0);
+        if (startup_mode != "none") SwitchServerMode(next_serverMode);
+        WritePluginConsole("LOADED Startup Server Mode", "INFO", 2);
+        WritePluginConsole("Register Commands", "INFO", 10);
+        RegisterAllCommands();
+        WritePluginConsole("List Players", "DEBUG", 10);
+        ServerCommand("admin.listPlayers", "all");
         return;
     }));
 
     thread_PluginEnable.Start();
-    
-    
-    
-    
-} 
 
-public void OnPluginDisable() {
-	plugin_enabled = false;
-	fIsEnabled = false;
-	ConsoleWrite("Disabled :(");
 
-    /// TRY COMMAND
+}
+
+private void RegisterAllCommands()
+{
+    this.RegisterCommand(
+             new MatchCommand(
+                 "ExtraServerFuncs",
+                 "OnCommandTest",
+                 this.Listify<string>("@", "!", "#"),
+                 "testcommand",
+                 this.Listify<MatchArgumentFormat>(),
+                 new ExecutionRequirements(
+                     ExecutionScope.All),
+                 "ONLY A TEST"
+             ));
+}
+
+private void UnRegisterAllCommands()
+{
     this.UnregisterCommand(
                 new MatchCommand(
                     "Extra Server Funcs",
@@ -3151,10 +3155,20 @@ public void OnPluginDisable() {
                         ExecutionScope.All),
                     "ONLY A TEST"
                 ));
-    /// TRY COMMAND
+
+}
 
 
 
+public void OnPluginDisable() {
+    this.ExecuteCommand("procon.protected.tasks.remove", "Switch");
+    plugin_enabled = false;
+	fIsEnabled = false;
+    UnRegisterAllCommands();
+
+	ConsoleWrite("Disabled :(");
+
+    
 
 }
 
@@ -3177,16 +3191,16 @@ public override void OnServerInfo(CServerInfo serverInfo) {
 
 
         
-        WritePluginConsole("^1^bCurrent Servermode: ^0^n" + serverMode + "^1^b Next Servermode: ^0^n" + next_serverMode, "Info", 2);
+        WritePluginConsole("^1^bCurrent Servermode: ^0^n" + serverMode + "^1^b Next Servermode: ^0^n" + next_serverMode, "INFO", 2);
         WritePluginConsole("^4^bCurrent round: ^2^n " + ToFriendlyMapName(currentMapFileName) + "^5 PlayersCount: ^0" + playerCount, "INFO", 2);
-        WritePluginConsole("^1^bDEBUG LEVEL ^4" + fDebugLevel, "Info", 3);
+        WritePluginConsole("DEBUG LEVEL " + fDebugLevel, "DEBUG", 3);
         
     }
 }
 
 public void OnMaplistMapInserted(int mapIndex, string mapFileName)
 {
-   
+if (autoconfig == enumBoolYesNo.Yes) this.ServerCommand("mapList.list");  // Update Maplist if Autoconfig is on
 }
 
 public void OnAnyChat(string speaker, string message)
@@ -3255,9 +3269,11 @@ public void OnVehicleSpawnAllowed(bool isEnabled)   // vars.vehicleSpawnAllowed
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
 
-            if (serverMode == "normal") SetPluginVariable("NM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled)); // SAVE TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled)); // SAVE TO PRIVATE MODE CONFIG
-
+            if (serverMode == "normal") SetPluginSetting("NM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled)); // SAVE TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled)); // SAVE TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled));
+            if (serverMode == "pistol") SetPluginSetting("POM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled));
+            if (serverMode == "knife") SetPluginSetting("KOM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled));
         }
     }
 
@@ -3270,9 +3286,11 @@ public void OnVehicleSpawnDelay(int limit)   // vars.vehicleSpawnDelay
     {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
-            if (serverMode == "normal") SetPluginVariable("NM_Vehicle Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Vehicle Spawn Time", limit.ToString()); // SAVE TO PRIVATE MODE CONFIG
-
+            if (serverMode == "normal") SetPluginSetting("NM_Vehicle Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Vehicle Spawn Time", limit.ToString()); // SAVE TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Vehicle Spawn Time", limit.ToString());
+            if (serverMode == "pistol") SetPluginSetting("POM_Vehicle Spawn Time", limit.ToString());
+            if (serverMode == "knife") SetPluginSetting("KOM_Vehicle Spawn Time", limit.ToString());
         }
     }
 
@@ -3285,9 +3303,11 @@ public void OnPlayerRespawnTime(int limit)   //vars.playerRespawnTime
     {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
-            if (serverMode == "normal") SetPluginVariable("NM_Player Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
-            if (serverMode == "private") SetPluginVariable("PM_Player Spawn Time", limit.ToString()); // SAVE TO PRIVATE MODE CONFIG
-
+            if (serverMode == "normal") SetPluginSetting("NM_Player Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
+            if (serverMode == "private") SetPluginSetting("PM_Player Spawn Time", limit.ToString()); // SAVE TO PRIVATE MODE CONFIG
+            if (serverMode == "flagrun") SetPluginSetting("FM_Player Spawn Time", limit.ToString());
+            if (serverMode == "pistol") SetPluginSetting("POM_Player Spawn Time", limit.ToString());
+            if (serverMode == "knife") SetPluginSetting("KOM_Player Spawn Time", limit.ToString());
         }
     }
 
@@ -3309,12 +3329,12 @@ public void OnMaplistList(List<MaplistEntry> lstMaplist)
      
         catch (Exception e)
         {
-            WritePluginConsole("Caught Exception in ListsEqual", "Error", 1);
-            WritePluginConsole(e.Message, "Error", 1);
+            WritePluginConsole("Caught Exception in ListsEqual", "ERROR", 0);
+            WritePluginConsole(e.Message, "ERROR", 0);
             throw;
         }
         this.m_listCurrMapList = new List<MaplistEntry>(lstMaplist);
-        WritePluginConsole("Maplist updated. There are " + m_listCurrMapList.Count + " maps currently in the maplist", "Info", 5);
+        WritePluginConsole("Maplist updated. There are " + m_listCurrMapList.Count + " maps currently in the maplist", "INFO", 5);
 
     }
 
@@ -3324,7 +3344,7 @@ public void OnMaplistList(List<MaplistEntry> lstMaplist)
 
 public override void OnResponseError(List<string> requestWords, string error)
 {
-    WritePluginConsole("^1^b PROCON ERROR: "+ error, "error", 2);
+    WritePluginConsole("^1^bPROCON ERROR: ^0^n"+ error, "ERROR", 2);
 
 }
 
@@ -3395,7 +3415,7 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
      DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
     
    
-    if (lastKiller != "" && lastWeapon != "Suicide")
+    if (lastKiller != "" && lastKiller != lastVictim)
     {
 
         if (isprohibitedWeapon(lastUsedWeapon)) PlayerWarn(lastKiller, lastUsedWeapon);
