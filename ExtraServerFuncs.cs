@@ -19,12 +19,14 @@ Roadmap:
 			    
             - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
             - readconfig funktioniert nicht ordnungsgemäß
-            - startet mit flagrun mode und nicht mit dem eingestellten startupmode
+            - Lädt den eingestellten startupmode nicht mehr
  
  
  - Infantry Only Mode
  - Hardcore Mode
  - Shootgun only mode
+ - Sniper Only
+ - Bolt Action Only
  
  
  
@@ -522,18 +524,11 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 
         lastcmdspeaker = cmdspeaker;
 
-        if (cmd == rules_command)
-        {
-            WritePluginConsole(cmdspeaker + " requested the Rules", "Info", 0);
-            ShowRules(cmdspeaker);
-            return;
-        }
-
-
-        if (cmd == cmd_KickAll)
-        {
-            KickAll();
-        }
+ 
+        //if (cmd == cmd_KickAll)
+        //{
+        //    KickAll();
+        //}
 
 
 
@@ -945,6 +940,7 @@ public bool KillPlayer(String name)
 
 private void KickAll()
 {
+    WritePluginConsole("KickAll()", "DEBUG", 10);
     List<string> tmp_Playerlist = players.ListPlayers();
 
     foreach (string player in tmp_Playerlist)
@@ -1786,7 +1782,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.4";
+	return "0.0.1.5";
 }
 
 public string GetPluginAuthor() {
@@ -1800,8 +1796,7 @@ public string GetPluginWebsite() {
 public string GetPluginDescription() {
 	return @"
 
-<p>....with some help from Koerai3</p>
-<p>
+
 If you find this plugin useful, please consider supporting me. Donations help support the servers used for development and provide incentive for additional features and new plugins! Any amount would be appreciated!</p>
 
 <center>
@@ -1868,7 +1863,6 @@ Starts a countdown and switch to next Servermode without waiting on end of round
 <blockquote><h4>!kickall</h4>
 Kicks all player who are not in Whitelist or have an ProCon Account<br/>
 </blockquote>
-</p>
 
 <blockquote><h4>!rules</h4>
 Show the Servermode specific rules.<br/>
@@ -1880,6 +1874,11 @@ Show the Servermode specific rules.<br/>
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.1.5 (02-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - edited first in-Game-Commands to a new method</br> 
+</blockquote>
+
 <blockquote><h4>0.0.1.4 (02-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - fixing the bug that Plugin load a random servermode on ProCon_Layer restart</br> 
@@ -3062,6 +3061,7 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnMaplistList",
                                              "OnServerDescription",
                                              "OnMaplistMapInserted",
+                                             "OnMaplistMapRemoved",
                                              "OnPlayerAuthenticated",
                                              "OnServerMessage",
                                              "OnVehicleSpawnAllowed",
@@ -3088,41 +3088,52 @@ public void OnPluginEnable()
 }
 public void InitPlugin()
 {
-    Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
+    try
     {
-        WritePluginConsole("Init Plugin...", "INFO", 0);
-        Thread.Sleep(2000);
-        WritePluginConsole("Set Startup Vars...", "INFO", 2);
-
-
-       
-        plugin_enabled = true;
-        fIsEnabled = true;
-        players = new PlayerDB();
-        files = new TextDatei();
-
-        
-        Thread.Sleep(2000);
-
-        serverMode = "plugin_init";
-        next_serverMode = startup_mode;
-        WritePluginConsole("startup_mode = " + startup_mode, "DEBUG", 10);
-        if (startup_mode == "none")
+        Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
         {
-            serverMode = "normal";
-            next_serverMode = "normal";
-        }
-        WritePluginConsole("ENABLED - Thanks for using :)", "INFO", 0);
-        if (startup_mode != "none") SwitchServerMode(next_serverMode);
-        WritePluginConsole("LOADED Startup Server Mode", "INFO", 2);
-        WritePluginConsole("Register Commands", "INFO", 10);
-        RegisterAllCommands();
-        WritePluginConsole("List Players", "DEBUG", 10);
-        ServerCommand("admin.listPlayers", "all");
-        return;
-    }));
+            WritePluginConsole("Init Plugin...", "INFO", 0);
+            Thread.Sleep(2000);
+            WritePluginConsole("Set Startup Vars...", "INFO", 2);
 
-    thread_PluginEnable.Start();
+
+
+            plugin_enabled = true;
+            fIsEnabled = true;
+            players = new PlayerDB();
+            files = new TextDatei();
+
+
+            Thread.Sleep(2000);
+
+            serverMode = "plugin_init";
+            next_serverMode = startup_mode;
+            WritePluginConsole("startup_mode = " + startup_mode, "DEBUG", 10);
+            if (startup_mode == "none")
+            {
+                serverMode = "normal";
+                next_serverMode = "normal";
+            }
+            WritePluginConsole("ENABLED - Thanks for using :)", "INFO", 0);
+            if (startup_mode != "none") SwitchServerMode(next_serverMode);
+            WritePluginConsole("LOADED Startup Server Mode", "INFO", 2);
+            WritePluginConsole("Register Commands", "INFO", 10);
+            RegisterAllCommands();
+            WritePluginConsole("List Players", "DEBUG", 10);
+            ServerCommand("admin.listPlayers", "all");
+            return;
+            }));
+
+        thread_PluginEnable.Start();
+    }
+    catch (Exception e)
+    {
+        WritePluginConsole("Caught Exception in InitPlugin()", "ERROR", 2);
+        WritePluginConsole(e.Message, "ERROR", 2);
+        throw;
+    }
+
+
 
 
 }
@@ -3130,33 +3141,158 @@ public void InitPlugin()
 private void RegisterAllCommands()
 {
     this.RegisterCommand(
-             new MatchCommand(
-                 "ExtraServerFuncs",
-                 "OnCommandTest",
-                 this.Listify<string>("@", "!", "#"),
-                 "testcommand",
-                 this.Listify<MatchArgumentFormat>(),
-                 new ExecutionRequirements(
-                     ExecutionScope.All),
-                 "ONLY A TEST"
-             ));
+                     new MatchCommand(
+                         "ExtraServerFuncs",
+                         "OnCommandRules",
+                         this.Listify<string>("@", "!", "/"),
+                         rules_command,
+                         this.Listify<MatchArgumentFormat>(),
+                         new ExecutionRequirements(
+                             ExecutionScope.All), // PUBLIC COMMAND
+                         "Show current rules"
+                     ));
+
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommandKickAll",
+                        this.Listify<string>("@", "!", "/"),
+                        cmd_KickAll,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+                            //2,
+                            //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Cancels a countdown timer"
+                    )
+                );
+
+
+
+
+    //lastcmdspeaker = cmdspeaker;
+
+
+
+
+
+
+    //if (cmd == nm_commandEnable)
+    //{
+    //    SwitchInitiator = cmdspeaker;
+    //    PreSwitchServerMode("normal");
+    //    return;
+    //}
+
+
+    //if (cmd == pm_commandEnable)
+    //{
+    //    SwitchInitiator = cmdspeaker;
+    //    PreSwitchServerMode("private");
+    //    return;
+    //}
+
+
+    //if (cmd == fm_commandEnable)
+    //{
+    //    SwitchInitiator = cmdspeaker;
+    //    PreSwitchServerMode("flagrun");
+    //    return;
+    //}
+
+    //if (cmd == kom_commandEnable)
+    //{
+    //    SwitchInitiator = cmdspeaker;
+    //    PreSwitchServerMode("knife");
+    //    return;
+    //}
+
+    //if (cmd == pom_commandEnable)
+    //{
+    //    SwitchInitiator = cmdspeaker;
+    //    PreSwitchServerMode("pistol");
+    //    return;
+    //}
+
+
+    //if (cmd == switchnow_cmd)
+    //{
+    //    if (IsSwitchDefined())
+    //    {
+    //        if (SwitchInitiator == cmdspeaker) StartSwitchCountdown();
+    //        if (SwitchInitiator != cmdspeaker) SendPlayerMessage(cmdspeaker, R(msg_notInitiator));
+    //        return;
+    //    }
+
+
+
+    //    if (!IsSwitchDefined()) SendPlayerMessage(cmdspeaker, R(msg_switchnotdefined));
+    //    return;
+    //}
+
+
+
+
+
+
+
 }
 
 private void UnRegisterAllCommands()
 {
     this.UnregisterCommand(
+             new MatchCommand(
+                 "ExtraServerFuncs",
+                 "OnCommandRules",
+                 this.Listify<string>("@", "!", "/"),
+                 rules_command,
+                 this.Listify<MatchArgumentFormat>(),
+                 new ExecutionRequirements(
+                     ExecutionScope.All), // PUBLIC COMMAND
+                 "Show current rules"
+             ));
+
+    this.UnregisterCommand(
                 new MatchCommand(
-                    "Extra Server Funcs",
-                    "OnCommandTest",
-                    this.Listify<string>("@", "!", "#"),
-                    "testcommand",
+                    "ExtraServerFuncs",
+                    "OnCommandKickAll",
+                    this.Listify<string>("@", "!", "/"),
+                    cmd_KickAll,
                     this.Listify<MatchArgumentFormat>(),
                     new ExecutionRequirements(
-                        ExecutionScope.All),
-                    "ONLY A TEST"
-                ));
+                        ExecutionScope.Account,
+                       // 2,
+                       // "yes", //confirmationCommand,
+                        "You do not have enough privileges"),
+                    "Cancels a countdown timer"
+                )
+            );
+
+
+
+
 
 }
+
+public void OnCommandRules(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+
+    WritePluginConsole("OnCommandRules()", "DEBUG", 10);
+    WritePluginConsole(strSpeaker + " requested the Rules", "INFO", 0);
+    ShowRules(strSpeaker);
+    return;
+
+}
+
+public void OnCommandKickAll(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    KickAll();
+}
+
+
+
+
 
 
 
@@ -3200,8 +3336,26 @@ public override void OnServerInfo(CServerInfo serverInfo) {
 
 public void OnMaplistMapInserted(int mapIndex, string mapFileName)
 {
-if (autoconfig == enumBoolYesNo.Yes) this.ServerCommand("mapList.list");  // Update Maplist if Autoconfig is on
+    WritePluginConsole("OnMaplistMapInserted()", "DEBUG", 10);
+    if (autoconfig == enumBoolYesNo.Yes)
+    {
+        this.ServerCommand("mapList.list");  // Update Maplist if Autoconfig is on
+        WritePluginConsole("OnMaplistMapInserted() AUTOUPDATE: mapList.list", "DEBUG", 10);
+    }
 }
+
+public void OnMaplistMapRemoved(int mapIndex)
+{
+    WritePluginConsole("OnMaplistMapRemoved()", "DEBUG", 10);
+    if (autoconfig == enumBoolYesNo.Yes)
+    {
+        this.ServerCommand("mapList.list");  // Update Maplist if Autoconfig is on
+        WritePluginConsole("OnMaplistMapInserted() AUTOUPDATE: mapList.list", "DEBUG", 10);
+    }
+
+}
+
+
 
 public void OnAnyChat(string speaker, string message)
 {
