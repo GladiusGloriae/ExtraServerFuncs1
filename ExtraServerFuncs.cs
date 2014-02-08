@@ -5,11 +5,18 @@ by MarkusSR1984 & Koerai3
 Roadmap:
 =================================
 
- Arbeit für Rainer:
-
-  - Funktionen sortieren ( Bitte aufpassen das du die Funktionen in der selben Klasse lässt ) !!!!!
-  - Docu schreiben
-   - du findest dir sicher arbeit ;)
+- DEBUG LEVEL
+ * 0 Quiet          NO MESSAGES / ONLY RESONSES ON CONFIG
+ * 1 
+ * 2 Normal         Normal user responses
+ * 3 DEBUG LOG      Enable Logging in a debug file
+ * 4 DEBUG1         Show exeptions
+ * 5
+ * 6 DEBUG2         Show each called function()
+ * 7
+ * 8 DEBUG3         Show Details of called functions()
+ * 9
+ * 10 DEBUG4        Show ALL Messages and Details
   
   
   
@@ -17,7 +24,7 @@ Roadmap:
 			    
             - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
             - readconfig funktioniert nicht ordnungsgemäß
-            - Lädt den eingestellten startupmode nicht mehr
+           
  
  
  - Infantry Only Mode
@@ -25,12 +32,6 @@ Roadmap:
  - Shootgun only mode
  - Sniper Only
  - Bolt Action Only
- 
- 
- 
--  Registered Commands !!!!!
-    
-  
  
   
 - MapLists
@@ -47,27 +48,6 @@ Roadmap:
 - Plugin USER SETTINGS
 	
 	- Sort Current Variables
- 
-
-- Show WeaponCode Funktion
-   - Variable yes/No hinzufügen
-   - Ausgabe Farblich hervorheben
-  
-  
- 
- 
-- Knife Only Mode Aktivieren
-    - WarnRoutine Erweitern
-    - Usersetting ( WarnCount, Kick/TBan/PBan/pb_tBan/pb_pBan )
-    - Warn Message
-
-
-- Pistol Only Mode Aktivieren
-    - Warnroutine Erweitern
-    - Usersettings ( WarnCount, Kick/TBan/PBan, Allowed Pistols )
-    - Warn Message
-
-
  
   
 - ServerMeldung hinzufügen die jede Minute anzeigt in Welchem Modus sich der Server befindet
@@ -86,11 +66,6 @@ Roadmap:
 		- Server Slots
         - Commander
         - 
-
-- Auto Spectator Funktion
-		- Spectatorports
-		- öffentliche Zuschauerports ???
-		
  
 */
 
@@ -128,6 +103,7 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
 
 public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 {
+
 
 /* Inherited:
     this.PunkbusterPlayerInfoList = new Dictionary<string, CPunkbusterInfo>();
@@ -190,6 +166,7 @@ private int totalRounds = 0;
 private string friendlyenummaplist;
 private int playerCount;
 private int maxPlayerCount;
+private int ServerInfoCounter = 0;
 private string isProhibitedWeapon_Result = "";
 private string currServername = "";
 private string currServerMessage = "";
@@ -252,7 +229,7 @@ private volatile string switchnow_cmd = "switchnow";     // SWITCHNOW Command
 private volatile string rules_command = "rules";         // !rules Command
 private volatile string cmd_KickAll = "kickall";         // Command to kick all players
 
-private volatile string cmd_cancel = "cancel";
+private volatile string cmd_cancel = "abort";
 
 // Messages - save in Variables to make it editable from user later
 /* REPLACEMENTS
@@ -356,7 +333,7 @@ private int fm_ActionTbanTime = 60;
 // KNIFE ONLY VARS
 private List<string> kom_ClanWhitelist;
 private List<string> kom_PlayerWhitelist;
-private string kom_Servername = "Servername - KNIFE ONLY";
+private string kom_Servername = "oxx[|===> KNIFE ONLY <===|]xxo  Servername";
 private string kom_Serverdescription = "Server is in KNIFE ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
 private string kom_ServerMessage = "Your Server Message";
 private enumBoolYesNo kom_VehicleSpawnAllowed = enumBoolYesNo.Yes;
@@ -401,7 +378,10 @@ private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P2
 private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
 private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
 
-
+private string LogFileName =  @"Plugins\ExtraServerFuncs.log";
+    
+    
+    
 
 
 
@@ -409,6 +389,8 @@ private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Kn
 public ExtraServerFuncs() {
 	fIsEnabled = false;
 	fDebugLevel = 2;
+    files = new TextDatei();
+
 
     nm_Rules = new List<string>();			// NORMAL MODE RULES
     nm_Rules.Add("############## RULES ##############");
@@ -446,20 +428,20 @@ public ExtraServerFuncs() {
     nm_MapList.Add("XP1_001 AirSuperiority0 2");
         
     pm_MapList = new List<string>(); 			// PRIVATE MODE MAPLIST
-    pm_MapList.Add("MP_Journey SquadDeathMatch0 2"); // Goldmud
-    pm_MapList.Add("MP_Prison SquadDeathMatch0 2");  // Spind
+    pm_MapList.Add("MP_Journey TeamDeathMatch0 2"); // Goldmud
+    pm_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
         
     pom_MapList = new List<string>(); 			// PISTOL ONLY MODE MAPLIST
-    pom_MapList.Add("MP_Prison SquadDeathMatch0 2");  // Spind
+    pom_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
 
     kom_MapList = new List<string>(); 			// KNIFE ONLY MODE MAPLIST
-    kom_MapList.Add("MP_Prison SquadDeathMatch0 2");  // Spind
+    kom_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
     
     fm_MapList = new List<string>(); 			// FLAGRUN MODE MAPLIST
     fm_MapList.Add("MP_Flooded ConquestLarge0 2"); // Floodzone
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
 
-    MapFileNames = new Dictionary<string, string>();
+    MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
     MapFileNames.Add("Zavod 311", "MP_Abandoned");
     MapFileNames.Add("Lancang Dam", "MP_Damage");
     MapFileNames.Add("Flood Zone", "MP_Flooded");
@@ -531,14 +513,13 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         lastcmdspeaker = cmdspeaker;
 
  
-        //if (cmd == cmd_KickAll)
-        //{
-        //    KickAll();
-        //}
+        if (cmd == cmd_KickAll)
+        {
+            KickAll();
+        }
+        
 
-
-
-        if (cmd == nm_commandEnable)
+        if (cmd == nm_commandEnable) 
         {
             SwitchInitiator = cmdspeaker;
             PreSwitchServerMode("normal");
@@ -546,7 +527,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         }
 
 
-        if (cmd == pm_commandEnable)
+        if (cmd == pm_commandEnable) 
         {
             SwitchInitiator = cmdspeaker;
             PreSwitchServerMode("private");
@@ -554,21 +535,21 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         }
 
 
-        if (cmd == fm_commandEnable)
+        if (cmd == fm_commandEnable)  
         {
             SwitchInitiator = cmdspeaker;
             PreSwitchServerMode("flagrun");
             return;
         }
 
-        if (cmd == kom_commandEnable)
+        if (cmd == kom_commandEnable) 
         {
             SwitchInitiator = cmdspeaker;
             PreSwitchServerMode("knife");
             return;
         }
 
-        if (cmd == pom_commandEnable)
+        if (cmd == pom_commandEnable) 
         {
             SwitchInitiator = cmdspeaker;
             PreSwitchServerMode("pistol");
@@ -576,7 +557,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         }
         
         
-        if (cmd == switchnow_cmd)
+        if (cmd == switchnow_cmd) 
         {
             if (IsSwitchDefined())
             {
@@ -1779,40 +1760,58 @@ public bool ListsEqual(List<MaplistEntry> a, List<MaplistEntry> b) // Vergleich 
 
 public void WritePluginConsole(string message, string tag, int level)
         {
-            if (tag == "ERROR")
+            try
             {
-                tag = "^1" + tag;   // RED
-            }
-            else if (tag == "DEBUG")
-            {
-                tag = "^3" + tag;   // ORAGNE
-            }
-            else if (tag == "INFO")
-            {
-                tag = "^2" + tag;   // GREEN
-            }
-            else if (tag == "VARIABLE")
-            {
-                tag = "^6" + tag;   // GREEN
-            }
-            else if (tag == "WARN")
-            {
-                tag = "^7" + tag;   // PINK
-            }
+                
+                if (tag == "ERROR")
+                {
+                    tag = "^1" + tag;   // RED
+                }
+                else if (tag == "DEBUG")
+                {
+                    tag = "^3" + tag;   // ORAGNE
+                }
+                else if (tag == "INFO")
+                {
+                    tag = "^2" + tag;   // GREEN
+                }
+                else if (tag == "VARIABLE")
+                {
+                    tag = "^6" + tag;   // GREEN
+                }
+                else if (tag == "WARN")
+                {
+                    tag = "^7" + tag;   // PINK
+                }
 
 
-            else
-            {
-                tag = "^5" + tag;   // BLUE
-            }
-            string line = "^b[" + this.GetPluginName() + "] " + tag + ": ^0^n" + message;
-            
-            if (this.fDebugLevel >= level)
-            {
-                this.ExecuteCommand("procon.protected.pluginconsole.write", line);
-            }
+                else
+                {
+                    tag = "^5" + tag;   // BLUE
+                }
+                
+                string line = "^b[" + this.GetPluginName() + "] " + tag + ": ^0^n" + message;
 
-           
+
+                if (tag == "ENABLED") line = "^b^2" + line;
+                if (tag == "DISABLED") line = "^b^3"+ line;
+
+                if (this.fDebugLevel >= 3) // WRITE LOG FILE
+                {
+                    files.DebugWrite(LogFileName, Regex.Replace(line, "[/^][0-9bni]", "")); // Lösche formatierung und schreibe in Logdatei
+                }
+
+
+                if (this.fDebugLevel >= level)
+                {
+                    this.ExecuteCommand("procon.protected.pluginconsole.write", line);
+                }
+
+            }
+            catch (Exception e)
+            {
+                this.ExecuteCommand("procon.protected.pluginconsole.write", "^1^b[ExtraServerFuncs][ERROR]^n WritePluginConsole: ^0" + e);
+            }
             
         }
 
@@ -1881,7 +1880,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.6";
+	return "0.0.1.7";
 }
 
 public string GetPluginAuthor() {
@@ -1967,7 +1966,7 @@ Kicks all player who are not in Whitelist or have an ProCon Account<br/>
 Show the Servermode specific rules.<br/>
 </blockquote>
 
-<blockquote><h4>!cancel</h4>
+<blockquote><h4>!abort</h4>
 Cancel an running countdown and an defined Server Mode Switch<br/>
 </blockquote>
 </p>
@@ -1977,6 +1976,14 @@ Cancel an running countdown and an defined Server Mode Switch<br/>
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.1.7 (07-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - fixed some bugs<br/>
+    - Added Logfile writing if Debug Level grather than 2<br/>
+    - limit the ServerInfo Display - it is now show evry 10th time<br/>
+    - changed the used method to react on commands<br/>
+    - changed 'cancel' command to abort. cancel was incompatibel with InGameAdmin</br> 
+</blockquote>
 
 <blockquote><h4>0.0.1.6 (06-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -1987,17 +1994,17 @@ Cancel an running countdown and an defined Server Mode Switch<br/>
     - Added 'cancel' command to cancel a running countdown and Modeswitch</br> 
 </blockquote>
 
-<blockquote><h4>0.0.1.5 (02-02-2014)</h4>
+<blockquote><h4>0.0.1.5 (05-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - edited first in-Game-Commands to a new method</br> 
 </blockquote>
 
-<blockquote><h4>0.0.1.4 (02-02-2014)</h4>
+<blockquote><h4>0.0.1.4 (04-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - fixing the bug that Plugin load a random servermode on ProCon_Layer restart</br> 
 </blockquote>
 
-<blockquote><h4>0.0.1.3 (02-02-2014)</h4>
+<blockquote><h4>0.0.1.3 (03-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
 	- fixig many bugs<br/>
 	- Added Map Prohibited Weapons<br/>
@@ -2078,7 +2085,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
             if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Aggressive Startup", typeof(enumBoolYesNo), agresive_startup));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Countdown Timer", typeof(int), countdown_time));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Waponcodes", typeof(enumBoolYesNo), showweaponcode));			
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Weaponcodes", typeof(enumBoolYesNo), showweaponcode));			
 
             
             
@@ -2381,7 +2388,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
     }
     
 
-    if (Regex.Match(strVariable, @"Show Waponcodes").Success)
+    if (Regex.Match(strVariable, @"Show Weaponcodes").Success)
     {
         if (strValue == "Yes") showweaponcode = enumBoolYesNo.Yes;
         if (strValue == "No") showweaponcode = enumBoolYesNo.No;
@@ -3283,9 +3290,9 @@ public void InitPlugin()
             {
                 next_serverMode = startup_mode; // Setze den nächten Servermode auf Startup mode
             }
-                        
-            
-            WritePluginConsole("ENABLED - Thanks for using :)", "INFO", 0);
+
+
+            WritePluginConsole(" - Thanks for using :)", "ENABLED", 0);
 
 
 
@@ -3350,7 +3357,7 @@ private void RegisterAllCommands()
     this.RegisterCommand(
                      new MatchCommand(
                          "ExtraServerFuncs",
-                         "OnCommandRules",
+                         "OnCommand_Rules",
                          this.Listify<string>("@", "!", "/"),
                          rules_command,
                          this.Listify<MatchArgumentFormat>(),
@@ -3362,7 +3369,7 @@ private void RegisterAllCommands()
     this.RegisterCommand(
                     new MatchCommand(
                         "ExtraServerFuncs",
-                        "OnCommandKickAll",
+                        "OnCommand_KickAll",
                         this.Listify<string>("@", "!", "/"),
                         cmd_KickAll,
                         this.Listify<MatchArgumentFormat>(),
@@ -3370,15 +3377,15 @@ private void RegisterAllCommands()
                             ExecutionScope.Account,
                             //2,
                             //"yes", //confirmationCommand,
-                            "You do not have enough privileges"),
-                        "Cancels a countdown timer"
+                            "You do not have enough privileges ti kick all players"),
+                        "Kicks ALL players from server"
                     )
                 );
 
     this.RegisterCommand(
                     new MatchCommand(
                         "ExtraServerFuncs",
-                        "OnCommandCancel",
+                        "OnCommand_Cancel",
                         this.Listify<string>("@", "!", "/"),
                         cmd_cancel,
                         this.Listify<MatchArgumentFormat>(),
@@ -3392,9 +3399,107 @@ private void RegisterAllCommands()
                 );
 
 
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Normal",
+                        this.Listify<string>("@", "!", "/"),
+                        nm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to NORMAL MODE"
+                    )
+                );
 
 
-    
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Private",
+                        this.Listify<string>("@", "!", "/"),
+                        pm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to PRIVATE MODE"
+                    )
+                );
+
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Flagrun",
+                        this.Listify<string>("@", "!", "/"),
+                        fm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to FLAGRUN MODE"
+                    )
+                );
+
+
+
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Knife",
+                        this.Listify<string>("@", "!", "/"),
+                        kom_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to KNIFE ONLY MODE"
+                    )
+                );
+
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Pistol",
+                        this.Listify<string>("@", "!", "/"),
+                        pom_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to PISTOL ONLY MODE"
+                    )
+                );
+
+    this.RegisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Switchnow",
+                        this.Listify<string>("@", "!", "/"),
+                        switchnow_cmd,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Switch to the defined Servermode instantly"
+                    )
+                );
+
+
+
 
 
 
@@ -3469,82 +3574,253 @@ private void RegisterAllCommands()
 private void UnRegisterAllCommands()
 {
     this.UnregisterCommand(
-             new MatchCommand(
-                 "ExtraServerFuncs",
-                 "OnCommandRules",
-                 this.Listify<string>("@", "!", "/"),
-                 rules_command,
-                 this.Listify<MatchArgumentFormat>(),
-                 new ExecutionRequirements(
-                     ExecutionScope.All), // PUBLIC COMMAND
-                 "Show current rules"
-             ));
+                     new MatchCommand(
+                         "ExtraServerFuncs",
+                         "OnCommand_Rules",
+                         this.Listify<string>("@", "!", "/"),
+                         rules_command,
+                         this.Listify<MatchArgumentFormat>(),
+                         new ExecutionRequirements(
+                             ExecutionScope.All), // PUBLIC COMMAND
+                         "Show current rules"
+                     ));
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_KickAll",
+                        this.Listify<string>("@", "!", "/"),
+                        cmd_KickAll,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges ti kick all players"),
+                        "Kicks ALL players from server"
+                    )
+                );
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Cancel",
+                        this.Listify<string>("@", "!", "/"),
+                        cmd_cancel,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Cancels a countdown timer"
+                    )
+                );
+
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Normal",
+                        this.Listify<string>("@", "!", "/"),
+                        nm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to NORMAL MODE"
+                    )
+                );
+
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Private",
+                        this.Listify<string>("@", "!", "/"),
+                        pm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to PRIVATE MODE"
+                    )
+                );
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Flagrun",
+                        this.Listify<string>("@", "!", "/"),
+                        fm_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to FLAGRUN MODE"
+                    )
+                );
+
+
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Knife",
+                        this.Listify<string>("@", "!", "/"),
+                        kom_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to KNIFE ONLY MODE"
+                    )
+                );
+
+    this.UnregisterCommand(
+                    new MatchCommand(
+                        "ExtraServerFuncs",
+                        "OnCommand_Pistol",
+                        this.Listify<string>("@", "!", "/"),
+                        pom_commandEnable,
+                        this.Listify<MatchArgumentFormat>(),
+                        new ExecutionRequirements(
+                            ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                            "You do not have enough privileges"),
+                        "Define a switch to PISTOL ONLY MODE"
+                    )
+                );
 
     this.UnregisterCommand(
                 new MatchCommand(
                     "ExtraServerFuncs",
-                    "OnCommandKickAll",
+                    "OnCommand_Switchnow",
                     this.Listify<string>("@", "!", "/"),
-                    cmd_KickAll,
+                    switchnow_cmd,
                     this.Listify<MatchArgumentFormat>(),
                     new ExecutionRequirements(
                         ExecutionScope.Account,
-                       // 2,
-                       // "yes", //confirmationCommand,
+        //2,
+        //"yes", //confirmationCommand,
                         "You do not have enough privileges"),
-                    "Cancels a countdown timer"
+                    "Switch to the defined Servermode instantly"
                 )
             );
-
-    this.UnregisterCommand(
-                 new MatchCommand(
-                     "ExtraServerFuncs",
-                     "OnCommandCancel",
-                     this.Listify<string>("@", "!", "/"),
-                     cmd_cancel,
-                     this.Listify<MatchArgumentFormat>(),
-                     new ExecutionRequirements(
-                         ExecutionScope.Account,
-                        //2,
-                        //"yes", //confirmationCommand,
-                         "You do not have enough privileges"),
-                     "Cancels a countdown timer"
-                 )
-             );
-
 
 
 }
 
-public void OnCommandRules(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+public void OnCommand_Rules(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
 {
-
-    WritePluginConsole("OnCommandRules()", "DEBUG", 10);
-    WritePluginConsole(strSpeaker + " requested the Rules", "INFO", 0);
+    
+    WritePluginConsole("OnCommand_Rules()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Rules() strSpeaker='" + strSpeaker + "' strText='" + strText + "'" , "DEBUG", 8);
+    WritePluginConsole(strSpeaker + " requested the Rules", "INFO", 2);
     ShowRules(strSpeaker);
     return;
 
 }
 
-public void OnCommandKickAll(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+public void OnCommand_KickAll(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
 {
+    WritePluginConsole("OnCommand_KickAll()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_KickAll() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    lastcmdspeaker = strSpeaker;
     KickAll();
 }
 
 
+public void OnCommand_Normal(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope) 
+{
+    WritePluginConsole("OnCommand_Normal()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Normal() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    PreSwitchServerMode("normal");
+    return;
+}
+
+public void OnCommand_Private(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope) 
+{
+    WritePluginConsole("OnCommand_Private()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Private() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    PreSwitchServerMode("private");
+    return;
+}
+
+public void OnCommand_Flagrun(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Flagrun()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Flagrun() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    PreSwitchServerMode("flagrun");
+    return;
+}
+
+public void OnCommand_Knife(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Knife()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Knife() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    PreSwitchServerMode("knife");
+    return;
+}
+
+public void OnCommand_Pistol(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Pistol()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Pistol() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    PreSwitchServerMode("pistol");
+    return;
+}
+
+public void OnCommand_Switchnow(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Switchnow()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Switchnow() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    lastcmdspeaker = strSpeaker;
+    if (IsSwitchDefined())
+    {
+        if (SwitchInitiator == strSpeaker) StartSwitchCountdown();
+        if (SwitchInitiator != strSpeaker) SendPlayerMessage(strSpeaker, R(msg_notInitiator));
+        return;
+    }
+
+
+    if (!IsSwitchDefined()) SendPlayerMessage(strSpeaker, R(msg_switchnotdefined));
+    return;
+}
 
 
 
 
 
 public void OnPluginDisable() {
+    WritePluginConsole("OnPluginDisable()", "DEBUG", 6);
+
     this.ExecuteCommand("procon.protected.tasks.remove", "Switch");
     plugin_enabled = false;
     plugin_loaded = false;
     fIsEnabled = false;
     UnRegisterAllCommands();
 
-	ConsoleWrite("Disabled :(");
+    WritePluginConsole("", "DISABLED", 0);
 
     
 
@@ -3566,13 +3842,14 @@ public override void OnServerInfo(CServerInfo serverInfo) {
             //serverInfo.RoundTime;
             //serverInfo.ServerUptime
 
+        ServerInfoCounter++; // Einen durchlauf zählen
 
-
-        if (plugin_enabled)
+        if (plugin_enabled && ServerInfoCounter >= 10)
         {
             WritePluginConsole("^1^bCurrent Servermode: ^0^n" + serverMode + "^1^b Next Servermode: ^0^n" + next_serverMode, "INFO", 2);
             WritePluginConsole("^4^bCurrent round: ^2^n " + ToFriendlyMapName(currentMapFileName) + "^5 PlayersCount: ^0" + playerCount, "INFO", 2);
             WritePluginConsole("DEBUG LEVEL " + fDebugLevel, "DEBUG", 3);
+            ServerInfoCounter = 0;
         }   
     
 }
@@ -3600,14 +3877,7 @@ public void OnMaplistMapRemoved(int mapIndex)
 
 
 
-public void OnAnyChat(string speaker, string message)
-{
-    if (plugin_enabled)
-    {
-        if (IsAdmin(speaker) && IsCommand(message)) PluginCommand(speaker, ExtractCommand(message));
-    }
-    
-}
+public void OnAnyChat(string speaker, string message){ }
 
 public void OnServerName(string serverName)  // Server Name was changed
 {
@@ -3661,8 +3931,7 @@ public void OnServerDescription(string serverDescription)
 
 public void OnVehicleSpawnAllowed(bool isEnabled)   // vars.vehicleSpawnAllowed
 {
-    if (plugin_enabled)
-    {
+  
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
 
@@ -3672,15 +3941,13 @@ public void OnVehicleSpawnAllowed(bool isEnabled)   // vars.vehicleSpawnAllowed
             if (serverMode == "pistol") SetPluginSetting("POM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled));
             if (serverMode == "knife") SetPluginSetting("KOM_Vehicle Spawn Allowed", boolToStringYesNo(isEnabled));
         }
-    }
-
+  
 
 }
 
 public void OnVehicleSpawnDelay(int limit)   // vars.vehicleSpawnDelay
 {
-    if (plugin_enabled)
-    {
+   
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
             if (serverMode == "normal") SetPluginSetting("NM_Vehicle Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
@@ -3689,15 +3956,11 @@ public void OnVehicleSpawnDelay(int limit)   // vars.vehicleSpawnDelay
             if (serverMode == "pistol") SetPluginSetting("POM_Vehicle Spawn Time", limit.ToString());
             if (serverMode == "knife") SetPluginSetting("KOM_Vehicle Spawn Time", limit.ToString());
         }
-    }
-
-
+   
 }
 
 public void OnPlayerRespawnTime(int limit)   //vars.playerRespawnTime
 {
-    if (plugin_enabled)
-    {
         if (autoconfig == enumBoolYesNo.Yes || readconfig)
         {
             if (serverMode == "normal") SetPluginSetting("NM_Player Spawn Time", limit.ToString()); // SAVE TO NORMAL MODE CONFIG
@@ -3706,7 +3969,7 @@ public void OnPlayerRespawnTime(int limit)   //vars.playerRespawnTime
             if (serverMode == "pistol") SetPluginSetting("POM_Player Spawn Time", limit.ToString());
             if (serverMode == "knife") SetPluginSetting("KOM_Player Spawn Time", limit.ToString());
         }
-    }
+   
 
 
 }
@@ -3741,7 +4004,7 @@ public void OnMaplistList(List<MaplistEntry> lstMaplist)
 
 public override void OnResponseError(List<string> requestWords, string error)
 {
-    WritePluginConsole("^1^bPROCON ERROR: ^0^n"+ error, "ERROR", 2);
+    WritePluginConsole("^1^bPROCON ERROR: ^0^n"+ error, "ERROR", 4);
 
 }
 
@@ -3782,65 +4045,68 @@ public override void OnPlayerJoin(string soldierName)
 
 public override void OnPlayerAuthenticated(string soldierName, string guid)
 {
-    DebugWrite("[OnPlayerAuthenticated]", 6);
+    WritePluginConsole("OnPlayerAuthenticated()", "DEBUG",6);
     players.Add(soldierName);
 }
 
 public override void OnPlayerLeft(CPlayerInfo playerInfo)
 {
+    WritePluginConsole("OnPlayerLeft()", "DEBUG", 6);
     players.Remove(playerInfo.SoldierName);
 
 }
 
 public override void OnPlayerKilled(Kill kKillerVictimDetails)
  {
-    
-    try
-    {
-    
-    
-    lastKiller = kKillerVictimDetails.Killer.SoldierName;
-    lastVictim = kKillerVictimDetails.Victim.SoldierName;
-    lastWeapon = kKillerVictimDetails.DamageType;
-    lastUsedWeapon = FWeaponName(lastWeapon);
-
-    if (showweaponcode == enumBoolYesNo.Yes) WritePluginConsole("^2^n" + lastKiller + "^1^b  [ " + lastUsedWeapon + " ]^7^n " + lastVictim, "KILL", 0); // Zeige Die Waffen in der Konsole Farblich hervorgehoben
-    
-    
-     DebugWrite("[OnPlayerKilled] Killer:     " + lastKiller, 6);
-     DebugWrite("[OnPlayerKilled] Victim:     " + lastVictim, 6);
-     DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
-    
-   
-    if (lastKiller != "" && lastKiller != lastVictim)
-    {
-
-        if (isprohibitedWeapon(lastUsedWeapon)) PlayerWarn(lastKiller, lastUsedWeapon);
-    
-    }
+     if (plugin_loaded)
+     {
+         try
+         {
 
 
-    if (lastKiller == lastVictim)
-    {
-        players.Suicide(lastVictim);
-    }
+             lastKiller = kKillerVictimDetails.Killer.SoldierName;
+             lastVictim = kKillerVictimDetails.Victim.SoldierName;
+             lastWeapon = kKillerVictimDetails.DamageType;
+             lastUsedWeapon = FWeaponName(lastWeapon);
+
+             if (showweaponcode == enumBoolYesNo.Yes) WritePluginConsole("^2^n" + lastKiller + "^1^b  [ " + lastUsedWeapon + " ]^7^n " + lastVictim, "KILL", 0); // Zeige Die Waffen in der Konsole Farblich hervorgehoben
+
+
+             DebugWrite("[OnPlayerKilled] Killer:     " + lastKiller, 6);
+             DebugWrite("[OnPlayerKilled] Victim:     " + lastVictim, 6);
+             DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
+
+
+             if (lastKiller != "" && lastKiller != lastVictim)
+             {
+
+                 if (isprohibitedWeapon(lastUsedWeapon)) PlayerWarn(lastKiller, lastUsedWeapon);
+
+             }
+
+
+             if (lastKiller == lastVictim)
+             {
+                 players.Suicide(lastVictim);
+             }
 
 
 
-    if (lastKiller != lastVictim)
-    {
-        if (lastKiller != "") players.Kill(lastKiller);
-        if (lastVictim != "") players.Death(lastVictim);
-    }
+             if (lastKiller != lastVictim)
+             {
+                 if (lastKiller != "") players.Kill(lastKiller);
+                 if (lastVictim != "") players.Death(lastVictim);
+             }
 
-    
-    
-    
-    }
-    catch (Exception ex)
-    {
-        WritePluginConsole("^1^bOnPlayerKilled returs an Error: ^0^n"+ ex.ToString(), "ERROR", 9);
-    }
+
+
+
+         }
+         catch (Exception ex)
+         {
+             WritePluginConsole("^1^bOnPlayerKilled returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+         }
+     }
 
  }
 
@@ -4188,6 +4454,8 @@ public override void OnLevelLoaded(string mapFileName, string Gamemode, int roun
 
 }
 
+
+
 } // end ExtraServerFuncs
 
 
@@ -4269,7 +4537,7 @@ private void AddPlayer(string name, string tag)
     Player_Warns.Add(name, 0);
     Player_Suicides.Add(name, 0);
 
-    if (!csv_db.isInit()) csv_db.Init(@"Logs\PlayerDB.csv");
+    if (!csv_db.isInit()) csv_db.Init(@"Plugins\ExtraServerFuncs_PlayerDB.csv");
     if (!csv_db.isPlayerInDatabase(name))
     {
         CSV_PlayerInfo new_player = new CSV_PlayerInfo();
@@ -4561,7 +4829,11 @@ class TextDatei
         sContent = "";
         for (int x = 0; x < sCols.Length - 1; x++)
         {
-            sContent += sCols[x] + "\r\n";
+             sContent += sCols[x] + "\r\n";
+                        
+
+
+            
         }
         sContent += sCols[sCols.Length - 1];
         sContent += sLines + "\r\n";
@@ -4571,7 +4843,47 @@ class TextDatei
         mySaveFile.Close();
     }
 
+    public void DebugWrite(String sFilename, string sLines)
+    {
+        string sContent = "";
+        string[] delimiterstring = { "\r\n" };
 
+        if (File.Exists(sFilename))
+        {
+            StreamReader myFile = new StreamReader(sFilename, System.Text.Encoding.Default);
+            sContent = myFile.ReadToEnd();
+            myFile.Close();
+        }
+
+        string[] sCols = sContent.Split(delimiterstring, StringSplitOptions.None);
+
+
+
+
+        sContent = "";
+        for (int x = 0; x < sCols.Length - 1; x++)
+        {
+            if (sCols.Length < 2000) sContent += sCols[x] + "\r\n";
+            if (sCols.Length > 2000)
+            {
+                if (x < sCols.Length - 2000)
+                {
+                }
+                else
+                {
+                    sContent += sCols[x] + "\r\n";
+                }
+
+
+            }
+        }
+        sContent += sCols[sCols.Length - 1];
+        sContent += sLines + "\r\n";
+
+        StreamWriter mySaveFile = new StreamWriter(sFilename);
+        mySaveFile.Write(sContent);
+        mySaveFile.Close();
+    }
 
     
     public void WriteLine(String sFilename, int iLine, string sLines, bool bReplace)
