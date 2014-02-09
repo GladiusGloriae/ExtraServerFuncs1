@@ -1927,7 +1927,39 @@ Here u can enter a few ssettings who are working in the specific Servermode. For
 <blockquote><h4>4. Plugin Commands</h4>
 In this section you can edit the InGame and Plugin commands if you dont like the default only the active commands will be shown.<br/>
 </blockquote>
+
+<blockquote><h4>5. Plugin Messages</h4>
+In this section you can edit the Messages who Plugin gives out to Players and admins. it`s able to use some replacements in this messags<br/>
+<br/>
+<b>USEABLE REPLACEMANTS</b><br/>
+<pre>
+%initiator%         Name of the admin who defined a Servermode change
+%cmd_switchnow%     switchnow command without !/@//
+%cmdspeaker%        Name of the admin who write the last command
+%currServermode%    Current Server Mode
+%nextServermode%    Next Server Mode
+%Killer%            Last Killer
+%Weapon%            Last used Weapon
+%Victim%            Last Victim
+%kickban%           Is Action Kick or Ban
+</pre>
+</blockquote>
+
+<blockquote><h4>6.1 Map Prohibited Weapons</h4>
+In this section you find some lists where you can enter the weapons who should be prohibited only on this map. You have a list for each map<br/>
+</blockquote>
+
+<blockquote><h4>6.2 Gamemode Prohibited Weapons  - NOT IMPLEMENTED YET</h4>
+In this section you find some lists where you can enter the weapons who should be prohibited only on this gamemode. You have a list for each gamemode<br/>
+</blockquote>
+
+<blockquote><h4>7. Debug</h4>
+In this option you can set the Debug Level. Do not do this if you have no problems with running this Plugin. If you think you found any issue than set debug level to 3 and it will be saved a logfile in the Plugin folder on your ProCon Layer. When u know what you are doing to find the issue please repeat this while debug level is 3 and send me the Logfile (ExtraServerFuncs.log) with an description what you have done and what happens. Only whith this method i`m able to locate the issues and fix them. thanks for your support<br/>
+</blockquote>
+
 </p>
+
+
 
 
 <h2>Changelog</h2>
@@ -1936,7 +1968,7 @@ In this section you can edit the InGame and Plugin commands if you dont like the
 	- ALPHA TESTING STATE<br/>
     - fixed some bugs<br/>
     - Added a check about whitespaces in Plugin Commands</br>
-    - Added parts of Plugin Description<br/>
+    - Added Plugin Description<br/>
     - Renamed a few Plugin Settings<br/>
 </blockquote>
 
