@@ -1,71 +1,17 @@
 /* ExtraServerFuncs.cs
-
-by MarkusSR1984 & Koerai3
-
-Roadmap:
-=================================
-
-- DEBUG LEVEL
- * 0 Quiet          NO MESSAGES / ONLY RESONSES ON CONFIG
- * 1 
- * 2 Normal         Normal user responses
- * 3 DEBUG LOG      Enable Logging in a debug file
- * 4 DEBUG1         Show exeptions
- * 5
- * 6 DEBUG2         Show each called function()
- * 7
- * 8 DEBUG3         Show Details of called functions()
- * 9
- * 10 DEBUG4        Show ALL Messages and Details
   
+ * Copyright 2014 by Schwitz Markus ( MarkusSR1984 ) schwitz@sossau.com
+ *
+ * thanks a lot to a few Plugin Develooper for some help in Forum and with ther Plugins where i could
+ * read or copy some code to understand how ProCon Plugins working. 
+ * 
+ * ExtraServerFuncs is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version. ExtraServerFuncs is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details. You should have received a copy of the
+ * GNU General Public License along with ExtraServerFuncs. If not, see http://www.gnu.org/licenses/.  
   
-  
- - BUGFIXING
-			    
-            - pb_pBan überprüfen, da nur ein tban ausgesprochen wird
-            - readconfig funktioniert nicht ordnungsgemäß
-           
- 
- 
- - Infantry Only Mode
- - Hardcore Mode
- - Shootgun only mode
- - Sniper Only
- - Bolt Action Only
- 
-  
-- MapLists
-  - Dem user die möglichkeit geben eigene Maplists zu erzeugen
-  - Dafür eigene Liste mit den Maplist namen erzeuen
-  - Dynamich je Maplistname eine Liste mit den Maps erzeugen
-  
- - PlayerDB Class umschreiben
-    - Die Speicherung soll in einer Liste erfolgen nicht in vielen
-  
- - Der Battlelog Client soll in einem eigenen thread laufen da der abruf der daten einige zeit in anspruch nimmt
- 
-
-- Plugin USER SETTINGS
-	
-	- Sort Current Variables
- 
-  
-- ServerMeldung hinzufügen die jede Minute anzeigt in Welchem Modus sich der Server befindet
-  alle Anzeigen ausser dem Normalen Modus
-    - gleich mit einem Task erledigen
- 
-
-- SendSwitchMessage() Funktion umschreiben
-    diese soll in Zukunft nicht mehr in einem Thread laufen
-    sondern über einen Task angesprochen werden, = mehr performanche
- 
-		
-- Weitere Servervariablen in Config aufnehmen
-		- Die Auslesefunktion umbauen so das nur auf Aufforderung zum Varupdate ausgelesen wird
-		- Server Message
-		- Server Slots
-        - Commander
-        - 
  
 */
 
@@ -509,7 +455,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
     if (plugin_enabled)
     {
 
-
+        cmd = cmd.Replace(" ", ""); // Leerzeichen entfernen
         lastcmdspeaker = cmdspeaker;
 
  
@@ -591,9 +537,12 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         {
             
             WritePluginConsole("Start test...Class PlayerDB", "TRY", 0);
-            WritePluginConsole("Write a csv file", "TRY", 0);
+            WritePluginConsole("Overflow the debug.logfile", "TRY", 0);
 
-
+            for (int t = 0; t < 5000; t++)
+            {
+                WritePluginConsole("This is a overflow test, This is line number:  " + t.ToString(), "TEST", 0);
+            }
             
 
 
@@ -642,7 +591,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 
 
 
-        WritePluginConsole("Unknown Command", "Error", 0);
+        WritePluginConsole("Unknown Command", "ERROR", 0);
         return;
 
     }
@@ -650,33 +599,7 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 }
 
 
-#region TESTROUTINEN
-
-public void WriteData(string path, string s)
-{
-    try
-    {
-        //if (File.Exists(path))
-        //    File.Delete(path);
-
-        using (FileStream fs = File.Open(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.ReadWrite))
-        {
-            Byte[] info = new UTF8Encoding(true).GetBytes(s);
-            fs.Write(info, 0, info.Length);
-        }
-    }
-    catch (Exception ex)
-    {
-        ConsoleError("unable to dump information to file");
-        ConsoleException("" + ex.GetType() + ": " + ex.Message);
-    }
-}
-
-
-#endregion
-
-
-public string FWeaponName(String killWeapon)  // Returns Returns a String with the Used Weapon
+public string FWeaponName(String killWeapon)  // Returns a String with the Used Weapon
 {
     KillWeaponDetails r = new KillWeaponDetails();
     r.Name = killWeapon;
@@ -703,7 +626,7 @@ public string FWeaponName(String killWeapon)  // Returns Returns a String with t
         }
         else
         {
-            DebugWrite("Warning: unrecognized weapon code: " + killWeapon, 5);
+            WritePluginConsole("Warning: unrecognized weapon code: " + killWeapon,"DEBUG", 8);
         }
     }
     return r.Name;
@@ -740,7 +663,7 @@ public KillWeaponDetails FriendlyWeaponName(String killWeapon)  // Returns all p
         }
         else
         {
-            DebugWrite("Warning: unrecognized weapon code: " + killWeapon, 5);
+            WritePluginConsole("Warning: unrecognized weapon code: " + killWeapon,"DEBUG", 8);
         }
     }
     return r;
@@ -1018,10 +941,10 @@ for (int i = 0; i < MapList.Count; i++)
 	
 	if (MapList[i] == "") return;
 	string[] splitMapList = MapList[i].Split(' ');
-	WritePluginConsole("Read map from list: "+i+"    " + MapList[i], "Info", 2);
-	WritePluginConsole("Splitted result 1 : "+ splitMapList[0], "Info", 10);
-	WritePluginConsole("Splitted result 2 : "+ splitMapList[1], "Info", 10);
-	WritePluginConsole("Splitted result 3 : "+ splitMapList[2], "Info", 10);
+	WritePluginConsole("Read map from list: "+i+"    " + MapList[i], "INFO", 2);
+	WritePluginConsole("Splitted result 1 : "+ splitMapList[0], "DEBUG", 10);
+	WritePluginConsole("Splitted result 2 : "+ splitMapList[1], "DEBUG", 10);
+	WritePluginConsole("Splitted result 3 : "+ splitMapList[2], "DEBUG", 10);
 	
 	this.ExecuteCommand("procon.protected.send", "mapList.add", splitMapList[0], splitMapList[1], splitMapList[2]);
 	this.ExecuteCommand("procon.protected.send", "mapList.save");
@@ -1305,7 +1228,7 @@ public void StartSwitchCountdown()
 
             this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.send", "admin.yell", msg_Count, "2", "all");
            // this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.send", "admin.say", msg_Count, "1", "all");
-            this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.pluginconsole.write", msg_Count, "2", "all");
+           // this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.pluginconsole.write", msg_Count, "2", "all");
 
 
 
@@ -1357,7 +1280,7 @@ public void SetExternalPluginSetting(String pluginName, String settingName, Stri
 {
     if (String.IsNullOrEmpty(pluginName) || String.IsNullOrEmpty(settingName) || settingValue == null)
     {
-        ConsoleError("Required inputs null or empty in setExternalPluginSetting");
+        WritePluginConsole("Required inputs null or empty in setExternalPluginSetting","DEBUG",8);
         return;
     }
     ExecuteCommand("procon.protected.plugins.setVariable", pluginName, settingName, settingValue);
@@ -1798,7 +1721,7 @@ public void WritePluginConsole(string message, string tag, int level)
 
                 if (this.fDebugLevel >= 3) // WRITE LOG FILE
                 {
-                    files.DebugWrite(LogFileName, Regex.Replace(line, "[/^][0-9bni]", "")); // Lösche formatierung und schreibe in Logdatei
+                    files.DebugWrite(LogFileName, Regex.Replace("[" + DateTime.Now + "]" +line, "[/^][0-9bni]", "")); // Lösche formatierung und schreibe in Logdatei
                 }
 
 
@@ -1815,55 +1738,11 @@ public void WritePluginConsole(string message, string tag, int level)
             
         }
 
-public enum MessageType { Warning, Error, Exception, Normal };
 
-public String FormatMessage(String msg, MessageType type) {
-	String prefix = "[^bExtraServerFuncs!^n] ";
 
-	if (type.Equals(MessageType.Warning))
-		prefix += "^1^bWARNING^0^n: ";
-	else if (type.Equals(MessageType.Error))
-		prefix += "^1^bERROR^0^n: ";
-	else if (type.Equals(MessageType.Exception))
-		prefix += "^1^bEXCEPTION^0^n: ";
 
-	return prefix + msg;
-}
 
-public void LogWrite(String msg)
-{
-	this.ExecuteCommand("procon.protected.pluginconsole.write", msg);
-}
 
-public void ConsoleWrite(string msg, MessageType type)
-{
-	LogWrite(FormatMessage(msg, type));
-}
-
-public void ConsoleWrite(string msg)
-{
-	ConsoleWrite(msg, MessageType.Normal);
-}
-
-public void ConsoleWarn(String msg)
-{
-	ConsoleWrite(msg, MessageType.Warning);
-}
-
-public void ConsoleError(String msg)
-{
-	ConsoleWrite(msg, MessageType.Error);
-}
-
-public void ConsoleException(String msg)
-{
-	ConsoleWrite(msg, MessageType.Exception);
-}
-
-public void DebugWrite(string msg, int level)
-{
-	if (fDebugLevel >= level) ConsoleWrite(msg, MessageType.Normal);
-}
 
 public void ServerCommand(params String[] args)
 {
@@ -1880,7 +1759,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.7";
+	return "0.0.1.8";
 }
 
 public string GetPluginAuthor() {
@@ -1972,10 +1851,95 @@ Cancel an running countdown and an defined Server Mode Switch<br/>
 </p>
 
 <h2>Settings</h2>
-<p>coming soon....</p>
+
+<blockquote><h4>1. Basic Settings</h4>
+<br/>
+<h5>I have read the Terms of Use</h5>
+Before u accept this you shuld know what you are doing, and also know the DICE Rules for Gameservers!!!!<br/>
+<br/>
+<h5>Private Mode</h5>
+Enable or disable the ability to use the private mode<br/>
+<br/>
+<h5>Flagrun Mode Mode</h5>
+Enable or disable the ability to use the flagrun mode<br/>
+<br/>
+<h5>Knife Only Mode</h5>
+Enable or disable the ability to use the knife only mode<br/>
+<br/>
+<h5>Pistol only Mode</h5>
+Enable or disable the ability to use the pistol only mode<br/>
+<br/>
+<h5>Use General Whitelist</h5>
+Enable the ability to use general used whitelists. This lists take effect on ALL Servermodes. If this option is enabled u get shown 2 Lists where u can enter Playernames or Clantags<br/>
+<br/>
+<h5>Auto Whitelist ProCon Accounts</h5>
+If you enable this option then is each Player who has an ProCon Account on your ProconLayerServer automaticly whitelisted. This equals an entry in General Whitelist<br/>
+<br/>
+<h5>Prevent ProconAccounts from warn</h5>
+If you Enable this option, your Admins will not be killed and warned if they break a rule<br/>
+<br/>
+<h5>Prevent Whitelist Players from warn</h5>
+If you Enable this option, your Whitelisted Players will not be killed and warned if they break a rule<br/>
+<br/>
+<h5>Use General Prohibited Weapons</h5>
+Enables a List where u can enter any weapon u want to prohibit on your server. this is in all modes active BUT not in Private mode<br/>
+<br/>
+<h5>Use Map Prohibited Weapons</h5>
+Enables a List for each map where u can enter any weapon u want to prohibit on a specific map. this is in all modes active BUT not in Private mode<br/>
+<br/>
+<h5>General Prohibited Weapons List</h5>
+In this List you can write each weapon who you want to prohibiton your server<br/>
+<br/>
+<h5>Prohibited Weapon Max Player Warns</h5>
+Enter here the count of wans a player get before he get kicked or baned<br/>
+<br/>
+<h5>Prohibited Weapon Player Action</h5>
+Choose if u want to kick / temporarly ban / or ban a player for using a prohibited weapon<br/>
+<br/>
+<h5>Prohibited Weapon TBan Minutes</h5>
+Time in Minutes for the TBan action<br/>
+<br/>
+<h5>Startup Mode</h5>
+This option is shown when u saved your Servername to prevent your Servername will be overwritten on first start of this Plugin. Choos the mode you want to start after an Gameserver restart or an Procon Layer restart. autodetect trys to switch the server to the last active mode. if this fails the server goes to Normal Mode, none is only for first startup of the plugin and should not be used in running time.<br/>
+<br/>
+<h5>Aggresive Startup</h5>
+If you enable this, the server taken no care on players on your server when Plugin starts. Plugin will load the Servermode specific settings and restart the current round to be able to load the new maplist. If u disable this setting the plugin waits on the end of the current round if players are on your server and get active on this time<br/>
+<br/>
+<h5>Countdown Timer</h5>
+here u can set the Time in Seconds the Countdown should run when u enter the switchnow command<br/>
+before level restart or end the round<br/>
+<br/>
+<h5>Show Weaponcodes</h5>
+Shows each kill in the Plugin Console. The Info comtains KILLER [WEAPON] VICTIM. use this to get the weaponnames you need for the prohibited weaponlists<br/>
+<br/>
+<h5>Plugin Autoconfig</h5>
+Enable this to easy configure the Plugin. when is enabled the Gamemodes lern the config direct from ProCon. For example: You edit the Servername in Procon, and the Plugin react on this setting and store it to the current Servermode. This works for each Serversetting, also for the Maplist. Easy enable Autoconfig, edit your Maplist in Procon, click on the refrech button, and the maps will be in the Plugin settings<br/>
+<br/>
+<h5>Plugin Command</h5>
+Thhis is a special field to give the Plugin some commands. You can enter the in game commands without an prefix to switch between servermodes without go in game<br/>
+<br/>
+</blockquote>
+
+<blockquote><h4>2. and 3. Mode Specific Settings</h4>
+Here u can enter a few ssettings who are working in the specific Servermode. For example, you can set the rules who are shown to player enter the !rules command. each mode has own rules. You can also set the Servername, Description, the Join Message, etc. AND you can set a own Maplist for each Servermode. The format of the Maplist is the same like your Maplist in ftp folder of your Gameserver, but the Plugin can also read it from your Procon Maplist to make it mutch easyer for u to use this maplists, i have inserted a few examples by default<br/>
+</blockquote>
+
+<blockquote><h4>4. Plugin Commands</h4>
+In this section you can edit the InGame and Plugin commands if you dont like the default only the active commands will be shown.<br/>
+</blockquote>
+</p>
 
 
 <h2>Changelog</h2>
+
+<blockquote><h4>0.0.1.8 (09-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - fixed some bugs<br/>
+    - Added a check about whitespaces in Plugin Commands</br>
+    - Added parts of Plugin Description<br/>
+    - Renamed a few Plugin Settings<br/>
+</blockquote>
+
 <blockquote><h4>0.0.1.7 (07-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - fixed some bugs<br/>
@@ -2022,6 +1986,22 @@ Cancel an running countdown and an defined Server Mode Switch<br/>
 	- PRE ALPHA<br/>
 	- initial development version<br/>
 </blockquote>
+
+
+<h2>Roadmap</h2>
+Things i want to implement in future versions of this Plugin....<br/>
+<br/>
+- Server should optionaly go back to choosen mode if is empty<br/>
+- Infantry only mode<br/>
+- Hardcore mode<br/>
+- Shotgun only mode<br/>
+- Sniper only mode<br/>
+- Bolt Action only mode<br/>
+- User defined Maplists who are loadable by chat command or on player count<br/>
+- Time triggered Modeswitches<br/>
+- Player count triggered Modeswitches<br/>
+- and mutch more....<br/>
+
 ";
 }
 #endregion
@@ -2074,7 +2054,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 
                 lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Max Player Warns", typeof(int), g_max_Warns));
                 lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Player Action", "enum.g_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
-                if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|G_TBan Minutes", typeof(int), g_ActionTbanTime));
+                if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon TBan Minutes", typeof(int), g_ActionTbanTime));
             }
 
 
@@ -2496,7 +2476,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
         g_PlayerAction = strValue;
     }
 
-    if (Regex.Match(strVariable, @"G_TBan Minutes").Success)
+    if (Regex.Match(strVariable, @"Prohibited Weapon TBan Minutes").Success)
     {
         g_ActionTbanTime = Convert.ToInt32(strValue);
     }
@@ -2550,16 +2530,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of NM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of NM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of NM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of NM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         nm_VehicleSpawnCount = tmpValue;
     }
@@ -2571,16 +2551,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of NM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of NM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of NM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of NM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
@@ -2658,16 +2638,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of PM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of PM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         pm_VehicleSpawnCount = tmpValue;
     } 
@@ -2679,16 +2659,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         
         
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
@@ -2761,16 +2741,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of FM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of FM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of FM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of FM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         fm_VehicleSpawnCount = tmpValue;
     }
@@ -2782,16 +2762,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of FM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of FM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
@@ -2881,16 +2861,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of KOM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of KOM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of KOM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of KOM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         kom_VehicleSpawnCount = tmpValue;
     }
@@ -2902,16 +2882,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of KOM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of KOM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
@@ -3002,16 +2982,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of POM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of POM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of POM_Vehicle Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of POM_Vehicle Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
         pom_VehicleSpawnCount = tmpValue;
     }
@@ -3023,16 +3003,16 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (tmpValue > 100)
         {
             tmpValue = 100;
-            ConsoleWrite("Incorrect Value of PM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
         if (tmpValue < 5)
         {
             tmpValue = 5;
-            ConsoleWrite("Incorrect Value of POM_Player Spawn Time");
-            ConsoleWrite("this Setting have to be between 5 and 100");
+            WritePluginConsole("Incorrect Value of POM_Player Spawn Time","ERROR",0);
+            WritePluginConsole("this Setting have to be between 5 and 100","ERROR",0);
         }
 
 
@@ -3209,6 +3189,17 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnPlayerRespawnTime"
                                              );
 }
+private void CancelSwitch()
+{
+    WritePluginConsole("^1^b[CancelSwitch]", "DEBUG", 6);
+    if (IsSwitchDefined())
+    {
+        this.ExecuteCommand("procon.protected.tasks.remove", "Switch");
+        next_serverMode = serverMode;
+    }
+
+}
+
 
 
 public void OnCommandCancel(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope) // Funktion zum Testcommand
@@ -3746,6 +3737,7 @@ public void OnCommand_Normal(string strSpeaker, string strText, MatchCommand mtc
     WritePluginConsole("OnCommand_Normal() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
     SwitchInitiator = strSpeaker;
     lastcmdspeaker = strSpeaker;
+    CancelSwitch();
     PreSwitchServerMode("normal");
     return;
 }
@@ -3756,6 +3748,7 @@ public void OnCommand_Private(string strSpeaker, string strText, MatchCommand mt
     WritePluginConsole("OnCommand_Private() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
     SwitchInitiator = strSpeaker;
     lastcmdspeaker = strSpeaker;
+    CancelSwitch();
     PreSwitchServerMode("private");
     return;
 }
@@ -3766,6 +3759,7 @@ public void OnCommand_Flagrun(string strSpeaker, string strText, MatchCommand mt
     WritePluginConsole("OnCommand_Flagrun() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
     SwitchInitiator = strSpeaker;
     lastcmdspeaker = strSpeaker;
+    CancelSwitch();
     PreSwitchServerMode("flagrun");
     return;
 }
@@ -3776,6 +3770,7 @@ public void OnCommand_Knife(string strSpeaker, string strText, MatchCommand mtcC
     WritePluginConsole("OnCommand_Knife() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
     SwitchInitiator = strSpeaker;
     lastcmdspeaker = strSpeaker;
+    CancelSwitch();
     PreSwitchServerMode("knife");
     return;
 }
@@ -3786,6 +3781,7 @@ public void OnCommand_Pistol(string strSpeaker, string strText, MatchCommand mtc
     WritePluginConsole("OnCommand_Pistol() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
     SwitchInitiator = strSpeaker;
     lastcmdspeaker = strSpeaker;
+    CancelSwitch();
     PreSwitchServerMode("pistol");
     return;
 }
@@ -4072,9 +4068,9 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
              if (showweaponcode == enumBoolYesNo.Yes) WritePluginConsole("^2^n" + lastKiller + "^1^b  [ " + lastUsedWeapon + " ]^7^n " + lastVictim, "KILL", 0); // Zeige Die Waffen in der Konsole Farblich hervorgehoben
 
 
-             DebugWrite("[OnPlayerKilled] Killer:     " + lastKiller, 6);
-             DebugWrite("[OnPlayerKilled] Victim:     " + lastVictim, 6);
-             DebugWrite("[OnPlayerKilled] DamageType: " + lastWeapon, 6);
+             WritePluginConsole("[OnPlayerKilled] Killer:     " + lastKiller,"DEBUG", 8);
+             WritePluginConsole("[OnPlayerKilled] Victim:     " + lastVictim,"DEBUG", 8);
+             WritePluginConsole("[OnPlayerKilled] DamageType: " + lastWeapon,"DEBUG", 8);
 
 
              if (lastKiller != "" && lastKiller != lastVictim)
@@ -4104,7 +4100,7 @@ public override void OnPlayerKilled(Kill kKillerVictimDetails)
          }
          catch (Exception ex)
          {
-             WritePluginConsole("^1^bOnPlayerKilled returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+             WritePluginConsole("^1^bOnPlayerKilled returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
          }
      }
 
@@ -4114,11 +4110,11 @@ private bool isprohibitedWeapon(string weapon)
 {
     try
     {
-        WritePluginConsole("Called isprohibitedWeapon()", "DEBUG", 10);
+        WritePluginConsole("[isprohibitedWeapon]", "DEBUG", 6);
 
         if (serverMode == "private")
         {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bFALSE^0^n  PRIVATE MODE DISABLES ALL WEAPON RULES", "DEBUG", 10);
+            WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n  PRIVATE MODE DISABLES ALL WEAPON RULES", "DEBUG", 8);
             return false;
         }
 
@@ -4126,7 +4122,7 @@ private bool isprohibitedWeapon(string weapon)
 
         if (serverMode == "flagrun")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  FLAGRUN MODE!", "DEBUG", 10);
+            WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  FLAGRUN MODE!", "DEBUG", 8);
             isProhibitedWeapon_Result = "flagrun";
             return true;
         }
@@ -4134,7 +4130,7 @@ private bool isprohibitedWeapon(string weapon)
 
         if (serverMode == "knife" && weapon != "Melee")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 10);
+            WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 8);
             isProhibitedWeapon_Result = "knife";
             return true;
         }
@@ -4142,7 +4138,7 @@ private bool isprohibitedWeapon(string weapon)
 
         if (serverMode == "pistol")  // PISTOL ONLY MODE
         {
-            WritePluginConsole("isprohibitedWeapon() Check Weapon: " + weapon, "DEBUG", 10);
+            WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
             List<string> tmp_pistols = new List<string>();
             
             if ( pom_allowPistol_M9 == enumBoolYesNo.Yes ) tmp_pistols.Add("M9");             //M9
@@ -4164,7 +4160,7 @@ private bool isprohibitedWeapon(string weapon)
 
             if (!tmp_pistols.Contains(weapon))
             {
-                WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  PROHIBITED PISTOL! " + weapon, "DEBUG", 10);
+                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED PISTOL! " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "pistol";
                 return true;
                 
@@ -4191,7 +4187,7 @@ private bool isprohibitedWeapon(string weapon)
              || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
              || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon)))
             {
-                WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 10);
+                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "maplist";
                 return true;
             }
@@ -4199,7 +4195,7 @@ private bool isprohibitedWeapon(string weapon)
         //GENERAL PROHIBITED WEAPONS
         if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon))   // GENERELL VERBOTENE WAFFEN
         {
-            WritePluginConsole("isprohibitedWeapon() is ^1^bTRUE^0^n  General prohibited Weapon match", "DEBUG", 10);
+            WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  General prohibited Weapon match", "DEBUG", 8);
             isProhibitedWeapon_Result = "generel";
             return true;
         }
@@ -4212,9 +4208,9 @@ private bool isprohibitedWeapon(string weapon)
     }
     catch (Exception ex)
     {
-        WritePluginConsole("^1^bisprohibitedWeapon returs an Error: ^0^n" + ex.ToString(), "ERROR", 9);
+        WritePluginConsole("^1^b[isprohibitedWeapon] returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
     }
-    WritePluginConsole("isprohibitedWeapon() is ^1^bFALSE^0^n", "DEBUG", 10);
+    WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n", "DEBUG", 8);
     return false;
 }
     
@@ -4400,7 +4396,7 @@ public override void OnPlayerSpawned(string soldierName, Inventory spawnedInvent
 // if (serverMode == "private" && !isInWhitelist(soldierName)) kickPlayer(soldierName, msg_pmKick);  // Kick player if not in Whitelist when PRIVATE MODE IS ACTIVE
 
 players.Add(soldierName);
-DebugWrite("Player spawn detected. Playername = " + soldierName, 6);
+WritePluginConsole("Player spawn detected. Playername = " + soldierName, "DEBUG",8);
 
 
 
@@ -4431,21 +4427,21 @@ if (IsSwitchDefined() && plugin_enabled) SwitchServerMode(next_serverMode);
 }
 
 public override void OnLoadingLevel(string mapFileName, int roundsPlayed, int roundsTotal) 
-{ 
-DebugWrite("[OnLoadingLevel] " + mapFileName, 5);
+{
+    WritePluginConsole("[OnLoadingLevel] " + mapFileName, "DEBUG",6);
 }
 
 public override void OnLevelStarted()
  {
-DebugWrite("[OnLevelStarted]", 5);
+     WritePluginConsole("[OnLevelStarted]","DEBUG", 6);
  }
 
 public override void OnLevelLoaded(string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal) // BF3
 {
-    WritePluginConsole("^1^b[OnLevelLoaded]", "DEBUG", 5);
+    WritePluginConsole("^1^b[OnLevelLoaded]", "DEBUG", 6);
     WritePluginConsole("^4^bStarted next round: ^2^n " + mapFileName + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 4);
     WritePluginConsole("^4^bStarted next round: ^2^n " + ToFriendlyMapName(mapFileName) + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 2);
-    DebugWrite("[OnLevelLoaded] " + mapFileName, 5);
+    WritePluginConsole("[OnLevelLoaded] " + mapFileName,"DEBUG", 8);
     currentMapFileName = mapFileName;
     currentGamemode = Gamemode;
     currentRound = roundsPlayed;
@@ -4861,12 +4857,12 @@ class TextDatei
 
 
         sContent = "";
-        for (int x = 0; x < sCols.Length - 1; x++)
+        for (int x = 0; x < sCols.Length -1; x++)
         {
-            if (sCols.Length < 2000) sContent += sCols[x] + "\r\n";
-            if (sCols.Length > 2000)
+            if (sCols.Length < 1000) sContent += sCols[x] + "\r\n";
+            if (sCols.Length > 1000)
             {
-                if (x < sCols.Length - 2000)
+                if (x < 1)
                 {
                 }
                 else
@@ -4879,6 +4875,7 @@ class TextDatei
         }
         sContent += sCols[sCols.Length - 1];
         sContent += sLines + "\r\n";
+        
 
         StreamWriter mySaveFile = new StreamWriter(sFilename);
         mySaveFile.Write(sContent);
