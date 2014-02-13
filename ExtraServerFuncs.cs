@@ -86,7 +86,8 @@ Thread countdown_message;
 
 TextDatei files;
 PlayerDB players;
-// GENERAL VARS    
+// GENERAL VARS  
+private string game_version = "";
 private volatile bool readconfig = false;
 public volatile bool plugin_enabled = false;
 private volatile bool plugin_loaded = false;
@@ -536,13 +537,22 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
         if (cmd == "try")
         {
             
-            WritePluginConsole("Start test...Class PlayerDB", "TRY", 0);
-            WritePluginConsole("Overflow the debug.logfile", "TRY", 0);
+            WritePluginConsole("Start test...", "TRY", 0);
 
-            for (int t = 0; t < 5000; t++)
-            {
-                WritePluginConsole("This is a overflow test, This is line number:  " + t.ToString(), "TEST", 0);
-            }
+
+
+            WritePluginConsole("Current Game Version = " + game_version, "TRY", 0);
+            
+            
+            
+            
+            
+            //WritePluginConsole("Overflow the debug.logfile", "TRY", 0);
+
+            //for (int t = 0; t < 5000; t++)
+            //{
+            //    WritePluginConsole("This is a overflow test, This is line number:  " + t.ToString(), "TEST", 0);
+            //}
             
 
 
@@ -1759,7 +1769,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.8";
+	return "0.0.1.9";
 }
 
 public string GetPluginAuthor() {
@@ -1963,6 +1973,14 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.1.9 (09-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Game Type Detection BF3 / BF4<br/>
+    - Added BF3 Support for Knife Only Mode<br/>
+    - Added BF3 Support for Pistol Only Mode<br/>
+    - Register commands only if mode is activated in plugin settings<br/>
+    - Modified save settings method to reload registered commands<br/>
+</blockquote>
 
 <blockquote><h4>0.0.1.8 (09-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -2247,11 +2265,13 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
-                //PISTOLS8
+                //PISTOLS
+
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~  PISTOLS  ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
+                if (game_version == "BF4") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
@@ -2612,8 +2632,10 @@ public void SetPluginVariable(string strVariable, string strValue) {
     // PRIVATE MODE VARIABLEN
     if (Regex.Match(strVariable, @"Private Mode").Success)
 	{
+        UnRegisterAllCommands();
         if (strValue == "Yes") pm_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") pm_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
     }
 
     if (Regex.Match(strVariable, @"PM_Command Enable").Success)
@@ -2715,8 +2737,10 @@ public void SetPluginVariable(string strVariable, string strValue) {
     // FLAGRUN MODE VARIABLEN
     if (Regex.Match(strVariable, @"Flagrun Mode").Success)
     {
+        UnRegisterAllCommands();
         if (strValue == "Yes") fm_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") fm_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
     }
 
     if (Regex.Match(strVariable, @"FM_Command Enable").Success)
@@ -2835,8 +2859,10 @@ public void SetPluginVariable(string strVariable, string strValue) {
     // KNIFE ONLY MODE VARIABLEN
     if (Regex.Match(strVariable, @"Knife Only Mode").Success)
     {
+        UnRegisterAllCommands();
         if (strValue == "Yes") kom_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") kom_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
     }
 
     if (Regex.Match(strVariable, @"KOM_Command Enable").Success)
@@ -2956,8 +2982,10 @@ public void SetPluginVariable(string strVariable, string strValue) {
     // PISTOL ONLY MODE VARIABLEN
     if (Regex.Match(strVariable, @"Pistol Only Mode").Success)
     {
+        UnRegisterAllCommands();
         if (strValue == "Yes") pom_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") pom_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
     }
 
     if (Regex.Match(strVariable, @"POM_Command Enable").Success)
@@ -3218,7 +3246,8 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnServerMessage",
                                              "OnVehicleSpawnAllowed",
                                              "OnVehicleSpawnDelay",
-                                             "OnPlayerRespawnTime"
+                                             "OnPlayerRespawnTime",
+                                             "OnPluginLoadingEnv"
                                              );
 }
 private void CancelSwitch()
@@ -3377,6 +3406,7 @@ public void InitPlugin()
 
 private void RegisterAllCommands()
 {
+    WritePluginConsole("[RegisterAllCommands]", "DEBUG", 6);
     this.RegisterCommand(
                      new MatchCommand(
                          "ExtraServerFuncs",
@@ -3439,15 +3469,15 @@ private void RegisterAllCommands()
                 );
 
 
-    this.RegisterCommand(
-                    new MatchCommand(
-                        "ExtraServerFuncs",
-                        "OnCommand_Private",
-                        this.Listify<string>("@", "!", "/"),
-                        pm_commandEnable,
-                        this.Listify<MatchArgumentFormat>(),
-                        new ExecutionRequirements(
-                            ExecutionScope.Account,
+if (pm_isEnabled == enumBoolYesNo.Yes)    this.RegisterCommand(
+                                          new MatchCommand(
+                                          "ExtraServerFuncs",
+                                          "OnCommand_Private",
+                                          this.Listify<string>("@", "!", "/"),
+                                          pm_commandEnable,
+                                          this.Listify<MatchArgumentFormat>(),
+                                          new ExecutionRequirements(
+                                          ExecutionScope.Account,
         //2,
         //"yes", //confirmationCommand,
                             "You do not have enough privileges"),
@@ -3455,7 +3485,7 @@ private void RegisterAllCommands()
                     )
                 );
 
-    this.RegisterCommand(
+if (fm_isEnabled == enumBoolYesNo.Yes)   this.RegisterCommand(
                     new MatchCommand(
                         "ExtraServerFuncs",
                         "OnCommand_Flagrun",
@@ -3473,7 +3503,7 @@ private void RegisterAllCommands()
 
 
 
-    this.RegisterCommand(
+if (kom_isEnabled == enumBoolYesNo.Yes) this.RegisterCommand(
                     new MatchCommand(
                         "ExtraServerFuncs",
                         "OnCommand_Knife",
@@ -3489,7 +3519,7 @@ private void RegisterAllCommands()
                     )
                 );
 
-    this.RegisterCommand(
+if (pom_isEnabled == enumBoolYesNo.Yes) this.RegisterCommand(
                     new MatchCommand(
                         "ExtraServerFuncs",
                         "OnCommand_Pistol",
@@ -3521,81 +3551,15 @@ private void RegisterAllCommands()
                     )
                 );
 
-
-
-
-
-
-    //lastcmdspeaker = cmdspeaker;
-
-
-
-
-
-
-    //if (cmd == nm_commandEnable)
-    //{
-    //    SwitchInitiator = cmdspeaker;
-    //    PreSwitchServerMode("normal");
-    //    return;
-    //}
-
-
-    //if (cmd == pm_commandEnable)
-    //{
-    //    SwitchInitiator = cmdspeaker;
-    //    PreSwitchServerMode("private");
-    //    return;
-    //}
-
-
-    //if (cmd == fm_commandEnable)
-    //{
-    //    SwitchInitiator = cmdspeaker;
-    //    PreSwitchServerMode("flagrun");
-    //    return;
-    //}
-
-    //if (cmd == kom_commandEnable)
-    //{
-    //    SwitchInitiator = cmdspeaker;
-    //    PreSwitchServerMode("knife");
-    //    return;
-    //}
-
-    //if (cmd == pom_commandEnable)
-    //{
-    //    SwitchInitiator = cmdspeaker;
-    //    PreSwitchServerMode("pistol");
-    //    return;
-    //}
-
-
-    //if (cmd == switchnow_cmd)
-    //{
-    //    if (IsSwitchDefined())
-    //    {
-    //        if (SwitchInitiator == cmdspeaker) StartSwitchCountdown();
-    //        if (SwitchInitiator != cmdspeaker) SendPlayerMessage(cmdspeaker, R(msg_notInitiator));
-    //        return;
-    //    }
-
-
-
-    //    if (!IsSwitchDefined()) SendPlayerMessage(cmdspeaker, R(msg_switchnotdefined));
-    //    return;
-    //}
-
-
-
-
-
+     
+ 
 
 
 }
 
 private void UnRegisterAllCommands()
 {
+    WritePluginConsole("[UnRegisterAllCommands]", "DEBUG", 6);
     this.UnregisterCommand(
                      new MatchCommand(
                          "ExtraServerFuncs",
@@ -3835,7 +3799,15 @@ public void OnCommand_Switchnow(string strSpeaker, string strText, MatchCommand 
     return;
 }
 
-
+public void OnPluginLoadingEnv(List<string> lstPluginEnv)
+{
+    foreach (String env in lstPluginEnv)
+    {
+        WritePluginConsole("Got ^bOnPluginLoadingEnv: " + env,"DEBUG", 6);
+    }
+    game_version = lstPluginEnv[1];
+    WritePluginConsole("^1Game Version = " + lstPluginEnv[1] , "DEBUG",8);
+}
 
 
 
@@ -4143,7 +4115,7 @@ private bool isprohibitedWeapon(string weapon)
     try
     {
         WritePluginConsole("[isprohibitedWeapon]", "DEBUG", 6);
-
+        WritePluginConsole("[isprohibitedWeapon] Detected GameType: " + game_version, "DEBUG", 8);
         if (serverMode == "private")
         {
             WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n  PRIVATE MODE DISABLES ALL WEAPON RULES", "DEBUG", 8);
@@ -4160,7 +4132,7 @@ private bool isprohibitedWeapon(string weapon)
         }
 
 
-        if (serverMode == "knife" && weapon != "Melee")  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
+        if (serverMode == "knife" && (weapon != "Melee" || weapon != "Knife"))  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
             WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 8);
             isProhibitedWeapon_Result = "knife";
@@ -4172,26 +4144,53 @@ private bool isprohibitedWeapon(string weapon)
         {
             WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
             List<string> tmp_pistols = new List<string>();
-            
-            if ( pom_allowPistol_M9 == enumBoolYesNo.Yes ) tmp_pistols.Add("M9");             //M9
-            if ( pom_allowPistol_QSZ92 == enumBoolYesNo.Yes ) tmp_pistols.Add("QSZ92");           //QSZ-92
-            if ( pom_allowPistol_MP443 == enumBoolYesNo.Yes ) tmp_pistols.Add("MP443");            //MP-443
-            if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
-            if ( pom_allowPistol_Glock18 == enumBoolYesNo.Yes ) tmp_pistols.Add("Glock18");          //G18
-            if ( pom_allowPistol_FN57 == enumBoolYesNo.Yes ) tmp_pistols.Add("FN57");             //FN57
-            if ( pom_allowPistol_M1911 == enumBoolYesNo.Yes ) tmp_pistols.Add("M1911");            //M1911
-            if ( pom_allowPistol_93R == enumBoolYesNo.Yes ) tmp_pistols.Add("M93R");              //93R
-            if ( pom_allowPistol_CZ75 == enumBoolYesNo.Yes ) tmp_pistols.Add("CZ75");             //CZ-75
-            if ( pom_allowPistol_Taurus44 == enumBoolYesNo.Yes ) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-            if ( pom_allowPistol_HK45C == enumBoolYesNo.Yes ) tmp_pistols.Add("HK45C");            //COMPACT 45
-            if ( pom_allowPistol_P226 == enumBoolYesNo.Yes ) tmp_pistols.Add("P226");             //P226
-            if ( pom_allowPistol_MP412Rex == enumBoolYesNo.Yes ) tmp_pistols.Add("MP412Rex");         //M412 REX
-            if ( pom_allowPistol_Meele == enumBoolYesNo.Yes ) tmp_pistols.Add("Melee");            //Knife
 
+            if (game_version == "BF4")     // BF4 PISTOLS AND KNIFE
+            {
+
+                if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
+                if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
+                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
+                if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
+                if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
+                if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
+                if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
+                if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
+                if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
+                if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
+                if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
+                if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
+                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
+                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
+            }
+
+
+
+
+
+            if (game_version == "BF3")     // BF3 PISTOLS AND KNIFE                     CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK
+            {
+                if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
+                if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
+                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
+                if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
+                if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
+                if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
+                if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
+                if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
+                if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
+                if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
+                if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
+                if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
+                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
+                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife");   
+                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");
+            }
 
 
             if (!tmp_pistols.Contains(weapon))
             {
+                
                 WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED PISTOL! " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "pistol";
                 return true;
