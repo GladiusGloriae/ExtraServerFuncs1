@@ -215,13 +215,13 @@ private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
 private string msg_FlagrunKick = "kicked %Killer% for Kill";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
-private string msg_KnifeKick = "KICKED %Killer for using %Weapon%";
+private string msg_KnifeKick = "KICKED %Killer% for using %Weapon%";
 private string msg_komKick = "kicked you for kills with %Weapon% on KNIFE ONLY MODE";
 private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
 
 private string msg_pomKick = "kicked you for kills with %Weapon% on PISTOL ONLY MODE";
-private string msg_PistolKick = "KICKED %Killer for using %Weapon%";
+private string msg_PistolKick = "KICKED %Killer% for using %Weapon%";
 private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_PistolLastWarn =     "NEXT TIME %kickban%!!!";
 private string msg_ActionTypeKick =     "KICK";
@@ -826,10 +826,10 @@ public bool kickPlayer(string pName, string reason)
 
 public bool tbanPlayer(string name, int minutes, string message)
     {
-        message = message + " (tBan " + (minutes).ToString() + " minutes) by [AUTOADMIN]";
+        //message = message + " (tBan " + (minutes).ToString() + " minutes) by [AUTOADMIN]"; // Verursacht Probleme im Private mode
         this.ExecuteCommand("procon.protected.send", "banList.add", "name", name, "seconds", (minutes * 60).ToString(), message);
         this.ExecuteCommand("procon.protected.send", "banList.save");
-        kickPlayer(name, message);
+       // kickPlayer(name, message);
         return true;
     }
 
@@ -838,7 +838,7 @@ public bool pbanPlayer(string name, string message)
         message = message + " (Permanent Ban) by [AUTOADMIN]";
         this.ExecuteCommand("procon.protected.send", "banList.add", "name", name,"perm", message);
         this.ExecuteCommand("procon.protected.send", "banList.save");
-        kickPlayer(name, message);
+       // kickPlayer(name, message);
         return true;
     }
 
@@ -1980,6 +1980,8 @@ In this option you can set the Debug Level. Do not do this if you have no proble
     - Added BF3 Support for Pistol Only Mode<br/>
     - Register commands only if mode is activated in plugin settings<br/>
     - Modified save settings method to reload registered commands<br/>
+    - Disabled CSV Player Database because ProCon Crashs when file is to large<br/>
+    - Changed Kick Method in Private mode to TBan 5 Minutes, because slow loadind Players could join in Private mode whithout beeing whitelisted<br/>
 </blockquote>
 
 <blockquote><h4>0.0.1.8 (09-02-2014)</h4>
@@ -2266,25 +2268,49 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
                 //PISTOLS
-
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~  PISTOLS  ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                if (game_version == "BF4") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+
+                if (game_version == "BF4")
+                {
+
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                }
+
+                if (game_version == "BF3")
+                {
+                
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18)); // G17 & G18 Because there is only one weaponconde for it
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                }
+
+                           
 
 
             }
+
+
+
+
+
 
 
 
@@ -2314,7 +2340,9 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             lstReturn.Add(new CPluginVariable("7. Debug|Debug level", fDebugLevel.GetType(), fDebugLevel));
             
             // Map Prohibited Weapons ####################################################################################################
-
+            
+            
+            // Anpassung FÜR BF3 Einbauen 
 
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Locker", typeof(string[]), OnMapProhibitedWeapons_Operation_Locker.ToArray()));
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Zavod 311", typeof(string[]), OnMapProhibitedWeapons_Zavod_311.ToArray()));
@@ -4036,7 +4064,7 @@ public override void OnPlayerJoin(string soldierName)
     {
         if (serverMode == "private") // Check if server is in PRIVATE MODE
         {
-            if (!isInWhitelist(soldierName)) kickPlayer(soldierName, msg_pmKick, 40);  // Kick player if not in Whitelist
+            if (!isInWhitelist(soldierName)) tbanPlayer(soldierName, 5, msg_pmKick);  // Kick player if not in Whitelist
 
         }
 
@@ -4132,7 +4160,7 @@ private bool isprohibitedWeapon(string weapon)
         }
 
 
-        if (serverMode == "knife" && (weapon != "Melee" || weapon != "Knife"))  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
+        if (serverMode == "knife" && !(weapon == "Melee" || weapon == "Knife" || weapon == "Knife_RazorBlade"))  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
         {
             WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 8);
             isProhibitedWeapon_Result = "knife";
@@ -4171,20 +4199,16 @@ private bool isprohibitedWeapon(string weapon)
             if (game_version == "BF3")     // BF3 PISTOLS AND KNIFE                     CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK
             {
                 if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
-                if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
-                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
-                if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
+                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP443/MP443");            //MP-443
                 if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
-                if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
                 if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
                 if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
-                if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
                 if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-                if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
-                if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
-                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
+                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP412Rex/MP412REX");         //M412 REX
+                
                 if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife");   
                 if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");
+                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife_RazorBlade");
             }
 
 
@@ -4572,7 +4596,7 @@ private void AddPlayer(string name, string tag)
         new_player.ClanTag = tag;
         csv_db.AddPlayer(new_player);
     }
-
+    
 
 
 
@@ -4593,7 +4617,7 @@ public void ResetData() // Store Data in CSV Database and reset Round Data
             tmp_player.Endrounds = tmp_player.Endrounds + 1;
             tmp_player.Visits = tmp_player.Visits + 1;
             tmp_player.LastSeen = DateTime.Now;
-            csv_db.SetPlayerData(tmp_player);
+            csv_db.SetPlayerData(tmp_player);   
             Player_Kills[name] = 0;
             Player_Death[name] = 0;
             Player_Warns[name] = 0;
@@ -5067,6 +5091,7 @@ public void AddPlayer(CSV_PlayerInfo new_player)
 
 public void SaveToFile()
 {
+    /*                           // SCHREIBEN DER CSV DATEI UNTERBINDEN DA ES ZU ABSTÜRZEN GEFÜHRT HAT
     string Savestring;
     if (!db_fileinit) return; // Breche Schreibvorgng ab wenn die Datenbank nicht Initialisiert wurde
     foreach (CSV_PlayerInfo player in csv_Players)
@@ -5079,6 +5104,7 @@ public void SaveToFile()
 
     csv_Players.Clear();
     db_fileinit = false;
+     */
     return;
 }
 
