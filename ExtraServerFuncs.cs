@@ -72,6 +72,10 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
     List<string> OnMapProhibitedWeapons_Altai_Range;
     List<string> OnMapProhibitedWeapons_Guilin_Peaks;
     List<string> OnMapProhibitedWeapons_Dragon_Pass;
+    List<string> OnMapProhibitedWeapons_Firestorm;
+    List<string> OnMapProhibitedWeapons_Metro;
+    List<string> OnMapProhibitedWeapons_Oman;
+    List<string> OnMapProhibitedWeapons_Caspian;
 
 
 
@@ -388,21 +392,76 @@ public ExtraServerFuncs() {
     fm_MapList.Add("MP_Flooded ConquestLarge0 2"); // Floodzone
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
 
-    MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
-    MapFileNames.Add("Zavod 311", "MP_Abandoned");
-    MapFileNames.Add("Lancang Dam", "MP_Damage");
-    MapFileNames.Add("Flood Zone", "MP_Flooded");
-    MapFileNames.Add("Golmud Railway", "MP_Journey");
-    MapFileNames.Add("Paracel Storm", "MP_Naval");
-    MapFileNames.Add("Operation Locker", "MP_Prison");
-    MapFileNames.Add("Hainan Resort", "MP_Resort");
-    MapFileNames.Add("Siege of Shanghai", "MP_Siege");
-    MapFileNames.Add("Rogue Transmission", "MP_TheDish");
-    MapFileNames.Add("Dawnbreaker", "MP_Tremors");
-    MapFileNames.Add("Silk Road", "XP1_001");
-    MapFileNames.Add("Altai Range", "XP1_002");
-    MapFileNames.Add("Guilin Peaks", "XP1_003");
-    MapFileNames.Add("Dragon Pass", "XP1_004");
+
+
+    if (game_version == "BF4")
+    {
+        // NORMAL MAPS
+        MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
+        MapFileNames.Add("Zavod 311", "MP_Abandoned");
+        MapFileNames.Add("Lancang Dam", "MP_Damage");
+        MapFileNames.Add("Flood Zone", "MP_Flooded");
+        MapFileNames.Add("Golmud Railway", "MP_Journey");
+        MapFileNames.Add("Paracel Storm", "MP_Naval");
+        MapFileNames.Add("Operation Locker", "MP_Prison");
+        MapFileNames.Add("Hainan Resort", "MP_Resort");
+        MapFileNames.Add("Siege of Shanghai", "MP_Siege");
+        MapFileNames.Add("Rogue Transmission", "MP_TheDish");
+        MapFileNames.Add("Dawnbreaker", "MP_Tremors");
+        // China Rising
+        MapFileNames.Add("Silk Road", "XP1_001");
+        MapFileNames.Add("Altai Range", "XP1_002");
+        MapFileNames.Add("Guilin Peaks", "XP1_003");
+        MapFileNames.Add("Dragon Pass", "XP1_004");
+        // Secend Assault
+        MapFileNames.Add("Caspian Border 2014", "XP0_Caspian");
+        MapFileNames.Add("Firestorm 2014", "XP0_Firestorm");
+        MapFileNames.Add("Operation Metro 2014", "XP0_Metro");
+        MapFileNames.Add("Gulf of Oman 2014", "XP0_Oman");
+    }
+
+
+    if (game_version == "BF3")
+    {
+
+        MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
+
+        MapFileNames.Add("Grand Bazaar", "MP_001");
+        MapFileNames.Add("Teheran Highway", "MP_003");
+        MapFileNames.Add("Caspian Border", "MP_007");
+        MapFileNames.Add("Seine Crossing", "MP_011");
+
+        
+        MapFileNames.Add("Operation Firestorm", "MP_012");
+        MapFileNames.Add("Damavand Peak", "MP_013");
+        MapFileNames.Add("Noshahr Canals", "MP_017");
+        MapFileNames.Add("Kharg Island", "MP_018");
+        MapFileNames.Add("Operation Metro", "MP_Subway");
+        MapFileNames.Add("Gulf of Oman", "XP1_002");
+        MapFileNames.Add("Bandar Desert", "XP3_Desert");
+        MapFileNames.Add("Alborz Mountains", "XP3_Alborz");
+        MapFileNames.Add("Armored Shield", "XP3_Shield");
+        MapFileNames.Add("Death Valley", "XP3_Valley");
+        MapFileNames.Add("Markaz Monolith", "XP4_FD");
+        MapFileNames.Add("Azadi Palace", "XP4_Parl");
+        MapFileNames.Add("Epicenter", "XP4_Quake");
+        MapFileNames.Add("Operation Riverside", "XP5_001");
+        MapFileNames.Add("Nebandan Flats", "XP5_002");
+        MapFileNames.Add("Kiasar Railroad", "XP5_003");
+        MapFileNames.Add("Sabalan Pipeline", "XP5_004");
+        MapFileNames.Add("Strike at Karkand", "XP1_001");
+        MapFileNames.Add("Sharqi Peninsula", "XP1_003");
+        MapFileNames.Add("Wake Island", "XP1_004");
+        MapFileNames.Add("Talah Market", "XP4_Rubble");
+        
+
+    }
+
+
+
+
+
+
 
 
 
@@ -421,6 +480,13 @@ public ExtraServerFuncs() {
     OnMapProhibitedWeapons_Altai_Range = new List<string>();
     OnMapProhibitedWeapons_Guilin_Peaks = new List<string>();
     OnMapProhibitedWeapons_Dragon_Pass = new List<string>();
+    OnMapProhibitedWeapons_Firestorm = new List<string>();
+    OnMapProhibitedWeapons_Metro = new List<string>();
+    OnMapProhibitedWeapons_Oman = new List<string>();
+    OnMapProhibitedWeapons_Caspian = new List<string>();
+
+
+
 
 
 
@@ -1769,7 +1835,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.1.9";
+	return "0.0.2.0";
 }
 
 public string GetPluginAuthor() {
@@ -1964,7 +2030,7 @@ In this section you find some lists where you can enter the weapons who should b
 </blockquote>
 
 <blockquote><h4>7. Debug</h4>
-In this option you can set the Debug Level. Do not do this if you have no problems with running this Plugin. If you think you found any issue than set debug level to 3 and it will be saved a logfile in the Plugin folder on your ProCon Layer. When u know what you are doing to find the issue please repeat this while debug level is 3 and send me the Logfile (ExtraServerFuncs.log) with an description what you have done and what happens. Only whith this method i`m able to locate the issues and fix them. thanks for your support<br/>
+In this option you can set the Debug Level. Do not do this if you have no problems with running this Plugin. If you think you found any issue than set debug level to 3 and it will be saved a logfile in the Plugin folder on your ProCon Layer. When u know what you had done when find the issue please repeat this while debug level is 3 and send me the Logfile (ExtraServerFuncs.log) with an description what you have done and what happens. Only whith this method i`m able to locate the issues and fix them. thanks for your support<br/>
 </blockquote>
 
 </p>
@@ -1973,7 +2039,15 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
-<blockquote><h4>0.0.1.9 (09-02-2014)</h4>
+
+<blockquote><h4>0.0.2.0 (19-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Second Assult Maps<br/>
+    - Edited Battlog Client to support BF3<br/>
+    - Added BF3 Maps to Map Dictionary<br/>
+</blockquote>
+
+<blockquote><h4>0.0.1.9 (13-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Added Game Type Detection BF3 / BF4<br/>
     - Added BF3 Support for Knife Only Mode<br/>
@@ -2358,7 +2432,13 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Altai Range", typeof(string[]), OnMapProhibitedWeapons_Altai_Range.ToArray()));
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Guilin Peaks", typeof(string[]), OnMapProhibitedWeapons_Guilin_Peaks.ToArray()));
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dragon Pass", typeof(string[]), OnMapProhibitedWeapons_Dragon_Pass.ToArray()));
-            
+
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Caspian Border 2014", typeof(string[]), OnMapProhibitedWeapons_Caspian.ToArray()));
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Firestorm 2014", typeof(string[]), OnMapProhibitedWeapons_Firestorm.ToArray()));
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golf of Oman 2014", typeof(string[]), OnMapProhibitedWeapons_Oman.ToArray()));
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Metro 2014", typeof(string[]), OnMapProhibitedWeapons_Metro.ToArray()));
+
+
                                   
 
 		}
@@ -3216,13 +3296,6 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
     if (Regex.Match(strVariable, @"Operation Locker").Success) OnMapProhibitedWeapons_Operation_Locker = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    
-
-
-
-
-
-
     if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CPluginVariable.DecodeStringArray(strValue));
@@ -3237,6 +3310,10 @@ public void SetPluginVariable(string strVariable, string strValue) {
     if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CPluginVariable.DecodeStringArray(strValue));
 
+    if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     
 
 
@@ -4240,7 +4317,14 @@ private bool isprohibitedWeapon(string weapon)
              || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(weapon))
              || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(weapon))
              || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon)))
+             || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon))
+
+             || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon)))
+
+
             {
                 WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "maplist";
@@ -4729,7 +4813,7 @@ public class BattlelogClient
         {
           /* First fetch the player's main page to get the persona id */
           String result = "";
-          fetchWebPage(ref result, "http://battlelog.battlefield.com/bf4/user/" + player);
+          fetchWebPage(ref result, "http://battlelog.battlefield.com/" + game_version + "/user/" + player);
 
           String tag = extractClanTag(result, player);
 
