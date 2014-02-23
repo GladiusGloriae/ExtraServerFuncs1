@@ -91,7 +91,8 @@ Thread countdown_message;
 TextDatei files;
 PlayerDB players;
 // GENERAL VARS  
-private string game_version = "";
+private bool firstload_sleep = true;
+public string game_version = "";
 private volatile bool readconfig = false;
 public volatile bool plugin_enabled = false;
 private volatile bool plugin_loaded = false;
@@ -393,11 +394,14 @@ public ExtraServerFuncs() {
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
 
 
-
-    if (game_version == "BF4")
-    {
-        // NORMAL MAPS
-        MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
+    
+    
+    
+    MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
+        
+  
+        // NORMAL MAPS    // BF4
+        
         MapFileNames.Add("Zavod 311", "MP_Abandoned");
         MapFileNames.Add("Lancang Dam", "MP_Damage");
         MapFileNames.Add("Flood Zone", "MP_Flooded");
@@ -418,20 +422,17 @@ public ExtraServerFuncs() {
         MapFileNames.Add("Firestorm 2014", "XP0_Firestorm");
         MapFileNames.Add("Operation Metro 2014", "XP0_Metro");
         MapFileNames.Add("Gulf of Oman 2014", "XP0_Oman");
-    }
+   
 
 
-    if (game_version == "BF3")
-    {
-
-        MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
+        // BF3 MAPS
 
         MapFileNames.Add("Grand Bazaar", "MP_001");
         MapFileNames.Add("Teheran Highway", "MP_003");
         MapFileNames.Add("Caspian Border", "MP_007");
         MapFileNames.Add("Seine Crossing", "MP_011");
 
-        
+
         MapFileNames.Add("Operation Firestorm", "MP_012");
         MapFileNames.Add("Damavand Peak", "MP_013");
         MapFileNames.Add("Noshahr Canals", "MP_017");
@@ -453,9 +454,6 @@ public ExtraServerFuncs() {
         MapFileNames.Add("Sharqi Peninsula", "XP1_003");
         MapFileNames.Add("Wake Island", "XP1_004");
         MapFileNames.Add("Talah Market", "XP4_Rubble");
-        
-
-    }
 
 
 
@@ -1051,12 +1049,27 @@ public string ToMapFileName(string friendlyname)
 
 public string ToFriendlyMapName(string mapfilename)
 {
-    if (MapFileNames.ContainsValue(mapfilename))
+    try
     {
-        foreach (KeyValuePair<string, string> pair in MapFileNames)
+
+        if (MapFileNames.ContainsValue(mapfilename))
         {
-            if (pair.Value == mapfilename) return pair.Key;
+            foreach (KeyValuePair<string, string> pair in MapFileNames)
+            {
+                if (pair.Value == mapfilename) return pair.Key;
+            }
+
+
+
         }
+        
+    }
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^b[ToFriendlyMapName] returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
+        WritePluginConsole("^1^b[ToFriendlyMapName] mapfilename = " + mapfilename, "DEBUG", 8);
+        WritePluginConsole("^1^b[ToFriendlyMapName] Game Version = " + game_version, "DEBUG", 8);
+
     }
     return "";
 }
@@ -1809,7 +1822,7 @@ public void WritePluginConsole(string message, string tag, int level)
             }
             catch (Exception e)
             {
-                this.ExecuteCommand("procon.protected.pluginconsole.write", "^1^b[ExtraServerFuncs][ERROR]^n WritePluginConsole: ^0" + e);
+                this.ExecuteCommand("procon.protected.pluginconsole.write", "^1^b[" + GetPluginName() + "][ERROR]^n WritePluginConsole: ^0" + e);
             }
             
         }
@@ -1835,7 +1848,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.0";
+	return "0.0.2.1";
 }
 
 public string GetPluginAuthor() {
@@ -2040,7 +2053,14 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 <h2>Changelog</h2>
 
-<blockquote><h4>0.0.2.0 (19-02-2014)</h4>
+<blockquote><h4>0.0.2.1 (19-02-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Fixed Bugs from Added Second Assult addition<br/>
+    - <br/>
+    - <br/>
+</blockquote>
+
+<blockquote><h4>0.0.2.0 (18-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Added Second Assult Maps<br/>
     - Edited Battlog Client to support BF3<br/>
@@ -3324,6 +3344,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
 public void OnPluginLoaded(string strHostName, string strPort, string strPRoConVersion) {
     plugin_enabled = false;
     plugin_loaded = false;
+    firstload_sleep = true;
     this.RegisterEvents(this.GetType().Name, 
                                              "OnVersion",
                                              "OnServerInfo",
@@ -3402,6 +3423,19 @@ public void InitPlugin()
             Thread.Sleep(4000);
             WritePluginConsole("Init Plugin...", "INFO", 0);
             Thread.Sleep(2000);
+
+
+
+
+            if (firstload_sleep)
+            {
+                serverMode = "first_start";
+                next_serverMode = "first_start";
+                WritePluginConsole("^1^bENABLE PLUGIN FIRST TIME! SLEEP FOR 30 SECONDS", "INFO", 2);
+                Thread.Sleep(30000); // Wenn Procon das erste mal gestartet wird 30 sekunden Warten
+                firstload_sleep = false;
+            }
+            
             WritePluginConsole("Set Startup Vars...", "INFO", 2);
             plugin_enabled = true;
             serverInfoloaded = false;
@@ -3942,7 +3976,7 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         totalRounds = serverInfo.TotalRounds;
         playerCount = serverInfo.PlayerCount;
         maxPlayerCount = serverInfo.MaxPlayerCount;
-        serverInfoloaded = true;    
+        serverInfoloaded = true;
         
             //serverInfo.RoundTime;
             //serverInfo.ServerUptime
@@ -4319,13 +4353,17 @@ private bool isprohibitedWeapon(string weapon)
              || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
              || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon))
 
-             || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon)))
+             || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
+             || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon))
+
+                )
+
 
 
             {
+                
                 WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "maplist";
                 return true;
@@ -4348,8 +4386,9 @@ private bool isprohibitedWeapon(string weapon)
     catch (Exception ex)
     {
         WritePluginConsole("^1^b[isprohibitedWeapon] returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
+        WritePluginConsole("^1^b[isprohibitedWeapon] Current Map" + currentMapFileName + "Current Weapon: " + weapon, "DEBUG", 8);
     }
-    WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n", "DEBUG", 8);
+    WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n Current Map: " + ToFriendlyMapName(currentMapFileName) + " (" + currentMapFileName + ") Current Weapon: " + weapon, "DEBUG", 8);
     return false;
 }
     
@@ -4780,7 +4819,7 @@ private void GetPlayerData()
 }
 
 
-public class BattlelogClient
+public class BattlelogClient : ExtraServerFuncs
     {
       private HttpWebRequest req = null;
 
@@ -5247,5 +5286,5 @@ public class MapListProhibitedWeapons
 
 
 
-} // end namespace PRoConEvents
+} // end namespace PRoConEventsf
 
