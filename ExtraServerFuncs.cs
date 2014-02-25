@@ -1,4 +1,4 @@
-/* ExtraServerFuncs.cs
+ï»¿/* ExtraServerFuncs.cs
   
  * Copyright 2014 by Schwitz Markus ( MarkusSR1984 ) schwitz@sossau.com
  *
@@ -213,7 +213,7 @@ private string msg_pistolmode =         "PISTOL ONLY MODE";
 private string msg_warnBanner =         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 private string msg_prohibitedWeapon =   "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_prohibitedWeaponLastWarn = "NEXT TIME %kickban%";
-private string msg_prohibitedWeaponKick = "KICKED %Killer for using %Weapon%";
+private string msg_prohibitedWeaponKick = "KICKED %Killer% for using %Weapon%";
 private string msg_prohibitedWeaponKickPlayer = "%kickban%ED you for using %Weapon%";
 private string msg_countdown =           "SERVER SWITCH TO %nextServermode% IN";
 private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
@@ -1573,7 +1573,7 @@ private string GetCurrentServermode()
 }
 
 
-private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes müssen eingefügt werden
+private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n eingef??werden
     {
 		WritePluginConsole("Check if " + wlPlayer + " is in Whitelist", "Info", 2);
         
@@ -1810,7 +1810,7 @@ public void WritePluginConsole(string message, string tag, int level)
 
                 if (this.fDebugLevel >= 3) // WRITE LOG FILE
                 {
-                    files.DebugWrite(LogFileName, Regex.Replace("[" + DateTime.Now + "]" +line, "[/^][0-9bni]", "")); // Lösche formatierung und schreibe in Logdatei
+                    files.DebugWrite(LogFileName, Regex.Replace("[" + DateTime.Now + "]" +line, "[/^][0-9bni]", "")); // L??e formatierung und schreibe in Logdatei
                 }
 
 
@@ -2153,8 +2153,7 @@ Things i want to implement in future versions of this Plugin....<br/>
 #endregion
 
 public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigenden Plugin variablen
-    {     // Optionen zum erstellen der Konfigvariablen / dem Usermenü
-
+    {     // Optionen zum erstellen der Konfigvariablen / dem Usermen??
         List<CPluginVariable> lstReturn = new List<CPluginVariable>();
 
 
@@ -2436,7 +2435,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             // Map Prohibited Weapons ####################################################################################################
             
             
-            // Anpassung FÜR BF3 Einbauen 
+            // Anpassung F? BF3 Einbauen 
 
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Locker", typeof(string[]), OnMapProhibitedWeapons_Operation_Locker.ToArray()));
             if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Zavod 311", typeof(string[]), OnMapProhibitedWeapons_Zavod_311.ToArray()));
@@ -3479,7 +3478,7 @@ public void InitPlugin()
             }
             else
             {
-                next_serverMode = startup_mode; // Setze den nächten Servermode auf Startup mode
+                next_serverMode = startup_mode; // Setze den n?ten Servermode auf Startup mode
             }
 
 
@@ -3498,8 +3497,9 @@ public void InitPlugin()
             {
                 WritePluginConsole("startup mode is not 'none'", "DEBUG", 10);
                 if (playerCount < 1)   
-                {            
+                {
                     WritePluginConsole("Player Count is less than 1", "DEBUG", 10);
+                    serverMode = "plugin_init";
                     PreSwitchServerMode(next_serverMode);
                     StartSwitchCountdown();
                 }
@@ -3981,7 +3981,7 @@ public override void OnServerInfo(CServerInfo serverInfo) {
             //serverInfo.RoundTime;
             //serverInfo.ServerUptime
 
-        ServerInfoCounter++; // Einen durchlauf zählen
+        ServerInfoCounter++; // Einen durchlauf z?en
 
         if (plugin_enabled && ServerInfoCounter >= 10)
         {
@@ -4161,7 +4161,7 @@ public override void OnListPlayers(List<CPlayerInfo> playerlist, CPlayerSubset s
 
     foreach (string player in playerdb)
     {
-        if (!tmpplayerdb.Contains(player)) players.Remove(player); // Spieler Löschen wenn noch in der DB aber nicht mehr auf dem Server 
+        if (!tmpplayerdb.Contains(player)) players.Remove(player); // Spieler L??en wenn noch in der DB aber nicht mehr auf dem Server 
     
     
     
@@ -4466,7 +4466,7 @@ private void PlayerWarn(string name,string weapon)
                 SendGlobalMessage(msg_warnBanner);
             }
 
-            if (warns > kom_max_Warns) // Maximale Warnungen überschritten
+            if (warns > kom_max_Warns) // Maximale Warnungen ??schritten
             {
                 if (!isInWhitelist(name)) kom_Action(name);
                 SendGlobalMessage(R(msg_KnifeKick));
@@ -4499,7 +4499,7 @@ private void PlayerWarn(string name,string weapon)
                 SendGlobalMessage(msg_warnBanner);
             }
 
-            if (warns > pom_max_Warns) // Maximale Warnungen überschritten
+            if (warns > pom_max_Warns) // Maximale Warnungen ??schritten
             {
                 if (!isInWhitelist(name)) pom_Action(name);
                 SendGlobalMessage(R(msg_PistolKick));
@@ -4882,7 +4882,7 @@ class TextDatei
 
         
     ///<summary>
-    /// Liefert den Inhalt der Datei zurück.
+    /// Liefert den Inhalt der Datei zur??
     ///</summary>
     ///<param name="sFilename">Dateipfad</param>
     public string ReadFile(String sFilename)
@@ -4899,7 +4899,7 @@ class TextDatei
     }
 
     ///<summary>
-    /// Schreibt den übergebenen Inhalt in eine Textdatei.
+    /// Schreibt den ??gebenen Inhalt in eine Textdatei.
     ///</summary>
     ///<param name="sFilename">Pfad zur Datei</param>
     ///<param name="sLines">zu schreibender Text</param>
@@ -4911,10 +4911,10 @@ class TextDatei
     }
 
     ///<summary>
-    /// Fügt den übergebenen Text an das Ende einer Textdatei an.
+    /// F??den ??gebenen Text an das Ende einer Textdatei an.
     ///</summary>
     ///<param name="sFilename">Pfad zur Datei</param>
-    ///<param name="sLines">anzufügender Text</param>
+    ///<param name="sLines">anzuf??der Text</param>
     public void Append(string sFilename, string sLines)
     {
         StreamWriter myFile = new StreamWriter(sFilename, true);
@@ -4923,7 +4923,7 @@ class TextDatei
     }
 
     ///<summary>
-    /// Liefert den Inhalt der übergebenen Zeilennummer zurück.
+    /// Liefert den Inhalt der ??gebenen Zeilennummer zur??
     ///</summary>
     ///<param name="sFilename">Pfad zur Datei</param>
     ///<param name="iLine">Zeilennummer</param>
@@ -4975,12 +4975,12 @@ class TextDatei
 
 
     /// <summary>
-    /// Schreibt den übergebenen Text in eine definierte Zeile.
+    /// Schreibt den ??gebenen Text in eine definierte Zeile.
     ///</summary>
     ///<param name="sFilename">Pfad zur Datei</param>
     ///<param name="iLine">Zeilennummer</param>
-    ///<param name="sLines">Text für die übergebene Zeile</param>
-    ///<param name="bReplace">Text in dieser Zeile überschreiben (t) oder einfügen (f)</param>
+    ///<param name="sLines">Text f??ie ??gebene Zeile</param>
+    ///<param name="bReplace">Text in dieser Zeile ??schreiben (t) oder einf?? (f)</param>
     
     
     public void WriteLine(String sFilename, string sLines)
@@ -5136,7 +5136,7 @@ public void Init(string Filename)
             {
                 lineCount++;
                 string[] row = line.Split(';');
-                if (lineCount > 1) // Erste Zeile überspringen, da es sich um den Header handelt
+                if (lineCount > 1) // Erste Zeile ??springen, da es sich um den Header handelt
                 {
                     csv_Player.PlayerName = row[0];
                     csv_Player.ClanTag = row[1];
@@ -5214,7 +5214,7 @@ public void AddPlayer(CSV_PlayerInfo new_player)
 
 public void SaveToFile()
 {
-    /*                           // SCHREIBEN DER CSV DATEI UNTERBINDEN DA ES ZU ABSTÜRZEN GEFÜHRT HAT
+    /*                           // SCHREIBEN DER CSV DATEI UNTERBINDEN DA ES ZU ABST?ZEN GEF?RT HAT
     string Savestring;
     if (!db_fileinit) return; // Breche Schreibvorgng ab wenn die Datenbank nicht Initialisiert wurde
     foreach (CSV_PlayerInfo player in csv_Players)
@@ -5222,7 +5222,7 @@ public void SaveToFile()
         Savestring = player.PlayerName + ";" + player.ClanTag + ";" + Convert.ToString(player.Visits) + ";" + Convert.ToString(player.Score) + ";" + Convert.ToString(player.Kills) + ";" + Convert.ToString(player.Death) + ";" + Convert.ToString(player.Suicides) + ";" + Convert.ToString(player.Warns) + ";" + Convert.ToString(player.Kicks) + ";" + Convert.ToString(player.Endrounds) + ";" + Convert.ToString(player.LastSeen) + ";" + Convert.ToString(player.PlayedTime);
 
         if (player.fileline == 0) files.WriteLine(CSV_Filename, Savestring); // Spieler ist neu aus dem Server und in der Datei nicht vorhanden. Schreibe neuen Datensatz
-        if (player.fileline > 1) files.WriteLine(CSV_Filename, player.fileline, Savestring, true); // Datensatz des Spieler in der CSV Datei überschreien
+        if (player.fileline > 1) files.WriteLine(CSV_Filename, player.fileline, Savestring, true); // Datensatz des Spieler in der CSV Datei ??schreien
     }
 
     csv_Players.Clear();
