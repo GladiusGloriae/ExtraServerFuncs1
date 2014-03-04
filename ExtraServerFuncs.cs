@@ -56,8 +56,8 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
     this.FrostbitePlayerInfoList = new Dictionary<string, CPlayerInfo>();
 */
 // VARS TO TRY SOMETHING
-
-
+    private bool isInitValidWeaponList = false;
+    List<string> ValidWeaponList;
     List<string> OnMapProhibitedWeapons_Zavod_311;
     List<string> OnMapProhibitedWeapons_Lancang_Dam;
     List<string> OnMapProhibitedWeapons_Flood_Zone;
@@ -344,6 +344,7 @@ public ExtraServerFuncs() {
     files = new TextDatei();
 
 
+
     nm_Rules = new List<string>();			// NORMAL MODE RULES
     nm_Rules.Add("############## RULES ##############");
     nm_Rules.Add("NO CHEATING / GLITCHING / BUGUSING");
@@ -509,6 +510,21 @@ public ExtraServerFuncs() {
 
 }
 
+private void InitValidWeaponList()
+{
+    
+    WeaponDictionary weapons = GetWeaponDefines();  // Create a List of Weapons to Validate the WeaponCodes in prohibited Weapon Lists
+    ValidWeaponList = new List<string>();
+    foreach (Weapon weapon in weapons)
+    {
+        ValidWeaponList.Add(FWeaponName(weapon.Name));
+    }
+    isInitValidWeaponList = true;
+    WritePluginConsole("[InitValidWeaponList] Weaponlist Contains " + (ValidWeaponList.Count).ToString() + " Weapons", "DEBUG", 6);
+}
+
+
+
 private void PluginCommand(string cmd) // Set Speaker to Server if no Speaker is send. e.G. command from ProConPlugin Config
 {
 PluginCommand("Server", cmd);
@@ -606,10 +622,14 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 
 
             WritePluginConsole("Current Game Version = " + game_version, "TRY", 0);
-            
-            
-            
-            
+
+            foreach (CMap map in GetMapDefines()) 
+            {
+                    
+                    string formattedMap = map.PublicLevelName + " " + map.GameMode + " " + map.FileName + " " + map.PlayList;
+                    WritePluginConsole("[MAPLIST] " +  formattedMap  ,"TRY",0);
+
+            }
             
             //WritePluginConsole("Overflow the debug.logfile", "TRY", 0);
 
@@ -1127,7 +1147,46 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
         if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
     }
-    
+
+    if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // MAPLIST PROHIBITET WEAPONLISTS
+    {
+        if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(lastUsedWeapon))
+ 
+         || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(lastUsedWeapon))
+
+         || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(lastUsedWeapon))
+         || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(lastUsedWeapon))
+
+            )
+        {
+            if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+            if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+            if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+            if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+            if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                     
+        }
+    }
+
+
+
+
+
+
 
     return text;
 
@@ -1170,7 +1229,7 @@ private void g_Action(string name)
 
 private void mpw_Action(string name)
 {
-    WritePluginConsole("Called g_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("Called mpw_Action(" + name + ")", "FUNCTION", 6);
     WritePluginConsole("mpw_PlayerAction = " + mpw_PlayerAction + " name = " + name, "FUNCTION", 6);
     if (mpw_PlayerAction == "kick") kickPlayer(name, R(msg_prohibitedWeaponKickPlayer));
     if (mpw_PlayerAction == "tban") tbanPlayer(name, g_ActionTbanTime, R(msg_prohibitedWeaponKickPlayer));
@@ -1256,6 +1315,104 @@ private bool SendGlobalYellV(String message, int duration)
 
 
 
+private List<string> CheckWeaponList(string[] WeaponListArray)
+{
+    List<string> tmp_WeaponList = new List<string>(WeaponListArray);
+    tmp_WeaponList = CheckWeaponList(tmp_WeaponList);
+    return tmp_WeaponList;
+
+}
+
+
+private List<string> CheckWeaponList(List<string> WeaponList)
+{
+    WritePluginConsole("[CheckWeaponList]", "DEBUG", 6);
+    if (!isInitValidWeaponList) InitValidWeaponList();
+    
+    
+    List<string> tmpWeaponList = new List<string>();
+
+    foreach (string weapon in WeaponList)
+    {
+        WritePluginConsole("[CheckWeaponList] Check Weapon: " + weapon, "DEBUG", 8);
+        if (!weapon.StartsWith("#"))
+        {
+            WritePluginConsole("[CheckWeaponList] " + weapon + " is not comment", "DEBUG", 8);
+            string rweapon = weapon.Replace(" ", "");
+
+            if (tmpWeaponList.Contains(rweapon))
+            {
+                WritePluginConsole("[CheckWeaponList] " + weapon + " is aleady in List", "DEBUG", 8);
+            }
+
+            else if (rweapon != "")
+            {
+
+                if (ValidWeaponList.Contains(rweapon))
+                {
+                    WritePluginConsole("[CheckWeaponList] " + rweapon + " is a valid Weapon Code", "DEBUG", 8);
+                    tmpWeaponList.Add(rweapon);
+                }
+                else
+                {
+                    
+                    if (rweapon.Length > 2)
+                    {
+                        WritePluginConsole("[CheckWeaponList] " + rweapon + " is no valid Weapon Code", "ERROR", 2);
+                        WritePluginConsole("[CheckWeaponList]  TRY TO FIND MATCHING WEAPONCODE", "INFO", 2);
+                        foreach (string validweapon in ValidWeaponList)
+                        {
+                            if (validweapon.IndexOf(rweapon, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                rweapon = validweapon;
+                            }
+                                                     
+                        }
+
+                        if (ValidWeaponList.Contains(rweapon))
+                        {
+                            WritePluginConsole("[CheckWeaponList] Found Matchcode " + rweapon, "INFO", 2);
+                            tmpWeaponList.Add(rweapon);
+                        }
+                        else
+                        {
+                            WritePluginConsole("[CheckWeaponList] Could not find any matching Weapon. Comment out invalid entry with: #invalid#" + rweapon, "ERROR", 2);
+                            tmpWeaponList.Add("#invalid#" + rweapon);
+                        }
+
+
+                    }
+                    else
+                    {
+                        WritePluginConsole("[CheckWeaponList] " + rweapon + " is shorter than 3 characters.", "ERROR", 2);
+                        WritePluginConsole("[CheckWeaponList] Could not find any matching Weapon. Comment out invalid entry with: #invalid#" + rweapon, "ERROR", 2);
+                        tmpWeaponList.Add("#invalid#" + rweapon);
+
+                        
+
+                    }
+
+
+
+
+                }
+
+
+            }
+
+
+
+        }
+
+        if (weapon.StartsWith("#"))
+        {
+            WritePluginConsole("[CheckWeaponList] " + weapon + " is comment", "DEBUG", 8);
+            tmpWeaponList.Add(weapon);
+        }
+
+    }
+    return tmpWeaponList;
+}
 
 
 public void PreSwitchServerMode(string MarkNewServerMode) // Define a Server Mode Switch
@@ -1848,7 +2005,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.1";
+	return "0.0.2.2";
 }
 
 public string GetPluginAuthor() {
@@ -2053,11 +2210,22 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 <h2>Changelog</h2>
 
-<blockquote><h4>0.0.2.1 (19-02-2014)</h4>
+<blockquote><h4>0.0.2.2 (04-03-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Corrected %Killer% replacement<br/>
+    - Fixed Bug in Replacements funtion<br/>
+    - Added Replacemant for Maplist prohibited Weapons<br/>
+    - Fixed a bug that makes Display errors on higher Debug Level<br/>
+    - Added function to Check of Weaponlists on double entrys and whitespaces<br/>
+    - Use function CheckWeaponList for all weaponlists<br/>
+    - Added Autocorrect and validity check to prohibited Weapon Lists<br/>
+    - Marking invalid Weaponcodes with #invalid#<br/>
+
+</blockquote>
+
+<blockquote><h4>0.0.2.1 (20-02-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Fixed Bugs from Added Second Assult addition<br/>
-    - <br/>
-    - <br/>
 </blockquote>
 
 <blockquote><h4>0.0.2.0 (18-02-2014)</h4>
@@ -2483,7 +2651,7 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 
 public void SetPluginVariable(string strVariable, string strValue) {
 
-    WritePluginConsole("^b" + strVariable + "^n ( " + strValue + " )","VARIABLE", 10);
+    if (plugin_loaded) WritePluginConsole("^b" + strVariable + "^n ( " + strValue + " )","VARIABLE", 10);
 
     // COMMANDS
 
@@ -2630,7 +2798,8 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
         if (Regex.Match(strVariable, @"General Prohibited Weapons List").Success)
     {
-		g_prohibitedWeapons = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+            g_prohibitedWeapons = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+            
     }
 
         
@@ -3314,25 +3483,32 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
 
-    if (Regex.Match(strVariable, @"Operation Locker").Success) OnMapProhibitedWeapons_Operation_Locker = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    if (Regex.Match(strVariable, @"Operation Locker").Success) OnMapProhibitedWeapons_Operation_Locker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
 
-    if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    //List<string> tmp_WeaponList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    //tmp_WeaponList = CheckWeaponList(tmp_WeaponList);
+    //g_prohibitedWeapons = new List<string>(tmp_WeaponList);
+
+    
+
+    if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+
+    if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
     
 
 
