@@ -47,7 +47,7 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
 
 
 
-public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
+    public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 {
 
 
@@ -57,7 +57,14 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
 */
 // VARS TO TRY SOMETHING
     private bool isInitValidWeaponList = false;
+    private bool isInitMapList = false;
+
     List<string> ValidWeaponList;
+    List<string> GameModeList;
+    List<string> MapNameList;
+    Dictionary<string, List<string>> ModeProhibitedWeapons = new Dictionary<string,List<string>>();
+    Dictionary<string, List<string>> MapProhibitedWeapons = new Dictionary<string, List<string>>();
+
     List<string> OnMapProhibitedWeapons_Zavod_311;
     List<string> OnMapProhibitedWeapons_Lancang_Dam;
     List<string> OnMapProhibitedWeapons_Flood_Zone;
@@ -77,7 +84,7 @@ public class ExtraServerFuncs : PRoConPluginAPI, IPRoConPluginInterface
     List<string> OnMapProhibitedWeapons_Oman;
     List<string> OnMapProhibitedWeapons_Caspian;
 
-
+    
 
 
 
@@ -90,6 +97,7 @@ Thread countdown_message;
 
 TextDatei files;
 PlayerDB players;
+//PluginDictionary PRoConPlugins;
 // GENERAL VARS  
 private bool firstload_sleep = true;
 public string game_version = "";
@@ -149,7 +157,8 @@ private BattlelogClient blClient; // BL Client try
 private PlayerInfo tmpvar1; // ONLY FOR TEST
 private Dictionary<string, PlayerInfo> PlayerDB = new Dictionary<string, PlayerInfo>();
 private Dictionary<string, string> MapFileNames;
-
+private Dictionary<string, string> GameModeNames;
+private Dictionary<string, string> tmpPluginVariables;
 
 
 static LocalDataStoreSlot VModeSlot = null;
@@ -239,6 +248,7 @@ private string msg_ActionTypeBan =      "BAN";
 
     
 // NORMAL MODE VARS
+List<string> nmPRoConConfig = new List<string>();
 
 private string nm_Servername = "Your Server Name";
 private string nm_Serverdescription = "Your Server Description";
@@ -252,7 +262,7 @@ private int g_max_Warns = 2;
 
 
 // PRIVATE MODE VARS
-
+List<string> pmPRoConConfig = new List<string>();
 private List<string>  pm_ClanWhitelist;
 private List<string>  pm_PlayerWhitelist;
 private string  pm_Servername = "Servername - PRIVATE MODE";
@@ -267,6 +277,7 @@ private int pm_max_Warns = 2;
 
 
 // FLAGRUN MODE VARS
+List<string> fmPRoConConfig = new List<string>();
 private List<string> fm_ClanWhitelist;
 private List<string> fm_PlayerWhitelist;
 private string fm_Servername = "Servername - FLAGFUN";
@@ -283,6 +294,7 @@ private int fm_ActionTbanTime = 60;
 
 
 // KNIFE ONLY VARS
+List<string> komPRoConConfig = new List<string>();
 private List<string> kom_ClanWhitelist;
 private List<string> kom_PlayerWhitelist;
 private string kom_Servername = "oxx[|===> KNIFE ONLY <===|]xxo  Servername";
@@ -301,6 +313,7 @@ private int kom_ActionTbanTime = 60;
 
 
 // PISTOL ONLY VARS
+List<string> pomPRoConConfig = new List<string>();
 private List<string> pom_ClanWhitelist;
 private List<string> pom_PlayerWhitelist;
 private string pom_Servername = "Servername - PISTOL ONLY";
@@ -328,6 +341,7 @@ private enumBoolYesNo pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;         //.4
 private enumBoolYesNo pom_allowPistol_HK45C = enumBoolYesNo.Yes;            //COMPACT 45
 private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P226
 private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
+private enumBoolYesNo pom_allowPistol_SW40 = enumBoolYesNo.Yes;             //SW40
 private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
 
 private string LogFileName =  @"Plugins\ExtraServerFuncs.log";
@@ -342,7 +356,7 @@ public ExtraServerFuncs() {
 	fIsEnabled = false;
 	fDebugLevel = 2;
     files = new TextDatei();
-
+    //PRoConPlugins = new PluginDictionary();
 
 
     nm_Rules = new List<string>();			// NORMAL MODE RULES
@@ -394,67 +408,67 @@ public ExtraServerFuncs() {
     fm_MapList.Add("MP_Flooded ConquestLarge0 2"); // Floodzone
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
 
-
+    tmpPluginVariables = new Dictionary<string, string>();
     
     
     
     MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
         
   
-        // NORMAL MAPS    // BF4
+    //    // NORMAL MAPS    // BF4
         
-        MapFileNames.Add("Zavod 311", "MP_Abandoned");
-        MapFileNames.Add("Lancang Dam", "MP_Damage");
-        MapFileNames.Add("Flood Zone", "MP_Flooded");
-        MapFileNames.Add("Golmud Railway", "MP_Journey");
-        MapFileNames.Add("Paracel Storm", "MP_Naval");
-        MapFileNames.Add("Operation Locker", "MP_Prison");
-        MapFileNames.Add("Hainan Resort", "MP_Resort");
-        MapFileNames.Add("Siege of Shanghai", "MP_Siege");
-        MapFileNames.Add("Rogue Transmission", "MP_TheDish");
-        MapFileNames.Add("Dawnbreaker", "MP_Tremors");
-        // China Rising
-        MapFileNames.Add("Silk Road", "XP1_001");
-        MapFileNames.Add("Altai Range", "XP1_002");
-        MapFileNames.Add("Guilin Peaks", "XP1_003");
-        MapFileNames.Add("Dragon Pass", "XP1_004");
-        // Secend Assault
-        MapFileNames.Add("Caspian Border 2014", "XP0_Caspian");
-        MapFileNames.Add("Firestorm 2014", "XP0_Firestorm");
-        MapFileNames.Add("Operation Metro 2014", "XP0_Metro");
-        MapFileNames.Add("Gulf of Oman 2014", "XP0_Oman");
+    //    MapFileNames.Add("Zavod 311", "MP_Abandoned");
+    //    MapFileNames.Add("Lancang Dam", "MP_Damage");
+    //    MapFileNames.Add("Flood Zone", "MP_Flooded");
+    //    MapFileNames.Add("Golmud Railway", "MP_Journey");
+    //    MapFileNames.Add("Paracel Storm", "MP_Naval");
+    //    MapFileNames.Add("Operation Locker", "MP_Prison");
+    //    MapFileNames.Add("Hainan Resort", "MP_Resort");
+    //    MapFileNames.Add("Siege of Shanghai", "MP_Siege");
+    //    MapFileNames.Add("Rogue Transmission", "MP_TheDish");
+    //    MapFileNames.Add("Dawnbreaker", "MP_Tremors");
+    //    // China Rising
+    //    MapFileNames.Add("Silk Road", "XP1_001");
+    //    MapFileNames.Add("Altai Range", "XP1_002");
+    //    MapFileNames.Add("Guilin Peaks", "XP1_003");
+    //    MapFileNames.Add("Dragon Pass", "XP1_004");
+    //    // Secend Assault
+    //    MapFileNames.Add("Caspian Border 2014", "XP0_Caspian");
+    //    MapFileNames.Add("Firestorm 2014", "XP0_Firestorm");
+    //    MapFileNames.Add("Operation Metro 2014", "XP0_Metro");
+    //    MapFileNames.Add("Gulf of Oman 2014", "XP0_Oman");
    
 
 
-        // BF3 MAPS
+    //    // BF3 MAPS
 
-        MapFileNames.Add("Grand Bazaar", "MP_001");
-        MapFileNames.Add("Teheran Highway", "MP_003");
-        MapFileNames.Add("Caspian Border", "MP_007");
-        MapFileNames.Add("Seine Crossing", "MP_011");
+    //    MapFileNames.Add("Grand Bazaar", "MP_001");
+    //    MapFileNames.Add("Teheran Highway", "MP_003");
+    //    MapFileNames.Add("Caspian Border", "MP_007");
+    //    MapFileNames.Add("Seine Crossing", "MP_011");
 
 
-        MapFileNames.Add("Operation Firestorm", "MP_012");
-        MapFileNames.Add("Damavand Peak", "MP_013");
-        MapFileNames.Add("Noshahr Canals", "MP_017");
-        MapFileNames.Add("Kharg Island", "MP_018");
-        MapFileNames.Add("Operation Metro", "MP_Subway");
-        MapFileNames.Add("Gulf of Oman", "XP1_002");
-        MapFileNames.Add("Bandar Desert", "XP3_Desert");
-        MapFileNames.Add("Alborz Mountains", "XP3_Alborz");
-        MapFileNames.Add("Armored Shield", "XP3_Shield");
-        MapFileNames.Add("Death Valley", "XP3_Valley");
-        MapFileNames.Add("Markaz Monolith", "XP4_FD");
-        MapFileNames.Add("Azadi Palace", "XP4_Parl");
-        MapFileNames.Add("Epicenter", "XP4_Quake");
-        MapFileNames.Add("Operation Riverside", "XP5_001");
-        MapFileNames.Add("Nebandan Flats", "XP5_002");
-        MapFileNames.Add("Kiasar Railroad", "XP5_003");
-        MapFileNames.Add("Sabalan Pipeline", "XP5_004");
-        MapFileNames.Add("Strike at Karkand", "XP1_001");
-        MapFileNames.Add("Sharqi Peninsula", "XP1_003");
-        MapFileNames.Add("Wake Island", "XP1_004");
-        MapFileNames.Add("Talah Market", "XP4_Rubble");
+    //    MapFileNames.Add("Operation Firestorm", "MP_012");
+    //    MapFileNames.Add("Damavand Peak", "MP_013");
+    //    MapFileNames.Add("Noshahr Canals", "MP_017");
+    //    MapFileNames.Add("Kharg Island", "MP_018");
+    //    MapFileNames.Add("Operation Metro", "MP_Subway");
+    //    MapFileNames.Add("Gulf of Oman", "XP1_002");
+    //    MapFileNames.Add("Bandar Desert", "XP3_Desert");
+    //    MapFileNames.Add("Alborz Mountains", "XP3_Alborz");
+    //    MapFileNames.Add("Armored Shield", "XP3_Shield");
+    //    MapFileNames.Add("Death Valley", "XP3_Valley");
+    //    MapFileNames.Add("Markaz Monolith", "XP4_FD");
+    //    MapFileNames.Add("Azadi Palace", "XP4_Parl");
+    //    MapFileNames.Add("Epicenter", "XP4_Quake");
+    //    MapFileNames.Add("Operation Riverside", "XP5_001");
+    //    MapFileNames.Add("Nebandan Flats", "XP5_002");
+    //    MapFileNames.Add("Kiasar Railroad", "XP5_003");
+    //    MapFileNames.Add("Sabalan Pipeline", "XP5_004");
+    //    MapFileNames.Add("Strike at Karkand", "XP1_001");
+    //    MapFileNames.Add("Sharqi Peninsula", "XP1_003");
+    //    MapFileNames.Add("Wake Island", "XP1_004");
+    //    MapFileNames.Add("Talah Market", "XP4_Rubble");
 
 
 
@@ -509,6 +523,43 @@ public ExtraServerFuncs() {
 
 
 }
+
+private void InitMapList()
+{
+    WritePluginConsole("[InitMapList]", "DEBUG", 6);
+    GameModeList = new List<string>();
+    MapNameList = new List<string>();
+    MapFileNames = new Dictionary<string, string>();
+    GameModeNames = new Dictionary<string, string>();
+    
+    
+    
+    foreach (CMap map in GetMapDefines())
+    {
+        //                          Anzeigename              Anzeige Mode        Mapfilename             mapGamemode
+        // string formattedMap = map.PublicLevelName + " " + map.GameMode + " " + map.FileName + " " + map.PlayList;
+        
+        if (!GameModeList.Contains(map.GameMode))
+        {
+            GameModeList.Add(map.GameMode);
+            GameModeNames.Add(map.GameMode, map.PlayList);
+        }
+        
+        if (!MapFileNames.ContainsKey(map.PublicLevelName))
+        {
+            MapNameList.Add(map.PublicLevelName);
+            MapFileNames.Add(map.PublicLevelName, map.FileName);
+        }
+    
+
+
+    }
+
+
+    isInitMapList = true;
+}
+
+
 
 private void InitValidWeaponList()
 {
@@ -621,15 +672,50 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
 
 
 
-            WritePluginConsole("Current Game Version = " + game_version, "TRY", 0);
-
-            foreach (CMap map in GetMapDefines()) 
+            foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
             {
-                    
-                    string formattedMap = map.PublicLevelName + " " + map.GameMode + " " + map.FileName + " " + map.PlayList;
-                    WritePluginConsole("[MAPLIST] " +  formattedMap  ,"TRY",0);
-
+                WritePluginConsole(tmpVar.Key + "("+tmpVar.Value +")", "TMPVARIABLE", 0);
             }
+            
+            
+            // Funktioniert noch nicht
+            
+            //foreach (string plugin in LoadedClassNames())
+            //{
+            //    WritePluginConsole("PLUGIN NAME: " + plugin , "TRY", 0);
+            //}
+
+            
+
+
+
+            //foreach (CMap map in GetMapDefines())
+            //{
+
+            //    // Anzeigename , Anzeige Mode, Mapfilename, mapGamemode
+            //    string formattedMap = map.PublicLevelName + " " + map.GameMode + " " + map.FileName + " " + map.PlayList;
+            //    WritePluginConsole(formattedMap, "MAPLISTENTRY", 0);    
+
+
+            //}
+
+            
+
+            //foreach (KeyValuePair<string, string> pair in tmpPluginVariables)
+            //{
+            //    WritePluginConsole("^b" + pair.Key + "^n ( " + pair.Value + " )", "VARIABLE[GETCACHE]", 0);    
+                
+            //}
+
+           
+
+            //foreach (CMap map in GetMapDefines()) 
+            //{
+                    
+            //        string formattedMap = map.PublicLevelName + " " + map.GameMode + " " + map.FileName + " " + map.PlayList;
+            //        WritePluginConsole("[MAPLIST] " +  formattedMap  ,"TRY",0);
+
+            //}
             
             //WritePluginConsole("Overflow the debug.logfile", "TRY", 0);
 
@@ -1063,6 +1149,7 @@ return false;
 
 public string ToMapFileName(string friendlyname)
 {
+    if (!isInitMapList) InitMapList();
     if (MapFileNames.ContainsKey(friendlyname)) return MapFileNames[friendlyname];
     return "";
 }
@@ -1071,7 +1158,7 @@ public string ToFriendlyMapName(string mapfilename)
 {
     try
     {
-
+        if (!isInitMapList) InitMapList();
         if (MapFileNames.ContainsValue(mapfilename))
         {
             foreach (KeyValuePair<string, string> pair in MapFileNames)
@@ -1094,6 +1181,40 @@ public string ToFriendlyMapName(string mapfilename)
     return "";
 }
 
+
+public string ToPlayList(string friendlyname)
+{
+    if (!isInitMapList) InitMapList();
+    if (GameModeNames.ContainsKey(friendlyname)) return GameModeNames[friendlyname];
+    return "";
+}
+
+public string ToFriendlyModeName(string playList)
+{
+    try
+    {
+        if (!isInitMapList) InitMapList();
+        if (GameModeNames.ContainsValue(playList))
+        {
+            foreach (KeyValuePair<string, string> pair in GameModeNames)
+            {
+                if (pair.Value == playList) return pair.Key;
+            }
+
+
+
+        }
+
+    }
+    catch (Exception ex)
+    {
+        WritePluginConsole("^1^b[ToFriendlyModeName] returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
+        WritePluginConsole("^1^b[ToFriendlyModeName] mapfilename = " + playList, "DEBUG", 8);
+        WritePluginConsole("^1^b[ToFriendlyModeName] Game Version = " + game_version, "DEBUG", 8);
+
+    }
+    return "";
+}
 
 
 
@@ -1552,7 +1673,8 @@ public void SwitchServerMode(string newServerMode)  // Switch the current Server
 		nm_MapList,
         nm_VehicleSpawnAllowed,
         nm_VehicleSpawnCount,
-        nm_PlayerSpawnCount
+        nm_PlayerSpawnCount,
+        nmPRoConConfig
         );
 	}
 
@@ -1574,8 +1696,8 @@ if (newServerMode == "private")
 		pm_MapList,
         pm_VehicleSpawnAllowed,
         pm_VehicleSpawnCount,
-        pm_PlayerSpawnCount
-
+        pm_PlayerSpawnCount,
+        pmPRoConConfig
 	);
 
 	}
@@ -1592,8 +1714,8 @@ if (newServerMode == "flagrun")
         fm_MapList,
         fm_VehicleSpawnAllowed,
         fm_VehicleSpawnCount,
-        fm_PlayerSpawnCount
-
+        fm_PlayerSpawnCount,
+        fmPRoConConfig // REWORK !!!!!
     );
 
 }
@@ -1610,8 +1732,8 @@ if (newServerMode == "pistol")
         pom_MapList,
         pom_VehicleSpawnAllowed,
         pom_VehicleSpawnCount,
-        pom_PlayerSpawnCount
-
+        pom_PlayerSpawnCount,
+        pomPRoConConfig // REWORK !!!!!
     );
 
 }
@@ -1628,8 +1750,8 @@ if (newServerMode == "knife")
         kom_MapList,
         kom_VehicleSpawnAllowed,
         kom_VehicleSpawnCount,
-        kom_PlayerSpawnCount
-
+        kom_PlayerSpawnCount,
+        komPRoConConfig // REWORK !!!!!
     );
 
 }
@@ -1639,7 +1761,7 @@ if (newServerMode == "knife")
 
 }
 
-public void WriteServerConfig(string newName, string Description, string Message, List<string> NewMaplist ,enumBoolYesNo VehicleSpawnAllowed,int VehicleSpawnTime, int PlayerSpawnTime)  // Write the Config to the Server
+public void WriteServerConfig(string newName, string Description, string Message, List<string> NewMaplist ,enumBoolYesNo VehicleSpawnAllowed,int VehicleSpawnTime, int PlayerSpawnTime, List<string> PRoConConfig)  // Write the Config to the Server
 {
     Thread thread_writeserverconfig = new Thread(new ThreadStart(delegate()
         {
@@ -1654,7 +1776,8 @@ public void WriteServerConfig(string newName, string Description, string Message
             this.ServerCommand("vars.vehicleSpawnAllowed", enumboolToStringTrueFalse(VehicleSpawnAllowed));           
             this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
             this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
-            
+
+            WritePRoConConfig(PRoConConfig);
     
 
     
@@ -1670,6 +1793,60 @@ public void WriteServerConfig(string newName, string Description, string Message
 
 thread_writeserverconfig.Start();
 }
+
+private void WritePRoConConfig(List<string> ConfigList) // Write Plugin Commands to ProCon !!! ONLY FOR TEST
+{
+    foreach (string line in ConfigList)
+    {
+        WritePluginConsole("Write line to PRoCon: " + line, "DEBUG", 8);
+
+        if (line.StartsWith("procon.protected.plugins"))
+        {
+            //line = line.Replace('"',string.Empty);
+            List<string> commands = new List<string>();
+
+            String[] parts = line.Split(new[] { '"' });
+            
+            foreach (string tmp in parts)
+            {
+                string newtmp = tmp.Trim();
+                newtmp = newtmp.Replace("#LISTITEM#", "|");
+
+                
+                if (newtmp.Length > 0 && !newtmp.StartsWith("#")) commands.Add(newtmp);
+            }
+
+            
+
+            if (commands.Count == 3)
+            {
+                this.ExecuteCommand(commands[0], commands[1], commands[2]);
+                WritePluginConsole("Write line to PRoCon: " + commands[0] + " " + commands[1]+ " " + commands[2], "DEBUG", 8);
+            }
+            else if (commands.Count == 4)
+            {
+                this.ExecuteCommand(commands[0], commands[1], commands[2], commands[3]);
+                WritePluginConsole("Write line to PRoCon: " + commands[0] + " " + commands[1] + " " + commands[2] + " " + commands[3], "DEBUG", 8);
+            }
+            else
+            {
+                WritePluginConsole("Unsupported count of Variables in PRoCon Config: " + line, "WARN", 2);
+            }
+        }
+
+
+
+
+
+
+        
+    }
+
+
+
+}
+
+
 
 private string GetCurrentServermode()
 {
@@ -1762,11 +1939,10 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
 
 			if (m_ClanWhitelist.Count >= 1 && m_ClanWhitelist[0] != "")	// Is General Clan Whitelist NOT Empty
 			{
-				this.blClient = new BattlelogClient();
-				WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check General Clan Whitelist...", "Info", 5);
-				if (m_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in General Clan Whitelist
+				WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check General Clan Whitelist...", "Info", 5);
+                if (m_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in General Clan Whitelist
 				{
-					WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in General Clan Whitelist", "Info", 2);
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in General Clan Whitelist", "Info", 2);
 					return true;
 				}
 			}
@@ -1786,11 +1962,11 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
 
 			if (pm_ClanWhitelist.Count >= 1 && pm_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
 			{
-				this.blClient = new BattlelogClient();
-				WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check PRIVATE MODE Clan Whitelist...", "Info", 5);
-				if (pm_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+				
+				WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check PRIVATE MODE Clan Whitelist...", "Info", 5);
+				if (pm_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
 				{
-					WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in PRIVATE MODE Clan Whitelist", "Info", 2);
+					WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in PRIVATE MODE Clan Whitelist", "Info", 2);
 					return true;
 				}
 			}
@@ -1808,11 +1984,11 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
 
             if (fm_ClanWhitelist.Count >= 1 && fm_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
             {
-                this.blClient = new BattlelogClient();
-                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check FLAGRUN MODE Clan Whitelist...", "Info", 5);
-                if (fm_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check FLAGRUN MODE Clan Whitelist...", "Info", 5);
+                if (fm_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
                 {
-                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in FLAGRUN MODE Clan Whitelist", "Info", 2);
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in FLAGRUN MODE Clan Whitelist", "Info", 2);
                     return true;
                 }
             }
@@ -1830,11 +2006,11 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
 
             if (pom_ClanWhitelist.Count >= 1 && pom_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
             {
-                this.blClient = new BattlelogClient();
-                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check PISTOL ONLY MODE Clan Whitelist...", "Info", 5);
-                if (pom_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check PISTOL ONLY MODE Clan Whitelist...", "Info", 5);
+                if (pom_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
                 {
-                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in PISTOL ONLY MODE Clan Whitelist", "Info", 2);
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in PISTOL ONLY MODE Clan Whitelist", "Info", 2);
                     return true;
                 }
             }
@@ -1853,11 +2029,11 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
 
             if (kom_ClanWhitelist.Count >= 1 && kom_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
             {
-                this.blClient = new BattlelogClient();
-                WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " Check KNIFE ONLY MODE Clan Whitelist...", "Info", 5);
-                if (kom_ClanWhitelist.Contains(this.blClient.getClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check KNIFE ONLY MODE Clan Whitelist...", "Info", 5);
+                if (kom_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
                 {
-                    WritePluginConsole(wlPlayer + " has Clantag: " + this.blClient.getClanTag(wlPlayer) + " is in KNIFE ONLY MODE Clan Whitelist", "Info", 2);
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in KNIFE ONLY MODE Clan Whitelist", "Info", 2);
                     return true;
                 }
             }
@@ -2005,7 +2181,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.2";
+	return "0.0.2.3";
 }
 
 public string GetPluginAuthor() {
@@ -2195,7 +2371,7 @@ In this section you can edit the Messages who Plugin gives out to Players and ad
 In this section you find some lists where you can enter the weapons who should be prohibited only on this map. You have a list for each map<br/>
 </blockquote>
 
-<blockquote><h4>6.2 Gamemode Prohibited Weapons  - NOT IMPLEMENTED YET</h4>
+<blockquote><h4>6.2 Gamemode Prohibited Weapons</h4>
 In this section you find some lists where you can enter the weapons who should be prohibited only on this gamemode. You have a list for each gamemode<br/>
 </blockquote>
 
@@ -2209,6 +2385,16 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.2.3 (07-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Function to get Player Clan Tags from Lokal Database to reduce the load on Battlelog<br/>
+	- Added Lists for experts use to send commands to other Plugins<br/>
+	- Added SW40 to Pistol Only Mode<br/>
+	- Added Game Mode Prohibited Weapons<br/>
+	- Changed method for Map prohibited Weapons<br/>
+	- Plugin is learning Maps and Gamemodes from Procon now<br/>
+	- some changes for better performance of the Plugin<br/>
+
 
 <blockquote><h4>0.0.2.2 (04-03-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -2406,6 +2592,8 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             }
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Player Spawn Time", typeof(int), nm_PlayerSpawnCount));
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
+            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
+            
 
             
             
@@ -2431,7 +2619,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_ClanWhitelist", typeof(string[]), pm_ClanWhitelist.ToArray()));
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PlayerWhitelist", typeof(string[]), pm_PlayerWhitelist.ToArray()));
-
+                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PRoCon Config", typeof(string[]), pmPRoConConfig.ToArray()));
             }
 
             
@@ -2462,7 +2650,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Max Player Warns", typeof(int), fm_max_Warns));
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", fm_PlayerAction));
                  if (fm_PlayerAction == "tban" || fm_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_TBan Minutes", typeof(int), fm_ActionTbanTime));
-
+                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PRoCon Config", typeof(string[]), fmPRoConConfig.ToArray()));
                 
 
                  
@@ -2493,7 +2681,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Max Player Warns", typeof(int), kom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Action", "enum.kom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", kom_PlayerAction));
                 if (kom_PlayerAction == "tban" || kom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_TBan Minutes", typeof(int), kom_ActionTbanTime));
-
+                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PRoCon Config", typeof(string[]), komPRoConConfig.ToArray()));
 
 
 
@@ -2528,6 +2716,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
                 //PISTOLS
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~  PISTOLS  ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
 
@@ -2547,6 +2736,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SW40", typeof(enumBoolYesNo), pom_allowPistol_SW40));
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
                 }
 
@@ -2560,6 +2750,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                    
                     lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
                 }
 
@@ -2602,28 +2793,128 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             
             // Map Prohibited Weapons ####################################################################################################
             
-            
-            // Anpassung F? BF3 Einbauen 
+            // OLD VERSION !!!!!!!!!!!!!!!!!!!!!!
+            // Anpassung Fuer BF3 Einbauen  ( Automatische generierung der Maps ) 
 
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Locker", typeof(string[]), OnMapProhibitedWeapons_Operation_Locker.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Zavod 311", typeof(string[]), OnMapProhibitedWeapons_Zavod_311.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Lancang Dam", typeof(string[]), OnMapProhibitedWeapons_Lancang_Dam.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Flood Zone", typeof(string[]), OnMapProhibitedWeapons_Flood_Zone.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golmud Railway", typeof(string[]), OnMapProhibitedWeapons_Golmud_Railway.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Paracel Storm", typeof(string[]), OnMapProhibitedWeapons_Paracel_Storm.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Hainan Resort", typeof(string[]), OnMapProhibitedWeapons_Hainan_Resort.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Siege of Shanghai", typeof(string[]), OnMapProhibitedWeapons_Siege_of_Shanghai.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Rogue Transmission", typeof(string[]), OnMapProhibitedWeapons_Rogue_Transmission.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dawnbreaker", typeof(string[]), OnMapProhibitedWeapons_Dawnbreaker.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Silk Road", typeof(string[]), OnMapProhibitedWeapons_Silk_Road.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Altai Range", typeof(string[]), OnMapProhibitedWeapons_Altai_Range.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Guilin Peaks", typeof(string[]), OnMapProhibitedWeapons_Guilin_Peaks.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dragon Pass", typeof(string[]), OnMapProhibitedWeapons_Dragon_Pass.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Locker", typeof(string[]), OnMapProhibitedWeapons_Operation_Locker.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Zavod 311", typeof(string[]), OnMapProhibitedWeapons_Zavod_311.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Lancang Dam", typeof(string[]), OnMapProhibitedWeapons_Lancang_Dam.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Flood Zone", typeof(string[]), OnMapProhibitedWeapons_Flood_Zone.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golmud Railway", typeof(string[]), OnMapProhibitedWeapons_Golmud_Railway.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Paracel Storm", typeof(string[]), OnMapProhibitedWeapons_Paracel_Storm.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Hainan Resort", typeof(string[]), OnMapProhibitedWeapons_Hainan_Resort.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Siege of Shanghai", typeof(string[]), OnMapProhibitedWeapons_Siege_of_Shanghai.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Rogue Transmission", typeof(string[]), OnMapProhibitedWeapons_Rogue_Transmission.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dawnbreaker", typeof(string[]), OnMapProhibitedWeapons_Dawnbreaker.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Silk Road", typeof(string[]), OnMapProhibitedWeapons_Silk_Road.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Altai Range", typeof(string[]), OnMapProhibitedWeapons_Altai_Range.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Guilin Peaks", typeof(string[]), OnMapProhibitedWeapons_Guilin_Peaks.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Dragon Pass", typeof(string[]), OnMapProhibitedWeapons_Dragon_Pass.ToArray()));
 
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Caspian Border 2014", typeof(string[]), OnMapProhibitedWeapons_Caspian.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Firestorm 2014", typeof(string[]), OnMapProhibitedWeapons_Firestorm.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golf of Oman 2014", typeof(string[]), OnMapProhibitedWeapons_Oman.ToArray()));
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Metro 2014", typeof(string[]), OnMapProhibitedWeapons_Metro.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Caspian Border 2014", typeof(string[]), OnMapProhibitedWeapons_Caspian.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Firestorm 2014", typeof(string[]), OnMapProhibitedWeapons_Firestorm.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Golf of Oman 2014", typeof(string[]), OnMapProhibitedWeapons_Oman.ToArray()));
+            //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Operation Metro 2014", typeof(string[]), OnMapProhibitedWeapons_Metro.ToArray()));
+
+
+            // NEW VERSION SICE 0.0.2.3
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // Anpassen !!!!!!!!!!!!!!
+            {
+
+                if (!isInitMapList) InitMapList();
+                if (isInitMapList)
+                {
+                    var random = new Random();
+                    string enumAddMapNames = "enum.AddMapNames_" + random.Next(100000, 999999) + "(...";
+                    string enumRemoveMapNames = "enum.RemoveMapNames_" + random.Next(100000, 999999) + "(...";
+                    foreach (string map in MapNameList)
+                    {
+                        if (!MapProhibitedWeapons.ContainsKey(map))
+                        {
+                            enumAddMapNames = enumAddMapNames + "|" + map;
+                        }
+
+                        if (MapProhibitedWeapons.ContainsKey(map))
+                        {
+                            enumRemoveMapNames = enumRemoveMapNames + "|" + map;
+                        }
+
+
+
+
+                    }
+                    enumAddMapNames = enumAddMapNames + ")";
+                    enumRemoveMapNames = enumRemoveMapNames + ")";
+
+                    lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", enumAddMapNames, ""));
+                    lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Remove Map...", enumRemoveMapNames, ""));
+                }
+
+                if (MapProhibitedWeapons.Count > 0)
+                {
+                    foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+                    {
+                        string tmpvar = "6.1 On Map prohibited Weapons|" + entry.Key;
+                        lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                    }
+                }
+
+
+
+            }
+
+
+
+
+
+            // MODE PROHIBITED WEAPONS
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // Anpassen !!!!!!!!!!!!!!
+            {
+                
+                if (!isInitMapList) InitMapList();
+                if (isInitMapList)
+                {
+                    var random = new Random();
+                    string enumAddGameModes = "enum.AddGameModes_" + random.Next(100000,999999) + "(...";
+                    string enumRemoveGameModes = "enum.RemoveGameModes_" + random.Next(100000, 999999) + "(...";
+                    foreach (string gameMode in GameModeList)
+                    {
+                        if (!ModeProhibitedWeapons.ContainsKey(gameMode))
+                        {
+                            enumAddGameModes = enumAddGameModes + "|" + gameMode;
+                        }
+
+                        if (ModeProhibitedWeapons.ContainsKey(gameMode))
+                        {
+                            enumRemoveGameModes = enumRemoveGameModes + "|" + gameMode;
+                        }
+
+
+
+
+                    }
+                    enumAddGameModes = enumAddGameModes + ")";
+                    enumRemoveGameModes = enumRemoveGameModes + ")";
+
+                    lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Add Game Mode...", enumAddGameModes, ""));
+                    lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Remove Game Mode...", enumRemoveGameModes, ""));
+                }
+
+                if (ModeProhibitedWeapons.Count > 0)
+                {
+                    foreach (KeyValuePair<string, List<string>> entry in ModeProhibitedWeapons)
+                    {
+                        string tmpvar = "6.2 Gamemode prohibited Weapons|" + entry.Key;
+                        lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                    }
+                }
+
+
+
+            }
+
 
 
                                   
@@ -2651,7 +2942,15 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 
 public void SetPluginVariable(string strVariable, string strValue) {
 
+    if (strVariable.Contains("|"))
+    {
+        string[] tmpVariable = strVariable.Split('|');
+        strVariable = tmpVariable[1];
+    }
+
     if (plugin_loaded) WritePluginConsole("^b" + strVariable + "^n ( " + strValue + " )","VARIABLE", 10);
+
+    if (!tmpPluginVariables.ContainsKey(strVariable)) tmpPluginVariables.Add(strVariable, strValue);
 
     // COMMANDS
 
@@ -2844,7 +3143,25 @@ public void SetPluginVariable(string strVariable, string strValue) {
     {
 		nm_Rules = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     }
-	
+
+    if (Regex.Match(strVariable, @"NM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        nmPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|","#LISTITEM#");
+            nmPRoConConfig.Add(tmpline);
+        }
+
+        
+
+
+    }
+    
+
+
 	
     if (Regex.Match(strVariable, @"NM_Server Name").Success)
     {
@@ -2955,6 +3272,22 @@ public void SetPluginVariable(string strVariable, string strValue) {
         pm_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     }
 
+    if (Regex.Match(strVariable, @"PM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        pmPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            pmPRoConConfig.Add(tmpline);
+        }
+        
+        
+        
+    }
+
+
     if (Regex.Match(strVariable, @"PM_Server Name").Success)
     {
         pm_Servername = strValue;
@@ -3038,6 +3371,23 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "No") fm_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
     }
+
+    if (Regex.Match(strVariable, @"FM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        fmPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            fmPRoConConfig.Add(tmpline);
+        }
+
+
+
+
+    }
+
 
     if (Regex.Match(strVariable, @"FM_Command Enable").Success)
     {
@@ -3160,6 +3510,23 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "No") kom_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
     }
+    
+    if (Regex.Match(strVariable, @"KOM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        komPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            komPRoConConfig.Add(tmpline);
+        }
+
+
+
+
+    }
+
 
     if (Regex.Match(strVariable, @"KOM_Command Enable").Success)
     {
@@ -3282,6 +3649,22 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "Yes") pom_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") pom_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
+    }
+
+    if (Regex.Match(strVariable, @"POM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        pomPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            pomPRoConConfig.Add(tmpline);
+        }
+
+
+
+
     }
 
     if (Regex.Match(strVariable, @"POM_Command Enable").Success)
@@ -3474,7 +3857,12 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "No") pom_allowPistol_MP412Rex = enumBoolYesNo.No;
     }
 
-
+    if (Regex.Match(strVariable, @"POM_Allow SW40").Success)
+    {
+        if (strValue == "Yes") pom_allowPistol_SW40 = enumBoolYesNo.Yes;
+        if (strValue == "No") pom_allowPistol_SW40 = enumBoolYesNo.No;
+    }
+    
     if (Regex.Match(strVariable, @"POM_Allow KNIFE").Success)
     {
         if (strValue == "Yes") pom_allowPistol_Meele = enumBoolYesNo.Yes;
@@ -3491,25 +3879,128 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
     
 
-    if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
 
-    if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    //if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+
+    // MAP PROHIBITED WEAPONS
+
+    if (Regex.Match(strVariable, @"Add Map...").Success)
+    {
+
+        if (!isInitMapList) InitMapList();
+        if (isInitMapList)
+        {
+            if (MapNameList.Contains(strValue))
+            {
+                if (!MapProhibitedWeapons.ContainsKey(strValue))
+                {
+                    List<string> tmpList = new List<string>();
+                    MapProhibitedWeapons.Add(strValue, tmpList);
+                }
+            }
+
+        }
+    }
+
+    if (isInitMapList)
+    {
+        if (MapNameList.Contains(strVariable))
+        {
+            if (!MapProhibitedWeapons.ContainsKey(strVariable))
+            {
+                List<string> tmpList = new List<string>();
+                MapProhibitedWeapons.Add(strVariable, tmpList);
+            }
+        }
+
+    }
+
+    if (MapProhibitedWeapons.ContainsKey(strVariable))
+    {
+        MapProhibitedWeapons[strVariable] = (CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    }
+
+    if (Regex.Match(strVariable, @"Remove Map...").Success)
+    {
+        if (MapProhibitedWeapons.ContainsKey(strValue))
+        {
+            MapProhibitedWeapons.Remove(strValue);
+        }
+
+
+    }
+
+
+
+
+
+
+    // GAME MODE PROHIBITED WEAPONS
+    if (Regex.Match(strVariable, @"Add Game Mode...").Success)
+    {
     
+    if (!isInitMapList) InitMapList();
+    if (isInitMapList)
+    {
+        if (GameModeList.Contains(strValue))
+        {
+            if (!ModeProhibitedWeapons.ContainsKey(strValue))
+            {
+                List<string> tmpList = new List<string>();
+                ModeProhibitedWeapons.Add(strValue, tmpList);
+            }
+        }
+
+    }
+    }
+
+    if (isInitMapList)
+    {
+        if (GameModeList.Contains(strVariable))
+        {
+            if (!ModeProhibitedWeapons.ContainsKey(strVariable))
+            {
+                List<string> tmpList = new List<string>();
+                ModeProhibitedWeapons.Add(strVariable, tmpList);
+            }
+        }
+
+    }
+    
+    if (ModeProhibitedWeapons.ContainsKey(strVariable))
+    {
+         ModeProhibitedWeapons[strVariable] = (CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
+    }
+
+    if (Regex.Match(strVariable, @"Remove Game Mode...").Success)
+    {
+        if (ModeProhibitedWeapons.ContainsKey(strValue))
+        {
+            ModeProhibitedWeapons.Remove(strValue);
+        }
+
+
+    }
+
+
+
+
 
 
 } // Speichern der von User eingegebenen Variablen
@@ -3550,6 +4041,13 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnPlayerRespawnTime",
                                              "OnPluginLoadingEnv"
                                              );
+
+    //// Resend Plugin Variables
+    //foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
+    //{
+    //    SetPluginVariable(tmpVar.Key, tmpVar.Value);
+    //}
+
 }
 private void CancelSwitch()
 {
@@ -4447,7 +4945,7 @@ private bool isprohibitedWeapon(string weapon)
         }
 
 
-        if (serverMode == "knife" && !(weapon == "Melee" || weapon == "Knife" || weapon == "Knife_RazorBlade"))  // FLAGRUN MODE ALSO KEIN KILL ERLAUBT
+        if (serverMode == "knife" && !(weapon == "Melee" || weapon == "Knife" || weapon == "Knife_RazorBlade"))  // KNIFE ONLY MODE
         {
             WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  KNIFE ONLY MODE!", "DEBUG", 8);
             isProhibitedWeapon_Result = "knife";
@@ -4476,6 +4974,7 @@ private bool isprohibitedWeapon(string weapon)
                 if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
                 if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
                 if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
+                if (pom_allowPistol_SW40 == enumBoolYesNo.Yes) tmp_pistols.Add("SW40");         //SW40
                 if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
             }
 
@@ -4511,40 +5010,78 @@ private bool isprohibitedWeapon(string weapon)
         }
 
 
-        //MAP LIST PROHIBITED WEAPONS
+        ////MAP LIST PROHIBITED WEAPONS ------- OLD !!!!!!!!!!!!
+        //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+        //{
+        //    if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon))
+
+        //     || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
+        //     || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon))
+
+        //        )
+
+
+
+        //    {
+                
+        //        WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
+        //        isProhibitedWeapon_Result = "maplist";
+        //        return true;
+        //    }
+        //}
+
+
+        //MAP LIST PROHIBITED WEAPONS - NEW
         if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
         {
-            if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon))
-
-             || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
-             || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon))
-
-                )
-
-
-
+            if (MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
             {
-                
-                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
-                isProhibitedWeapon_Result = "maplist";
-                return true;
+                if (MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)].Contains(weapon))
+                {
+
+                    WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
+                    isProhibitedWeapon_Result = "maplist";
+                    return true;
+
+                }
             }
         }
+
+
+
+        //MODE LIST PROHIBITED WEAPONS
+        if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+        {
+            if (ModeProhibitedWeapons.ContainsKey(ToFriendlyModeName(currentGamemode)))
+            {
+                if (ModeProhibitedWeapons[ToFriendlyModeName(currentGamemode)].Contains(weapon))
+                {
+
+                    WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Mode prohibited Weapon match  Current Mode: " + ToFriendlyModeName(currentGamemode) + " Current Weapon: " + weapon, "DEBUG", 8);
+                    isProhibitedWeapon_Result = "playlist";
+                    return true;
+
+                }
+            }
+        }
+
+
+
         //GENERAL PROHIBITED WEAPONS
         if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes && g_prohibitedWeapons.Contains(weapon))   // GENERELL VERBOTENE WAFFEN
         {
@@ -4564,7 +5101,7 @@ private bool isprohibitedWeapon(string weapon)
         WritePluginConsole("^1^b[isprohibitedWeapon] returs an Error: ^0^n" + ex.ToString(), "ERROR", 4);
         WritePluginConsole("^1^b[isprohibitedWeapon] Current Map" + currentMapFileName + "Current Weapon: " + weapon, "DEBUG", 8);
     }
-    WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n Current Map: " + ToFriendlyMapName(currentMapFileName) + " (" + currentMapFileName + ") Current Weapon: " + weapon, "DEBUG", 8);
+    WritePluginConsole("[isprohibitedWeapon] is ^1^bFALSE^0^n Current Map: " + ToFriendlyMapName(currentMapFileName) + " (" + currentMapFileName + ") Current Mode: " + ToFriendlyModeName(currentGamemode) + " (" + currentGamemode + ") Current Weapon: " + weapon, "DEBUG", 8);
     return false;
 }
     
@@ -4584,8 +5121,8 @@ private void PlayerWarn(string name,string weapon)
         players.Warn(name);
         int warns = players.Warns(name);
 
-      
-                if (isProhibitedWeapon_Result == "generel" || isProhibitedWeapon_Result == "maplist")
+
+        if (isProhibitedWeapon_Result == "generel" || isProhibitedWeapon_Result == "maplist" || isProhibitedWeapon_Result == "playlist")
                 {
                     KillPlayer(name);
                     WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + g_max_Warns.ToString(), "KILL", 2);
@@ -4950,6 +5487,20 @@ public void Remove(string name) // Remove Player from DB and save him to CSV_Dat
     Player_Warns.Remove(name);
     Player_Suicides.Remove(name);
 }
+
+public string GetPlayerClanTag(string name) // Gebe das Clantag des Spielers aus der lokalen Datenbank zurück
+{
+    PlayerInfo tmpPlayer = GetPlayerInfo(name);
+    if (tmpPlayer.Tag != "")
+    {
+        return tmpPlayer.Tag;
+    }
+    else
+    {
+        return "EMPTY CLAN TAG";
+    }
+}
+
 
 public PlayerInfo GetPlayerInfo(string name)
 { 
@@ -5447,19 +5998,6 @@ public struct KillWeaponDetails
  public String Detail;  // BF4: ammo or attachment
  public String AttachedTo;  // BF4: main weapon when Name is a secondary attachment, like M320
 }
-
-public class MapListProhibitedWeapons
-{
-
-
-
-
-
-}
-
-
-
-
 
 
 } // end namespace PRoConEventsf
