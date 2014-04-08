@@ -2240,7 +2240,8 @@ public string GetPluginWebsite() {
 }
 
 public string GetPluginDescription() {
-	return @"
+
+string Description = @"
 
 
 If you find this plugin useful, please consider supporting me. Donations help support the servers used for development and provide incentive for additional features and new plugins! Any amount would be appreciated!</p>
@@ -2273,12 +2274,16 @@ Easy set te pistols u want to allow in the plugin settings. and please remember 
 
 <blockquote><h4>KNIFE ONLY MODE</h4>
 Only Knife is allowed on this servermode<br/>
-</blockquote>
+</blockquote>";
 
+if (fm_isEnabled == enumBoolYesNo.Yes) // TEST
+{
+Description = Description + @"
 <blockquote><h4>FLAGRUN MODE</h4>
 On this mode no kills are allowed. You can use this to fill your server in late hours or if u want to play this mode<br/>
-</blockquote>
-
+</blockquote>";
+}
+Description = Description + @"
 
 <h2>In Game Commands</h2>
 <p>Please notice that i show you the default config here. All commands are editable in the Plugin setting. If you had done this, this commands would not work together. </p>
@@ -2438,7 +2443,7 @@ In this option you can set the Debug Level. Do not do this if you have no proble
     - fixed Medkit and Death bug in Pistol only Mode<br/>
     - added dynamic creation of entrys in StartupMode Variable<br/>
     - Added Server Restart detecton based on Server Settings and Uptime<br/>
-
+</blockquote>
 
 <blockquote><h4>0.0.2.3 (07-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -2449,7 +2454,7 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 	- Changed method for Map prohibited Weapons<br/>
 	- Plugin is learning Maps and Gamemodes from Procon now<br/>
 	- some changes for better performance of the Plugin<br/>
-
+</blockquote>
 
 <blockquote><h4>0.0.2.2 (04-03-2014)</h4>
 	- ALPHA TESTING STATE<br/>
@@ -2544,6 +2549,8 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 ";
+
+return Description;
 }
 #endregion
 
