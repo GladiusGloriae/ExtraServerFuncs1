@@ -114,7 +114,7 @@ private enumBoolYesNo showweaponcode = enumBoolYesNo.No;
 private enumBoolYesNo agresive_startup = enumBoolYesNo.No;
 private List<string> m_ClanWhitelist;
 private List<string> m_PlayerWhitelist;
-private volatile string startup_mode_def = "enum.startup_mode(none|autodetect|normal|private|flagrun|knife|pistol)";
+private volatile string startup_mode_def;
 private volatile string startup_mode = "none";
 private volatile string tmp_mapList;
 private volatile string SwitchInitiator;
@@ -131,7 +131,8 @@ private string isProhibitedWeapon_Result = "";
 private string currServername = "";
 private string currServerMessage = "";
 private string currServerDescription = "";
-     
+private int ServerUptime = -1;
+private bool ServerUptimePluginHasReInit = false;
 
 private enumBoolYesNo g_prohibitedWeapons_enable = enumBoolYesNo.No;
 private List<string> g_prohibitedWeapons;
@@ -584,7 +585,7 @@ PluginCommand("Server", cmd);
 private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereitstellung von Plugin und Chat Commands in Procon
 {
     
-    if (plugin_enabled)
+    if (plugin_enabled || cmd == "try")
     {
 
         cmd = cmd.Replace(" ", ""); // Leerzeichen entfernen
@@ -670,12 +671,14 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             
             WritePluginConsole("Start test...", "TRY", 0);
 
+            WritePluginConsole("Current ServerUptime is: " + ServerUptime, "TRY", 0);
+            
 
 
-            foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
-            {
-                WritePluginConsole(tmpVar.Key + "("+tmpVar.Value +")", "TMPVARIABLE", 0);
-            }
+            //foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
+            //{
+            //    WritePluginConsole(tmpVar.Key + "("+tmpVar.Value +")", "TMPVARIABLE", 0);
+            //}
             
             
             // Funktioniert noch nicht
@@ -1269,39 +1272,83 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
 
     }
 
-    if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // MAPLIST PROHIBITET WEAPONLISTS
+
+    //MAP LIST PROHIBITED WEAPONS - NEW
+    if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
     {
-        if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(lastUsedWeapon))
- 
-         || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(lastUsedWeapon))
-
-         || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(lastUsedWeapon))
-         || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(lastUsedWeapon))
-
-            )
+        if (MapProhibitedWeapons.ContainsKey(ToFriendlyMapName(currentMapFileName)))
         {
-            if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
-            if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-            if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-            if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-            if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-                     
+            if (MapProhibitedWeapons[ToFriendlyMapName(currentMapFileName)].Contains(lastUsedWeapon))
+            {
+
+                if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+                if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+
+            }
         }
     }
+
+
+
+    //MODE LIST PROHIBITED WEAPONS
+    if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+    {
+        if (ModeProhibitedWeapons.ContainsKey(ToFriendlyModeName(currentGamemode)))
+        {
+            if (ModeProhibitedWeapons[ToFriendlyModeName(currentGamemode)].Contains(lastUsedWeapon))
+            {
+
+                if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+                if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+
+            }
+        }
+    }
+
+
+
+
+
+
+    //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // MAPLIST PROHIBITET WEAPONLISTS
+    //{
+    //    if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(lastUsedWeapon))
+ 
+    //     || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(lastUsedWeapon))
+
+    //     || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(lastUsedWeapon))
+    //     || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(lastUsedWeapon))
+
+    //        )
+    //    {
+    //        if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    //        if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    //        if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    //        if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    //        if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+                     
+    //    }
+    //}
 
 
 
@@ -2385,6 +2432,14 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.2.4 (08-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Reworked Replacements Method to get it work with new Prohibited Weapons Methods<br/>
+    - fixed Medkit and Death bug in Pistol only Mode<br/>
+    - added dynamic creation of entrys in StartupMode Variable<br/>
+    - Added Server Restart detecton based on Server Settings and Uptime<br/>
+
+
 <blockquote><h4>0.0.2.3 (07-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Added Function to get Player Clan Tags from Lokal Database to reduce the load on Battlelog<br/>
@@ -2488,28 +2543,15 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 </blockquote>
 
 
-<h2>Roadmap</h2>
-Things i want to implement in future versions of this Plugin....<br/>
-<br/>
-- Server should optionaly go back to choosen mode if is empty<br/>
-- Infantry only mode<br/>
-- Hardcore mode<br/>
-- Shotgun only mode<br/>
-- Sniper only mode<br/>
-- Bolt Action only mode<br/>
-- User defined Maplists who are loadable by chat command or on player count<br/>
-- Time triggered Modeswitches<br/>
-- Player count triggered Modeswitches<br/>
-- and mutch more....<br/>
-
 ";
 }
 #endregion
 
 public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigenden Plugin variablen
     {     // Optionen zum erstellen der Konfigvariablen / dem Usermen??
+        
         List<CPluginVariable> lstReturn = new List<CPluginVariable>();
-
+        var random = new Random();
 
 
         // BASIC SETTINGS ##################################################################################################################
@@ -2556,8 +2598,14 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon TBan Minutes", typeof(int), g_ActionTbanTime));
             }
 
-
-
+            
+            startup_mode_def = "enum.startup_mode_" + random.Next(100000, 999999) + "(none|autodetect|normal";
+            if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
+            if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
+            if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knife";
+            if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistol";
+            startup_mode_def = startup_mode_def + ")";
+            
             
             
             
@@ -2824,7 +2872,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 if (!isInitMapList) InitMapList();
                 if (isInitMapList)
                 {
-                    var random = new Random();
+                    
                     string enumAddMapNames = "enum.AddMapNames_" + random.Next(100000, 999999) + "(...";
                     string enumRemoveMapNames = "enum.RemoveMapNames_" + random.Next(100000, 999999) + "(...";
                     foreach (string map in MapNameList)
@@ -2875,7 +2923,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 if (!isInitMapList) InitMapList();
                 if (isInitMapList)
                 {
-                    var random = new Random();
+                    
                     string enumAddGameModes = "enum.AddGameModes_" + random.Next(100000,999999) + "(...";
                     string enumRemoveGameModes = "enum.RemoveGameModes_" + random.Next(100000, 999999) + "(...";
                     foreach (string gameMode in GameModeList)
@@ -4650,15 +4698,27 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         totalRounds = serverInfo.TotalRounds;
         playerCount = serverInfo.PlayerCount;
         maxPlayerCount = serverInfo.MaxPlayerCount;
+        ServerUptime = serverInfo.ServerUptime;    
         serverInfoloaded = true;
         
             //serverInfo.RoundTime;
-            //serverInfo.ServerUptime
+            
 
         ServerInfoCounter++; // Einen durchlauf z?en
+        if (ServerUptime >= 360) ServerUptimePluginHasReInit = false;
 
         if (plugin_enabled && ServerInfoCounter >= 10)
         {
+
+            if ((GetCurrentServermode() == "unknown" && startup_mode != "none" && plugin_loaded) || (!ServerUptimePluginHasReInit && ServerUptime <= 300))
+            {
+                
+                WritePluginConsole("DETECTED UNKNOWN SERVER CONFIG", "INFO", 2);
+                WritePluginConsole("REINITAILZE PLUGIN TO SET STARTUP CONFIG", "INFO", 2);
+                ServerUptimePluginHasReInit = true;
+                InitPlugin();
+            }
+
             WritePluginConsole("^1^bCurrent Servermode: ^0^n" + serverMode + "^1^b Next Servermode: ^0^n" + next_serverMode, "INFO", 2);
             WritePluginConsole("^4^bCurrent round: ^2^n " + ToFriendlyMapName(currentMapFileName) + "^5 PlayersCount: ^0" + playerCount, "INFO", 2);
             WritePluginConsole("DEBUG LEVEL " + fDebugLevel, "DEBUG", 3);
@@ -4976,6 +5036,8 @@ private bool isprohibitedWeapon(string weapon)
                 if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
                 if (pom_allowPistol_SW40 == enumBoolYesNo.Yes) tmp_pistols.Add("SW40");         //SW40
                 if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
+                tmp_pistols.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+                tmp_pistols.Add("Death");  // to fix the Problem with exploding tonns
             }
 
 
