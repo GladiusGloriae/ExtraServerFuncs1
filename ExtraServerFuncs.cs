@@ -2228,7 +2228,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.3";
+	return "0.0.2.4";
 }
 
 public string GetPluginAuthor() {
