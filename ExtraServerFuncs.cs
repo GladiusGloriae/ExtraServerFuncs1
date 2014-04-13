@@ -2407,9 +2407,9 @@ If you find this plugin useful, please consider supporting me. Donations help su
 This Plugin provides some functionality like Private Mode, Pistol Only Mode,  Knife Only Mode and something else. You can set various settings for each Servermode e.G. Should vehicles be allowed or not. Witch pistols should be allowed on Pistol Only Mode, All Time prohibited weapons. You can set a extra Maplist for each Servermode. The !rules command is also supported from this plugin to provide a own ruleset for each mode.  This plugin provedes a Autoconfig Method. With this its able to register some config changes in Procon and save this to plugin config. e.G. you set a new servername in Procon and the plugin change the servername also. In future it should be able to change the modes timebased or on playercounts. If i had done this i work on more modes and more settings to provide switches between normal and hardcore and something else.
 </p>
 If you want to automate your configured servermodes on Player Count, Time, Weekday or on a specific Day use my ""Extra Task Manager"" plugin!
-Download it from: <a href=""https://github.com/MarkusSR1984/ExtraTaskPlaner/archive/master.zip"" target=""_blank"">Extra Task Manager</a>
+Download it from: <a href=""https://github.com/MarkusSR1984/ExtraTaskPlaner/releases"" target=""_blank"">Extra Task Manager</a>
 </p>
-Keep your Copy up to Date and get the latest Version of Extra Server Funcs here: <a href=""https://github.com/GladiusGloriae/ExtraServerFuncs1/archive/536d94e7d8a94f10f1bd5bb5ab9d6fafa12f1a5f.zip"" target=""_blank"">Extra Server Funcs latest version</a>
+Keep your Copy up to Date and get the latest Version of Extra Server Funcs here: <a href=""https://github.com/GladiusGloriae/ExtraServerFuncs1/releases"" target=""_blank"">Extra Server Funcs latest version</a>
 
 
 <blockquote><h4>NORMAL MODE</h4>
