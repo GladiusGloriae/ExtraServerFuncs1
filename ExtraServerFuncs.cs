@@ -654,17 +654,17 @@ private void SendTaskPlanerInfo()
 
     Commands.Add("Define normal mode as next");           // You have to catch this Commands in Method ExtraTaskPlaner_Callback()
 
-    if (pm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define private mode as next");
-    if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define flagrun mode as next");
-    if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define knife only mode as next");
-    if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define pistol only mode as next");
+    /*if (pm_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Define private mode as next");
+    /*if (fm_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Define flagrun mode as next");
+    /*if (kom_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Define knife only mode as next");
+    /*if (pom_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Define pistol only mode as next");
 
     Commands.Add("Switch instantly to normal mode");           
 
-    if (pm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to private mode");
-    if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define flagrun mode");
-    if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define knife only mode");
-    if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define pistol only mode");
+    /*if (pm_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Switch instantly to private mode");
+    /*if (fm_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Switch instantly to Define flagrun mode");
+    /*if (kom_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Switch instantly to Define knife only mode");
+    /*if (pom_isEnabled == enumBoolYesNo.Yes)*/ Commands.Add("Switch instantly to Define pistol only mode");
 
 
     //Variables.Add("Sample Variable");        I dont want to give out any Variable to Task Manager
@@ -4351,6 +4351,8 @@ public void InitPlugin()
                 firstload_sleep = false;
             }
             
+            SendTaskPlanerInfo();
+
             WritePluginConsole("Set Startup Vars...", "INFO", 2);
             plugin_enabled = true;
             serverInfoloaded = false;
