@@ -2873,7 +2873,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
             // NEW VERSION SICE 0.0.2.3
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // Anpassen !!!!!!!!!!!!!!
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) 
             {
 
                 if (!isInitMapList) InitMapList();
@@ -2924,7 +2924,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
             // MODE PROHIBITED WEAPONS
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // Anpassen !!!!!!!!!!!!!!
+            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) 
             {
                 
                 if (!isInitMapList) InitMapList();
