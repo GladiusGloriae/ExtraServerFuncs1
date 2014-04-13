@@ -62,6 +62,8 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     List<string> ValidWeaponList;
     List<string> GameModeList;
     List<string> MapNameList;
+    List<TeamScore> currentTeamScores = new List<TeamScore>();
+
     Dictionary<string, List<string>> ModeProhibitedWeapons = new Dictionary<string,List<string>>();
     Dictionary<string, List<string>> MapProhibitedWeapons = new Dictionary<string, List<string>>();
 
@@ -84,10 +86,13 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     List<string> OnMapProhibitedWeapons_Oman;
     List<string> OnMapProhibitedWeapons_Caspian;
 
-    
 
-
-
+// Extra Task Manager Variables
+    private Hashtable PluginInfo = new Hashtable();
+    private bool isRegisteredInTaskPlaner = false;
+    private List<string> Commands = new List<string>();
+    private List<string> Variables = new List<string>();
+// Extra Task Manager Variables
 
 
 // Threads
@@ -560,6 +565,125 @@ private void InitMapList()
     isInitMapList = true;
 }
 
+public bool IsExtraTaskPlanerInstalled()
+{
+    List<MatchCommand> registered = this.GetRegisteredCommands();
+    foreach (MatchCommand command in registered)
+    {
+        if (command.RegisteredClassname.CompareTo("ExtraTaskPlaner") == 0 && command.RegisteredMethodName.CompareTo("PluginInterface") == 0)
+        {
+            WritePluginConsole("^bExtra Task Planer^n detected", "INFO", 3);
+            return true;
+        }
+
+    }
+
+    return false;
+}
+
+public void ExtraTaskPlaner_Callback(string command)
+{
+
+    if (command == "success")
+    {
+        isRegisteredInTaskPlaner = true;
+    }
+
+    if (command == "Define normal mode as next") PreSwitchServerMode("normal");
+    if (pm_isEnabled == enumBoolYesNo.Yes && command == "Define private mode as next") PreSwitchServerMode("private");
+    if (fm_isEnabled == enumBoolYesNo.Yes && command == "Define flagrun mode as next") PreSwitchServerMode("flagrun");
+    if (kom_isEnabled == enumBoolYesNo.Yes && command == "Define knife only mode as next") PreSwitchServerMode("knife");
+    if (pom_isEnabled == enumBoolYesNo.Yes && command == "Define pistol only mode as next") PreSwitchServerMode("pistol");
+
+
+    if (command == "Switch instantly to normal mode")
+    {
+        PreSwitchServerMode("normal");
+        StartSwitchCountdown();
+    }
+
+
+    if (pm_isEnabled == enumBoolYesNo.Yes && command == "Switch instantly to private mode")
+    {
+        PreSwitchServerMode("normal");
+        StartSwitchCountdown();
+    }
+
+    if (fm_isEnabled == enumBoolYesNo.Yes && command == "Switch instantly to Define flagrun mode")
+    {
+        PreSwitchServerMode("flagrun");
+        StartSwitchCountdown();
+    }
+
+    if (kom_isEnabled == enumBoolYesNo.Yes && command == "Switch instantly to Define knife only mode")
+    {
+        PreSwitchServerMode("knife");
+        StartSwitchCountdown();
+    }
+
+    if (pom_isEnabled == enumBoolYesNo.Yes && command == "Switch instantly to Define pistol only mode")
+    {
+        PreSwitchServerMode("pistol");
+        StartSwitchCountdown();
+    }
+
+
+
+
+
+
+}
+
+
+private string GetCurrentClassName()
+{
+    string tmpClassName;
+
+    tmpClassName = this.GetType().ToString(); // Get Current Classname String
+    tmpClassName = tmpClassName.Replace("PRoConEvents.", "");
+
+
+    return tmpClassName;
+
+}
+
+
+private void SendTaskPlanerInfo()
+{
+    Commands = new List<string>();
+
+    Commands.Add("Define normal mode as next");           // You have to catch this Commands in Method ExtraTaskPlaner_Callback()
+
+    if (pm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define private mode as next");
+    if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define flagrun mode as next");
+    if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define knife only mode as next");
+    if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define pistol only mode as next");
+
+    Commands.Add("Switch instantly to normal mode");           
+
+    if (pm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to private mode");
+    if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define flagrun mode");
+    if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define knife only mode");
+    if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch instantly to Define pistol only mode");
+
+
+    //Variables.Add("Sample Variable");        I dont want to give out any Variable to Task Manager
+    
+
+
+
+
+
+    PluginInfo["PluginName"] = GetPluginName();
+    PluginInfo["PluginVersion"] = GetPluginVersion();
+    PluginInfo["PluginClassname"] = GetCurrentClassName();
+
+    PluginInfo["PluginCommands"] = CPluginVariable.EncodeStringArray(Commands.ToArray());
+    PluginInfo["PluginVariables"] = CPluginVariable.EncodeStringArray(Variables.ToArray());
+
+    this.ExecuteCommand("procon.protected.plugins.setVariable", "ExtraTaskPlaner", "RegisterPlugin", JSON.JsonEncode(PluginInfo)); // Send Plugin Infos to Task Planer
+
+}
 
 
 private void InitValidWeaponList()
@@ -1587,7 +1711,19 @@ public void PreSwitchServerMode(string MarkNewServerMode) // Define a Server Mod
 {
     WritePluginConsole("Called PreSwitchServerMode: serverMode= " + serverMode + " next_serverMode = " + next_serverMode, "Warn", 10);
     next_serverMode = MarkNewServerMode;
-    SendSwitchMessage();
+    
+
+    if (playerCount <= 1)
+    {
+        StartSwitchCountdown();
+    }
+    else
+    {
+        SendSwitchMessage();
+    }
+
+
+
 }
 
 public void SendSwitchMessage()
@@ -1650,13 +1786,23 @@ public void StartSwitchCountdown()
             counter--;
         }
 
-        this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString() , "1", "1", "procon.protected.plugins.call", "ExtraServerFuncs", "SwitchNow");
-        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 5).ToString(), "1", "1", "procon.protected.send", "mapList.getMapIndices");
-        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 6).ToString(), "6", "1", "procon.protected.send", "mapList.setNextMapIndex", "0");
-        
-        // EDIT: Check if players are on server, if more then 4 then endround. if less then 4 runnextRound
-        this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 7).ToString(), "7", "1", "procon.protected.send", "mapList.runNextRound");
+        if (playerCount >= 4) // End Round if more then 3 Players are on Server
+        {
+            // Try to build in a Winning team detection
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 7).ToString(), "7", "1", "procon.protected.send", "mapList.endRound 1");
+        }
+        else
+        {
 
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", timer.ToString(), "1", "1", "procon.protected.plugins.call", "ExtraServerFuncs", "SwitchNow");
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 5).ToString(), "1", "1", "procon.protected.send", "mapList.getMapIndices");
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 6).ToString(), "6", "1", "procon.protected.send", "mapList.setNextMapIndex", "0");
+
+         
+
+            this.ExecuteCommand("procon.protected.tasks.add", "Switch", (timer + 7).ToString(), "7", "1", "procon.protected.send", "mapList.runNextRound");
+        }
+        
         
         
 
@@ -2228,7 +2374,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.4";
+	return "0.0.2.5";
 }
 
 public string GetPluginAuthor() {
@@ -2236,7 +2382,7 @@ public string GetPluginAuthor() {
 }
 
 public string GetPluginWebsite() {
-    return "github.com/MarkusSR1984/ExtraServerFuncs.git";
+    return "";
 }
 
 public string GetPluginDescription() {
@@ -2259,6 +2405,12 @@ If you find this plugin useful, please consider supporting me. Donations help su
 
 <h2>Description</h2>
 This Plugin provides some functionality like Private Mode, Pistol Only Mode,  Knife Only Mode and something else. You can set various settings for each Servermode e.G. Should vehicles be allowed or not. Witch pistols should be allowed on Pistol Only Mode, All Time prohibited weapons. You can set a extra Maplist for each Servermode. The !rules command is also supported from this plugin to provide a own ruleset for each mode.  This plugin provedes a Autoconfig Method. With this its able to register some config changes in Procon and save this to plugin config. e.G. you set a new servername in Procon and the plugin change the servername also. In future it should be able to change the modes timebased or on playercounts. If i had done this i work on more modes and more settings to provide switches between normal and hardcore and something else.
+</p>
+If you want to automate your configured servermodes on Player Count, Time, Weekday or on a specific Day use my ""Extra Task Manager"" plugin!
+Download it from: <a href=""https://github.com/MarkusSR1984/ExtraTaskPlaner/archive/master.zip"" target=""_blank"">Extra Task Manager</a>
+</p>
+Keep your Copy up to Date and get the latest Version of Extra Server Funcs here: <a href=""https://github.com/GladiusGloriae/ExtraServerFuncs1/archive/536d94e7d8a94f10f1bd5bb5ab9d6fafa12f1a5f.zip"" target=""_blank"">Extra Server Funcs latest version</a>
+
 
 <blockquote><h4>NORMAL MODE</h4>
 The server runs normaly and public<br/>
@@ -2437,6 +2589,15 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+
+<blockquote><h4>0.0.2.5 (13-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - End Round on Swichtnow Command if there are more the 3 Players are on Server<br/>
+    - Switch instantly when mode is Predefined if Server is empty or only one Player is on Server<br/>
+    - Added Support for Extra Task Manager<br/>
+    - <br/>
+</blockquote>
+
 <blockquote><h4>0.0.2.4 (08-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Reworked Replacements Method to get it work with new Prohibited Weapons Methods<br/>
@@ -2997,6 +3158,11 @@ public List<CPluginVariable> GetPluginVariables()  // Liste der Plugin Variablen
 
 public void SetPluginVariable(string strVariable, string strValue) {
 
+    if (Regex.Match(strVariable, @"ExtraTaskPlaner_Callback").Success) // Extra Task Manager Callback
+    {
+        ExtraTaskPlaner_Callback(strValue);
+    }
+
     if (strVariable.Contains("|"))
     {
         string[] tmpVariable = strVariable.Split('|');
@@ -3304,6 +3470,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "Yes") pm_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") pm_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
+        //SendTaskPlanerInfo(); // Update Plugin Info in Extra Task Manager
     }
 
     if (Regex.Match(strVariable, @"PM_Command Enable").Success)
@@ -3425,6 +3592,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "Yes") fm_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") fm_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
+        //SendTaskPlanerInfo(); // Update Plugin Info in Extra Task Manager
     }
 
     if (Regex.Match(strVariable, @"FM_PRoCon Config").Success)
@@ -3564,6 +3732,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "Yes") kom_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") kom_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
+        //SendTaskPlanerInfo(); // Update Plugin Info in Extra Task Manager
     }
     
     if (Regex.Match(strVariable, @"KOM_PRoCon Config").Success)
@@ -3704,6 +3873,7 @@ public void SetPluginVariable(string strVariable, string strValue) {
         if (strValue == "Yes") pom_isEnabled = enumBoolYesNo.Yes;
         if (strValue == "No") pom_isEnabled = enumBoolYesNo.No;
         RegisterAllCommands();
+        //SendTaskPlanerInfo(); // Update Plugin Info in Extra Task Manager
     }
 
     if (Regex.Match(strVariable, @"POM_PRoCon Config").Success)
@@ -4096,6 +4266,23 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnPlayerRespawnTime",
                                              "OnPluginLoadingEnv"
                                              );
+    // EXTRA TASK MANAGER 
+    Thread startup_sleep = new Thread(new ThreadStart(delegate()
+    {
+        Thread.Sleep(2000);
+        if (IsExtraTaskPlanerInstalled())
+        {
+            do
+            {
+                SendTaskPlanerInfo();
+                Thread.Sleep(2000);
+            }
+            while (!isRegisteredInTaskPlaner);
+        }
+    }));
+    startup_sleep.Start();
+    // EXTRA TASK MANAGER 
+
 
     //// Resend Plugin Variables
     //foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
@@ -4708,6 +4895,14 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         ServerUptime = serverInfo.ServerUptime;    
         serverInfoloaded = true;
         
+        currentTeamScores = serverInfo.TeamScores;
+        
+        foreach (TeamScore team in currentTeamScores)
+        {
+            WritePluginConsole("TeamInfo: TeamID = " + team.TeamID + " Score = " + team.Score + " WinningScore = " + team.WinningScore, "DEBUG",6);
+    
+
+        }
             //serverInfo.RoundTime;
             
 
