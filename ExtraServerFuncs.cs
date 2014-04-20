@@ -87,6 +87,16 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     List<string> OnMapProhibitedWeapons_Oman;
     List<string> OnMapProhibitedWeapons_Caspian;
 
+// Update Check Variables
+private    Match match;
+private    Match onlineversion;
+private    Match localversion;
+private    int localV = 0;
+private    int onlineV = 0;
+private    bool CheckedOnUpdates = false;
+// Update Check Variables
+
+
 
 // Extra Task Manager Variables
     private Hashtable PluginInfo = new Hashtable();
@@ -103,8 +113,10 @@ Thread countdown_message;
 
 TextDatei files;
 PlayerDB players;
+GitHubClient client = new GitHubClient(); 
 //PluginDictionary PRoConPlugins;
 // GENERAL VARS  
+
 private bool firstload_sleep = true;
 public string game_version = "";
 private volatile bool readconfig = false;
@@ -1282,6 +1294,45 @@ private bool IsAdmin(string speaker)
       return isAdmin;
     }
 
+
+public bool isNewVersion(string currentPluginVersion)
+{
+    WritePluginConsole("Check on Updates...", "INFO", 6);
+    if (!CheckedOnUpdates)
+    {
+        WritePluginConsole("Fetch Online Version...", "DEBUG", 8);
+        match = Regex.Match((String)client.getWebsite(), @"\s*([0-9][.][0-9][.][0-9][.][0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        onlineversion = Regex.Match(match.Groups[1].ToString(), @"\s*([0-9])[.]([0-9])[.]([0-9])[.]([0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        localversion = Regex.Match(currentPluginVersion, @"\s*([0-9])[.]([0-9])[.]([0-9])[.]([0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+
+        localV = (Convert.ToInt32(localversion.Groups[1].ToString()) * 1000) + (Convert.ToInt32(localversion.Groups[2].ToString()) * 100) + (Convert.ToInt32(localversion.Groups[3].ToString()) * 10) + (Convert.ToInt32(localversion.Groups[4].ToString()));
+        onlineV = (Convert.ToInt32(onlineversion.Groups[1].ToString()) * 1000) + (Convert.ToInt32(onlineversion.Groups[2].ToString()) * 100) + (Convert.ToInt32(onlineversion.Groups[3].ToString()) * 10) + (Convert.ToInt32(onlineversion.Groups[4].ToString()));
+        CheckedOnUpdates = true;
+    }
+    WritePluginConsole("Local Version: " + currentPluginVersion, "DEBUG", 8);
+    WritePluginConsole("Online Version: " + onlineversion.Value.ToString(), "DEBUG", 8);
+
+    if (localV < onlineV)
+    {
+        WritePluginConsole("========================================================", "INFO", 0);
+        WritePluginConsole("UPDATE AVIABLE !", "INFO", 0);
+        WritePluginConsole("-----------------------------------", "INFO", 0);
+        WritePluginConsole("Update to version " + onlineversion.Value.ToString() + " now", "INFO", 0);
+        WritePluginConsole("Check the download link in Plugin description", "INFO", 0);
+        WritePluginConsole("========================================================", "INFO", 0);
+        return true;
+
+
+    }
+
+
+    return false;
+}
+
+
 public void sleep(int time) // Stellt den sleep befehl betreit
 {
 	Thread.Sleep(time);
@@ -2449,7 +2500,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.6";
+	return "0.0.2.7";
 }
 
 public string GetPluginAuthor() {
@@ -2664,6 +2715,11 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.2.7 (21-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Update Check and Information in Plugin Console<br/>
+</blockquote>
+
 <blockquote><h4>0.0.2.6 (20-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Fixed a lot of issues<br/>
@@ -5015,8 +5071,10 @@ public void OnPluginDisable() {
 public override void OnVersion(string serverType, string version) { }
 
 public override void OnServerInfo(CServerInfo serverInfo) {
+
         
-        
+
+
         currentMapFileName = serverInfo.Map;
         currentGamemode = serverInfo.GameMode;
         currentRound = serverInfo.CurrentRound;
@@ -5037,6 +5095,7 @@ public override void OnServerInfo(CServerInfo serverInfo) {
 
         if (plugin_enabled && ServerInfoCounter >= 10)
         {
+            isNewVersion(GetPluginVersion()); // Check on Update
 
             if ((GetCurrentServermode() == "unknown" && startup_mode != "none" && plugin_loaded) || (!ServerUptimePluginHasReInit && ServerUptime <= 300))
             {
@@ -6401,6 +6460,63 @@ public void SaveToFile()
 
 
 }
+
+
+public class GitHubClient
+{
+    private HttpWebRequest req = null;
+
+    WebClient client = null;
+
+    private String fetchWebPage(ref String html_data, String url)
+    {
+        try
+        {
+            if (client == null)
+                client = new WebClient();
+
+            client.Headers["User-Agent"] =
+            "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) " +
+            "(compatible; MSIE 6.0; Windows NT 5.1; " +
+            ".NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+
+            html_data = client.DownloadString(url);
+            return html_data;
+        }
+        catch (WebException e)
+        {
+            if (e.Status.Equals(WebExceptionStatus.Timeout))
+                throw new Exception("HTTP request timed-out");
+            else
+                throw;
+        }
+
+        return html_data;
+    }
+
+    public String getWebsite()
+    {
+        try
+        {
+            /* First fetch the player's main page to get the persona id */
+            String result = "";
+            fetchWebPage(ref result, "https://api.github.com/repos/GladiusGloriae/ExtraServerFuncs1/releases");
+
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            return e.ToString();
+            //Handle exceptions here however you want
+        }
+
+        return "ERROR FETCHING WEBSITE";
+    }
+
+
+}
+
 
 public struct PlayerInfo
 {
