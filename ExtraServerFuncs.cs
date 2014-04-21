@@ -1298,6 +1298,9 @@ private bool IsAdmin(string speaker)
 public bool isNewVersion(string currentPluginVersion)
 {
     WritePluginConsole("Check on Updates...", "INFO", 6);
+    CheckedOnUpdates = false; // Get Resettet from a Timer evry hour, later
+
+
     if (!CheckedOnUpdates)
     {
         WritePluginConsole("Fetch Online Version...", "DEBUG", 8);
@@ -2500,7 +2503,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.7";
+	return "0.0.2.8";
 }
 
 public string GetPluginAuthor() {
@@ -2715,6 +2718,12 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.2.8 (21-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Changed a few little things on Update Check<br/>
+    - Version to check funkionality of update check<br/>
+</blockquote>
+
 <blockquote><h4>0.0.2.7 (21-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Added Update Check and Information in Plugin Console<br/>
@@ -4626,7 +4635,9 @@ public void InitPlugin()
             RegisterAllCommands();
 
             plugin_loaded = true;
-            
+
+            isNewVersion(GetPluginVersion()); // Check on Update
+
             return;
             }));
 
@@ -5093,7 +5104,7 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         ServerInfoCounter++; // Einen durchlauf zaelen
         if (ServerUptime >= 360) ServerUptimePluginHasReInit = false;
 
-        if (plugin_enabled && ServerInfoCounter >= 10)
+        if (plugin_enabled && ServerInfoCounter >= 20)
         {
             isNewVersion(GetPluginVersion()); // Check on Update
 
