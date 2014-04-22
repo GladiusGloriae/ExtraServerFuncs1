@@ -68,24 +68,24 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     Dictionary<string, List<string>> ModeProhibitedWeapons = new Dictionary<string,List<string>>();
     Dictionary<string, List<string>> MapProhibitedWeapons = new Dictionary<string, List<string>>();
 
-    List<string> OnMapProhibitedWeapons_Zavod_311;
-    List<string> OnMapProhibitedWeapons_Lancang_Dam;
-    List<string> OnMapProhibitedWeapons_Flood_Zone;
-    List<string> OnMapProhibitedWeapons_Golmud_Railway;
-    List<string> OnMapProhibitedWeapons_Paracel_Storm;
-    List<string> OnMapProhibitedWeapons_Operation_Locker;
-    List<string> OnMapProhibitedWeapons_Hainan_Resort;
-    List<string> OnMapProhibitedWeapons_Siege_of_Shanghai;
-    List<string> OnMapProhibitedWeapons_Rogue_Transmission;
-    List<string> OnMapProhibitedWeapons_Dawnbreaker;
-    List<string> OnMapProhibitedWeapons_Silk_Road;
-    List<string> OnMapProhibitedWeapons_Altai_Range;
-    List<string> OnMapProhibitedWeapons_Guilin_Peaks;
-    List<string> OnMapProhibitedWeapons_Dragon_Pass;
-    List<string> OnMapProhibitedWeapons_Firestorm;
-    List<string> OnMapProhibitedWeapons_Metro;
-    List<string> OnMapProhibitedWeapons_Oman;
-    List<string> OnMapProhibitedWeapons_Caspian;
+    //List<string> OnMapProhibitedWeapons_Zavod_311;
+    //List<string> OnMapProhibitedWeapons_Lancang_Dam;
+    //List<string> OnMapProhibitedWeapons_Flood_Zone;
+    //List<string> OnMapProhibitedWeapons_Golmud_Railway;
+    //List<string> OnMapProhibitedWeapons_Paracel_Storm;
+    //List<string> OnMapProhibitedWeapons_Operation_Locker;
+    //List<string> OnMapProhibitedWeapons_Hainan_Resort;
+    //List<string> OnMapProhibitedWeapons_Siege_of_Shanghai;
+    //List<string> OnMapProhibitedWeapons_Rogue_Transmission;
+    //List<string> OnMapProhibitedWeapons_Dawnbreaker;
+    //List<string> OnMapProhibitedWeapons_Silk_Road;
+    //List<string> OnMapProhibitedWeapons_Altai_Range;
+    //List<string> OnMapProhibitedWeapons_Guilin_Peaks;
+    //List<string> OnMapProhibitedWeapons_Dragon_Pass;
+    //List<string> OnMapProhibitedWeapons_Firestorm;
+    //List<string> OnMapProhibitedWeapons_Metro;
+    //List<string> OnMapProhibitedWeapons_Oman;
+    //List<string> OnMapProhibitedWeapons_Caspian;
 
 // Update Check Variables
 private    Match match;
@@ -123,8 +123,10 @@ private volatile bool readconfig = false;
 public volatile bool plugin_enabled = false;
 private volatile bool plugin_loaded = false;
 private volatile bool serverInfoloaded = false;
+private volatile bool stop_init = false;
 private bool taskPlanerUpdateNeeded = false;
 private enumBoolYesNo advanced_mode = enumBoolYesNo.No;
+private enumBoolYesNo expert_mode = enumBoolYesNo.No;
 private enumBoolYesNo pm_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo fm_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo kom_isEnabled = enumBoolYesNo.No;
@@ -132,6 +134,13 @@ private enumBoolYesNo pom_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo mWhitelist_isEnabled  = enumBoolYesNo.No;
 private enumBoolYesNo showweaponcode = enumBoolYesNo.No;
 private enumBoolYesNo agresive_startup = enumBoolYesNo.No;
+
+private enumBoolYesNo rules_enable = enumBoolYesNo.Yes;
+private string rules_method = "both";
+private enumBoolYesNo rules_firstjoin = enumBoolYesNo.Yes;
+private int rules_time = 3;
+private List<string> spawnedPlayer = new List<string>();
+
 private List<string> m_ClanWhitelist;
 private List<string> m_PlayerWhitelist;
 private volatile string startup_mode_def;
@@ -295,6 +304,7 @@ private int     pm_PlayerSpawnCount = 100;
 private List<string> pm_Rules;
 private List<string> pm_MapList;
 private int pm_max_Warns = 2;
+private enumBoolYesNo autoKickAll = enumBoolYesNo.No;
 
 
 // FLAGRUN MODE VARS
@@ -500,24 +510,24 @@ public ExtraServerFuncs() {
 
 
 
-    OnMapProhibitedWeapons_Zavod_311 = new List<string>();
-    OnMapProhibitedWeapons_Lancang_Dam = new List<string>();
-    OnMapProhibitedWeapons_Flood_Zone = new List<string>();
-    OnMapProhibitedWeapons_Golmud_Railway = new List<string>();
-    OnMapProhibitedWeapons_Paracel_Storm = new List<string>();
-    OnMapProhibitedWeapons_Operation_Locker = new List<string>();
-    OnMapProhibitedWeapons_Hainan_Resort = new List<string>();
-    OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>();
-    OnMapProhibitedWeapons_Rogue_Transmission = new List<string>();
-    OnMapProhibitedWeapons_Dawnbreaker = new List<string>();
-    OnMapProhibitedWeapons_Silk_Road = new List<string>();
-    OnMapProhibitedWeapons_Altai_Range = new List<string>();
-    OnMapProhibitedWeapons_Guilin_Peaks = new List<string>();
-    OnMapProhibitedWeapons_Dragon_Pass = new List<string>();
-    OnMapProhibitedWeapons_Firestorm = new List<string>();
-    OnMapProhibitedWeapons_Metro = new List<string>();
-    OnMapProhibitedWeapons_Oman = new List<string>();
-    OnMapProhibitedWeapons_Caspian = new List<string>();
+    //OnMapProhibitedWeapons_Zavod_311 = new List<string>();
+    //OnMapProhibitedWeapons_Lancang_Dam = new List<string>();
+    //OnMapProhibitedWeapons_Flood_Zone = new List<string>();
+    //OnMapProhibitedWeapons_Golmud_Railway = new List<string>();
+    //OnMapProhibitedWeapons_Paracel_Storm = new List<string>();
+    //OnMapProhibitedWeapons_Operation_Locker = new List<string>();
+    //OnMapProhibitedWeapons_Hainan_Resort = new List<string>();
+    //OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>();
+    //OnMapProhibitedWeapons_Rogue_Transmission = new List<string>();
+    //OnMapProhibitedWeapons_Dawnbreaker = new List<string>();
+    //OnMapProhibitedWeapons_Silk_Road = new List<string>();
+    //OnMapProhibitedWeapons_Altai_Range = new List<string>();
+    //OnMapProhibitedWeapons_Guilin_Peaks = new List<string>();
+    //OnMapProhibitedWeapons_Dragon_Pass = new List<string>();
+    //OnMapProhibitedWeapons_Firestorm = new List<string>();
+    //OnMapProhibitedWeapons_Metro = new List<string>();
+    //OnMapProhibitedWeapons_Oman = new List<string>();
+    //OnMapProhibitedWeapons_Caspian = new List<string>();
 
 
 
@@ -1083,21 +1093,57 @@ private void ShowRules()
 private void ShowRules(string playerName)
 		{
 			WritePluginConsole("Read Servermode for show rules: " + serverMode, "Info", 6);
-			if (serverMode == "normal")  ShowRules(playerName, nm_Rules);
-			if (serverMode == "private") ShowRules(playerName, pm_Rules);
-            if (serverMode == "knife") ShowRules(playerName, kom_Rules);
-            if (serverMode == "pistol") ShowRules(playerName, pom_Rules);
-            if (serverMode == "flagrun") ShowRules(playerName, fm_Rules);
+			if (serverMode == "normal")  ShowRules(playerName, nm_Rules, false);
+            if (serverMode == "private") ShowRules(playerName, pm_Rules, false);
+            if (serverMode == "knife") ShowRules(playerName, kom_Rules, false);
+            if (serverMode == "pistol") ShowRules(playerName, pom_Rules, false);
+            if (serverMode == "flagrun") ShowRules(playerName, fm_Rules, false);
             
 		}
-		
-private void ShowRules(string playerName, List<string> RulesList)
+
+private void ShowRules(string playerName , bool firstspawn)
+{
+    WritePluginConsole("Read Servermode for show rules: " + serverMode, "Info", 6);
+    if (serverMode == "normal") ShowRules(playerName, nm_Rules, firstspawn);
+    if (serverMode == "private") ShowRules(playerName, pm_Rules, firstspawn);
+    if (serverMode == "knife") ShowRules(playerName, kom_Rules, firstspawn);
+    if (serverMode == "pistol") ShowRules(playerName, pom_Rules, firstspawn);
+    if (serverMode == "flagrun") ShowRules(playerName, fm_Rules, firstspawn);
+
+}
+
+
+private void ShowRules(string playerName, List<string> RulesList , bool firstspawn)
 		{
-			foreach (string rule in RulesList)
+            int delay = 0;
+
+            if (firstspawn) delay = 7;  // Set waittime for first spawn
+    
+            foreach (string rule in RulesList)
 			{
 				WritePluginConsole("Sending Rule to " + playerName + " rule: " + rule, "Info", 6);
-				if (playerName == "all") SendGlobalMessage(rule);
-				if (playerName != "all") SendPlayerMessage(playerName, rule);
+                
+                if (rules_method == "chat")
+                {
+                    if (playerName == "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.say", StripModifiers(E(rule)), "all");
+                    if (playerName != "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.say", StripModifiers(E(rule)), "player", playerName);
+                }
+                if (rules_method == "yell")
+                {
+                    if (playerName == "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.yell", StripModifiers(E(rule)), rules_time.ToString(), "all");
+                    if (playerName != "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.yell", StripModifiers(E(rule)), rules_time.ToString(), "player", playerName);
+                }
+                if (rules_method == "both")
+                {
+
+
+                    if (playerName == "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.say", StripModifiers(E(rule)), "all");
+                    if (playerName != "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.say", StripModifiers(E(rule)), "player", playerName);
+                    if (playerName == "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.yell", StripModifiers(E(rule)), rules_time.ToString(), "all");
+                    if (playerName != "all") this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", delay.ToString(), "1", "1", "procon.protected.send", "admin.yell", StripModifiers(E(rule)), rules_time.ToString(), "player", playerName);
+                }
+                delay = delay + rules_time;
+
 			}
 		}
 
@@ -1294,26 +1340,49 @@ private bool IsAdmin(string speaker)
       return isAdmin;
     }
 
+public void ResetUpdateCheck()
+{
+
+    WritePluginConsole("[ResetUpdateCheck]", "DEBUG", 6);
+    if (!isNewVersion()) CheckedOnUpdates = false; // Get Resettet from a Timer evry hour if no Update is aviable
+    
+}
+public bool isNewVersion()
+{
+    return isNewVersion(GetPluginVersion());
+}
 
 public bool isNewVersion(string currentPluginVersion)
 {
     WritePluginConsole("Check on Updates...", "INFO", 6);
-    CheckedOnUpdates = false; // Get Resettet from a Timer evry hour, later
+   
 
 
     if (!CheckedOnUpdates)
     {
         WritePluginConsole("Fetch Online Version...", "DEBUG", 8);
-        match = Regex.Match((String)client.getWebsite(), @"\s*([0-9][.][0-9][.][0-9][.][0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
-        onlineversion = Regex.Match(match.Groups[1].ToString(), @"\s*([0-9])[.]([0-9])[.]([0-9])[.]([0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        
+        string webResult = (String)client.getWebsite();
 
         localversion = Regex.Match(currentPluginVersion, @"\s*([0-9])[.]([0-9])[.]([0-9])[.]([0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
+        if (webResult.StartsWith("System.Security.SecurityException"))
+        {
+            WritePluginConsole("Could not fetch Online Version. Is Sandbox enabled ??","ERROR",4);
+            WritePluginConsole("Could not fetch Online Version. Please check on updates by yourselv !", "WARN", 2);
+            match = Regex.Match("0.0.0.0", @"\s*([0-9][.][0-9][.][0-9][.][0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        }
+        else
+        {
+            match = Regex.Match(webResult, @"\s*([0-9][.][0-9][.][0-9][.][0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        }
+
+        onlineversion = Regex.Match(match.Groups[1].ToString(), @"\s*([0-9])[.]([0-9])[.]([0-9])[.]([0-9])\s*", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         localV = (Convert.ToInt32(localversion.Groups[1].ToString()) * 1000) + (Convert.ToInt32(localversion.Groups[2].ToString()) * 100) + (Convert.ToInt32(localversion.Groups[3].ToString()) * 10) + (Convert.ToInt32(localversion.Groups[4].ToString()));
         onlineV = (Convert.ToInt32(onlineversion.Groups[1].ToString()) * 1000) + (Convert.ToInt32(onlineversion.Groups[2].ToString()) * 100) + (Convert.ToInt32(onlineversion.Groups[3].ToString()) * 10) + (Convert.ToInt32(onlineversion.Groups[4].ToString()));
         CheckedOnUpdates = true;
+
     }
     WritePluginConsole("Local Version: " + currentPluginVersion, "DEBUG", 8);
     WritePluginConsole("Online Version: " + onlineversion.Value.ToString(), "DEBUG", 8);
@@ -1326,6 +1395,9 @@ public bool isNewVersion(string currentPluginVersion)
         WritePluginConsole("Update to version " + onlineversion.Value.ToString() + " now", "INFO", 0);
         WritePluginConsole("Check the download link in Plugin description", "INFO", 0);
         WritePluginConsole("========================================================", "INFO", 0);
+
+        WritePluginEvent("UPDATE IS AVIABLE: Update to version " + onlineversion.Value.ToString() + " now", "Extra Server Funcs");
+        
         return true;
 
 
@@ -2093,7 +2165,7 @@ public void WriteServerConfig(string newName, string Description, string Message
                 this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
                 this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
 
-                WritePRoConConfig(PRoConConfig);
+                if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
             }
 
     
@@ -2503,7 +2575,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.8";
+	return "0.0.2.9";
 }
 
 public string GetPluginAuthor() {
@@ -2718,6 +2790,19 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.2.9 (22-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Reduced Update check on one per hour<br/>
+    - Added a fail correction if ProCon can not fetch the online plugin version (e.g. in Sandboxed PRoCon)<br/>
+    - Added Expert Mode <br/>
+    - Added Option for AutoKick All when Server switch to Private Mode <br/>
+    - Added a Rules Enable and Disable option <br/>
+    - Rules get shown delayed now <br/>
+    - Added Show Rules on First Spawn option  <br/>
+    - Fixed the bug that Plugin State don´t get shown util user refeshed variables <br/>
+    - Fixed the bug that Plugin Init can not get stopped <br/>
+</blockquote>
+
 <blockquote><h4>0.0.2.8 (21-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Changed a few little things on Update Check<br/>
@@ -2951,18 +3036,22 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Countdown Timer", typeof(int), countdown_time));
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Weaponcodes", typeof(enumBoolYesNo), showweaponcode));			
 
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|Enable Server Rules", typeof(enumBoolYesNo), rules_enable));
+            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules in...", "enum.rules_method(chat|yell|both)", rules_method));
+            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules on first spawn", typeof(enumBoolYesNo), rules_firstjoin));
+            if (rules_enable == enumBoolYesNo.Yes && advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules Time", typeof(int), rules_time));
+
             
-            
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Autoconfig", typeof(enumBoolYesNo), autoconfig));			
-            if (advanced_mode == enumBoolYesNo.Yes )lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", typeof(string), ""));
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Autoconfig", typeof(enumBoolYesNo), autoconfig));
+            if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", typeof(string), ""));
             
             
 
             // NORMAL MODE SETTING ##################################################################################################################
 
 
-            
-            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Rules", typeof(string[]), nm_Rules.ToArray()));
+
+            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Rules", typeof(string[]), nm_Rules.ToArray()));
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), nm_Servername));
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Description", typeof(string), nm_Serverdescription));
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Message", typeof(string), nm_ServerMessage));
@@ -2977,7 +3066,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             }
             if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Player Spawn Time", typeof(int), nm_PlayerSpawnCount));
             lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
-            if (advanced_mode == enumBoolYesNo.Yes )lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
+            if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
             
 
             
@@ -2990,8 +3079,8 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             
             if (pm_isEnabled == enumBoolYesNo.Yes) // PRIVATE MODE
             {
-                
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Rules", typeof(string[]), pm_Rules.ToArray()));
+
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Rules", typeof(string[]), pm_Rules.ToArray()));
 
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Name", typeof(string), pm_Servername));
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Description", typeof(string), pm_Serverdescription));
@@ -3007,7 +3096,9 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_ClanWhitelist", typeof(string[]), pm_ClanWhitelist.ToArray()));
                 lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PlayerWhitelist", typeof(string[]), pm_PlayerWhitelist.ToArray()));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PRoCon Config", typeof(string[]), pmPRoConConfig.ToArray()));
+                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PRoCon Config", typeof(string[]), pmPRoConConfig.ToArray()));
+
+                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Autokick All on enable", typeof(enumBoolYesNo), autoKickAll));
             }
 
             
@@ -3022,7 +3113,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (fm_isEnabled == enumBoolYesNo.Yes) // FLAGRUN MODE
             {
 
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Rules", typeof(string[]), fm_Rules.ToArray()));
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Rules", typeof(string[]), fm_Rules.ToArray()));
 
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Name", typeof(string), fm_Servername));
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Description", typeof(string), fm_Serverdescription));
@@ -3041,7 +3132,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Max Player Warns", typeof(int), fm_max_Warns));
                  lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", fm_PlayerAction));
                  if (fm_PlayerAction == "tban" || fm_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_TBan Minutes", typeof(int), fm_ActionTbanTime));
-                 if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PRoCon Config", typeof(string[]), fmPRoConConfig.ToArray()));
+                 if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PRoCon Config", typeof(string[]), fmPRoConConfig.ToArray()));
                 
 
                  
@@ -3056,7 +3147,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (kom_isEnabled == enumBoolYesNo.Yes) // KNIFE ONLY MODE
             {
 
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Rules", typeof(string[]), kom_Rules.ToArray()));
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Rules", typeof(string[]), kom_Rules.ToArray()));
 
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Name", typeof(string), kom_Servername));
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Description", typeof(string), kom_Serverdescription));
@@ -3075,7 +3166,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Max Player Warns", typeof(int), kom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Action", "enum.kom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", kom_PlayerAction));
                 if (kom_PlayerAction == "tban" || kom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_TBan Minutes", typeof(int), kom_ActionTbanTime));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PRoCon Config", typeof(string[]), komPRoConConfig.ToArray()));
+                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PRoCon Config", typeof(string[]), komPRoConConfig.ToArray()));
 
 
 
@@ -3094,7 +3185,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             if (pom_isEnabled == enumBoolYesNo.Yes) // PISTOL ONLY MODE
             {
 
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Rules", typeof(string[]), pom_Rules.ToArray()));
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Rules", typeof(string[]), pom_Rules.ToArray()));
 
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Name", typeof(string), pom_Servername));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Description", typeof(string), pom_Serverdescription));
@@ -3113,7 +3204,7 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
+                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
                 //PISTOLS
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~  PISTOLS  ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
 
@@ -3189,6 +3280,8 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             // Special Settings
             lstReturn.Add(new CPluginVariable("7. Special Settings|Debug level", fDebugLevel.GetType(), fDebugLevel));
             lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Advanced Mode", typeof(enumBoolYesNo), advanced_mode));
+            if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Expert Mode", typeof(enumBoolYesNo), expert_mode));
+            
 
             // Map Prohibited Weapons ####################################################################################################
             
@@ -3376,10 +3469,18 @@ public void SetPluginVariable(string strVariable, string strValue) {
     if (Regex.Match(strVariable, @"Enable Advanced Mode").Success)
     {
         if (strValue == "Yes") advanced_mode = enumBoolYesNo.Yes;
-        if (strValue == "No") advanced_mode = enumBoolYesNo.No;
+        if (strValue == "No")
+        {
+            advanced_mode = enumBoolYesNo.No;
+            expert_mode = enumBoolYesNo.No; // Disable Expert Mode if advanced mode is off
+        }
     }
 
-    
+    if (Regex.Match(strVariable, @"Enable Expert Mode").Success)
+    {
+        if (strValue == "Yes") expert_mode = enumBoolYesNo.Yes;
+        if (strValue == "No") expert_mode = enumBoolYesNo.No;
+    }
 
 
 	if (Regex.Match(strVariable, @"Plugin Command").Success)
@@ -3524,6 +3625,35 @@ public void SetPluginVariable(string strVariable, string strValue) {
     {
         g_ActionTbanTime = Convert.ToInt32(strValue);
     }
+
+    if (Regex.Match(strVariable, @"Enable Server Rules").Success)
+    {
+        if (strValue == "Yes") rules_enable = enumBoolYesNo.Yes;
+        if (strValue == "No") rules_enable = enumBoolYesNo.No;
+    }
+
+    if (Regex.Match(strVariable, @"Show Rules in...").Success)
+    {
+        rules_method = strValue;
+    }
+    
+    
+    
+    if (Regex.Match(strVariable, @"Show Rules on first spawn").Success)
+    {
+        if (strValue == "Yes") rules_firstjoin = enumBoolYesNo.Yes;
+        if (strValue == "No") rules_firstjoin = enumBoolYesNo.No;
+    }
+    
+    
+    
+    if (Regex.Match(strVariable, @"Show Rules Time").Success)
+    {
+        rules_time = Convert.ToInt32(strValue);
+    }
+
+
+
 
 
 
@@ -3761,6 +3891,15 @@ public void SetPluginVariable(string strVariable, string strValue) {
     {
         pm_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
     }
+
+    if (Regex.Match(strVariable, @"PM_Autokick All on enable").Success)
+    {
+        if (strValue == "Yes") autoKickAll = enumBoolYesNo.Yes;
+        if (strValue == "No") autoKickAll = enumBoolYesNo.No;
+       
+    }
+    
+
 
     // FLAGRUN MODE VARIABLEN
     if (Regex.Match(strVariable, @"Flagrun Mode").Success)
@@ -4502,9 +4641,10 @@ public void OnCommand_Cancel(string strSpeaker, string strText, MatchCommand mtc
 
 public void OnPluginEnable() 
 {
-
-    InitPlugin();  
-    
+    stop_init = false;
+    WritePluginConsole(" - Thanks for using :)", "ENABLED", 0);
+    InitPlugin();
+    this.ExecuteCommand("procon.protected.tasks.add", "ExtraServerFuncs_CheckUpdate_Intervall", "3600", "3600" , "-1", "procon.protected.plugins.call", "ExtraServerFuncs", "ResetUpdateCheck"); // Check Online Version evry 60 Minutes
 }
 public void InitPlugin()
 {
@@ -4513,6 +4653,9 @@ public void InitPlugin()
         Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
         {
             Thread.Sleep(4000);
+            
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
+
             if (thermsofuse == "YES")
             {
                 WritePluginConsole("User acctepted the therms of use... run Plugin init...", "INFO", 0);
@@ -4530,7 +4673,7 @@ public void InitPlugin()
             
             WritePluginConsole("Init Plugin...", "INFO", 0);
             Thread.Sleep(2000);
-
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
 
 
 
@@ -4542,7 +4685,7 @@ public void InitPlugin()
                 Thread.Sleep(30000); // Wenn Procon das erste mal gestartet wird 30 sekunden Warten
                 firstload_sleep = false;
             }
-            
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
             
 
             WritePluginConsole("Set Startup Vars...", "INFO", 2);
@@ -4556,10 +4699,11 @@ public void InitPlugin()
             fIsEnabled = true;
 
             Thread.Sleep(1000);
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
             WritePluginConsole("Update Current Server Variables", "DEBUG", 10);
             UdateServerConfig();
             Thread.Sleep(1000);
-
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
 
 
             serverMode = "plugin_init";
@@ -4592,12 +4736,16 @@ public void InitPlugin()
             }
 
 
-            WritePluginConsole(" - Thanks for using :)", "ENABLED", 0);
+            
 
 
 
             WritePluginConsole("^3Wait on: OnServerInfo()", "DEBUG", 10);
-            while (!serverInfoloaded) { Thread.Sleep(500); } // Wait on Server Info
+            
+            while (!serverInfoloaded && !stop_init) { Thread.Sleep(500); } // Wait on Server Info
+            
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
+            
             WritePluginConsole("^2Recived: OnServerInfo()", "DEBUG", 10);
 
 
@@ -4637,7 +4785,8 @@ public void InitPlugin()
             plugin_loaded = true;
 
             isNewVersion(GetPluginVersion()); // Check on Update
-
+            SetPluginSetting("REFRESH PLUGIN VARIABLES", ""); // Refresh to get shown State Display after Init
+            WritePluginConsole("....ready! Do my work now :)", "INFO", 2);
             return;
             }));
 
@@ -4658,18 +4807,20 @@ public void InitPlugin()
 private void RegisterAllCommands()
 {
     WritePluginConsole("[RegisterAllCommands]", "DEBUG", 6);
-    this.RegisterCommand(
-                     new MatchCommand(
-                         "ExtraServerFuncs",
-                         "OnCommand_Rules",
-                         this.Listify<string>("@", "!", "/"),
-                         rules_command,
-                         this.Listify<MatchArgumentFormat>(),
-                         new ExecutionRequirements(
-                             ExecutionScope.All), // PUBLIC COMMAND
-                         "Show current rules"
-                     ));
-
+    if (rules_enable == enumBoolYesNo.Yes)
+    {
+        this.RegisterCommand(
+                         new MatchCommand(
+                             "ExtraServerFuncs",
+                             "OnCommand_Rules",
+                             this.Listify<string>("@", "!", "/"),
+                             rules_command,
+                             this.Listify<MatchArgumentFormat>(),
+                             new ExecutionRequirements(
+                                 ExecutionScope.All), // PUBLIC COMMAND
+                             "Show current rules"
+                         ));
+    }
     //this.RegisterCommand(
     //                new MatchCommand(
     //                    "ExtraServerFuncs",
@@ -4811,18 +4962,20 @@ if (pom_isEnabled == enumBoolYesNo.Yes) this.RegisterCommand(
 private void UnRegisterAllCommands()
 {
     WritePluginConsole("[UnRegisterAllCommands]", "DEBUG", 6);
-    this.UnregisterCommand(
-                     new MatchCommand(
-                         "ExtraServerFuncs",
-                         "OnCommand_Rules",
-                         this.Listify<string>("@", "!", "/"),
-                         rules_command,
-                         this.Listify<MatchArgumentFormat>(),
-                         new ExecutionRequirements(
-                             ExecutionScope.All), // PUBLIC COMMAND
-                         "Show current rules"
-                     ));
-
+    if (rules_enable == enumBoolYesNo.Yes)
+    {
+        this.UnregisterCommand(
+                         new MatchCommand(
+                             "ExtraServerFuncs",
+                             "OnCommand_Rules",
+                             this.Listify<string>("@", "!", "/"),
+                             rules_command,
+                             this.Listify<MatchArgumentFormat>(),
+                             new ExecutionRequirements(
+                                 ExecutionScope.All), // PUBLIC COMMAND
+                             "Show current rules"
+                         ));
+    }
     //this.UnregisterCommand(
     //                new MatchCommand(
     //                    "ExtraServerFuncs",
@@ -5068,9 +5221,14 @@ public void OnPluginDisable() {
     WritePluginConsole("OnPluginDisable()", "DEBUG", 6);
 
     this.ExecuteCommand("procon.protected.tasks.remove", "Switch");
+    this.ExecuteCommand("procon.protected.tasks.remove", "ExtraServerFuncs_CheckUpdate_Intervall");
+    
+    // Threads have to been stoped here !!!!!!!!!
+
     plugin_enabled = false;
     plugin_loaded = false;
     fIsEnabled = false;
+    stop_init = true;
     UnRegisterAllCommands();
 
     WritePluginConsole("", "DISABLED", 0);
@@ -5345,6 +5503,11 @@ public override void OnPlayerLeft(CPlayerInfo playerInfo)
 {
     WritePluginConsole("[OnPlayerLeft()]", "DEBUG", 6);
     players.Remove(playerInfo.SoldierName);
+
+    if (spawnedPlayer.Contains(playerInfo.SoldierName))
+    {
+        spawnedPlayer.Remove(playerInfo.SoldierName);
+    }
 
 }
 
@@ -5799,6 +5962,12 @@ public override void OnPlayerSpawned(string soldierName, Inventory spawnedInvent
 players.Add(soldierName);
 WritePluginConsole("Player spawn detected. Playername = " + soldierName, "DEBUG",8);
 
+if (!spawnedPlayer.Contains(soldierName))
+{
+    spawnedPlayer.Add(soldierName);
+    if (rules_firstjoin == enumBoolYesNo.Yes) ShowRules(soldierName, true); // Show firstspan server rules
+
+}
 
 
 
@@ -5823,6 +5992,9 @@ public override void OnRoundOverTeamScores(List<TeamScore> teamScores) { }
 
 public override void OnRoundOver(int winningTeamId) {
 players.ResetData();
+
+
+
 if (IsSwitchDefined() && plugin_enabled) SwitchServerMode(next_serverMode);
 
 }
@@ -5840,13 +6012,24 @@ public override void OnLevelStarted()
 public override void OnLevelLoaded(string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal) // BF3
 {
     WritePluginConsole("^1^b[OnLevelLoaded]", "DEBUG", 6);
-    WritePluginConsole("^4^bStarted next round: ^2^n " + mapFileName + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 4);
-    WritePluginConsole("^4^bStarted next round: ^2^n " + ToFriendlyMapName(mapFileName) + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 2);
+    WritePluginConsole("^4^bStarted next round: ^2^n " + mapFileName + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 8);
+    WritePluginConsole("^4^bStarted next round: ^2^n " + ToFriendlyMapName(mapFileName) + "^5 " + Gamemode + " ^0 Round " + roundsPlayed.ToString() + " of " + roundsTotal.ToString(), "INFO", 6);
     WritePluginConsole("[OnLevelLoaded] " + mapFileName,"DEBUG", 8);
     currentMapFileName = mapFileName;
     currentGamemode = Gamemode;
     currentRound = roundsPlayed;
     totalRounds = roundsTotal;
+    spawnedPlayer.Clear();
+    if (serverMode == "private" && autoKickAll == enumBoolYesNo.Yes)
+    {
+        WritePluginConsole("Auto Kick All is enabled... Kicking all not whitelisted players...", "INFO", 2);
+        {
+            KickAll();
+        }
+
+    }
+    
+    
 
 
 }
