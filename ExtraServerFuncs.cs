@@ -57,6 +57,7 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
 */
 // VARS TO TRY SOMETHING
     private bool isInitValidWeaponList = false;
+    private bool isInitWeaponDictionarys = false;
     private bool isInitMapList = false;
 
     List<string> ValidWeaponList;
@@ -64,6 +65,11 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     List<string> MapNameList;
     List<TeamScore> currentTeamScores = new List<TeamScore>();
     List<string> tmpBanList = new List<string>();
+    List<string> HandgunList = new List<string>();
+    List<string> BoltActionList = new List<string>();
+    List<string> AutoSniperList = new List<string>();
+    List<string> ShotgunList = new List<string>();
+    List<string> MeleeList = new List<string>();
 
     Dictionary<string, List<string>> ModeProhibitedWeapons = new Dictionary<string,List<string>>();
     Dictionary<string, List<string>> MapProhibitedWeapons = new Dictionary<string, List<string>>();
@@ -359,6 +365,15 @@ private int pom_max_Warns = 2;
 private string pom_PlayerAction = "pb_tban";
 private int pom_ActionTbanTime = 60;
 
+
+// New Weapon Dictionarys for Pistol, Shotgun, DMR, Sniper ( 0.0.3.0 )
+Dictionary<string, enumBoolYesNo> Allow_Handguns = new Dictionary<string, enumBoolYesNo>();
+Dictionary<string, enumBoolYesNo> Allow_Shotguns = new Dictionary<string, enumBoolYesNo>();
+Dictionary<string, enumBoolYesNo> Allow_Autosniper = new Dictionary<string, enumBoolYesNo>();
+Dictionary<string, enumBoolYesNo> Allow_Boltaction = new Dictionary<string, enumBoolYesNo>();
+
+        
+// OLD HANDGUN LISTS        
 private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
 private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
 private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
@@ -444,98 +459,6 @@ public ExtraServerFuncs() {
     
     
     MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
-        
-  
-    //    // NORMAL MAPS    // BF4
-        
-    //    MapFileNames.Add("Zavod 311", "MP_Abandoned");
-    //    MapFileNames.Add("Lancang Dam", "MP_Damage");
-    //    MapFileNames.Add("Flood Zone", "MP_Flooded");
-    //    MapFileNames.Add("Golmud Railway", "MP_Journey");
-    //    MapFileNames.Add("Paracel Storm", "MP_Naval");
-    //    MapFileNames.Add("Operation Locker", "MP_Prison");
-    //    MapFileNames.Add("Hainan Resort", "MP_Resort");
-    //    MapFileNames.Add("Siege of Shanghai", "MP_Siege");
-    //    MapFileNames.Add("Rogue Transmission", "MP_TheDish");
-    //    MapFileNames.Add("Dawnbreaker", "MP_Tremors");
-    //    // China Rising
-    //    MapFileNames.Add("Silk Road", "XP1_001");
-    //    MapFileNames.Add("Altai Range", "XP1_002");
-    //    MapFileNames.Add("Guilin Peaks", "XP1_003");
-    //    MapFileNames.Add("Dragon Pass", "XP1_004");
-    //    // Secend Assault
-    //    MapFileNames.Add("Caspian Border 2014", "XP0_Caspian");
-    //    MapFileNames.Add("Firestorm 2014", "XP0_Firestorm");
-    //    MapFileNames.Add("Operation Metro 2014", "XP0_Metro");
-    //    MapFileNames.Add("Gulf of Oman 2014", "XP0_Oman");
-   
-
-
-    //    // BF3 MAPS
-
-    //    MapFileNames.Add("Grand Bazaar", "MP_001");
-    //    MapFileNames.Add("Teheran Highway", "MP_003");
-    //    MapFileNames.Add("Caspian Border", "MP_007");
-    //    MapFileNames.Add("Seine Crossing", "MP_011");
-
-
-    //    MapFileNames.Add("Operation Firestorm", "MP_012");
-    //    MapFileNames.Add("Damavand Peak", "MP_013");
-    //    MapFileNames.Add("Noshahr Canals", "MP_017");
-    //    MapFileNames.Add("Kharg Island", "MP_018");
-    //    MapFileNames.Add("Operation Metro", "MP_Subway");
-    //    MapFileNames.Add("Gulf of Oman", "XP1_002");
-    //    MapFileNames.Add("Bandar Desert", "XP3_Desert");
-    //    MapFileNames.Add("Alborz Mountains", "XP3_Alborz");
-    //    MapFileNames.Add("Armored Shield", "XP3_Shield");
-    //    MapFileNames.Add("Death Valley", "XP3_Valley");
-    //    MapFileNames.Add("Markaz Monolith", "XP4_FD");
-    //    MapFileNames.Add("Azadi Palace", "XP4_Parl");
-    //    MapFileNames.Add("Epicenter", "XP4_Quake");
-    //    MapFileNames.Add("Operation Riverside", "XP5_001");
-    //    MapFileNames.Add("Nebandan Flats", "XP5_002");
-    //    MapFileNames.Add("Kiasar Railroad", "XP5_003");
-    //    MapFileNames.Add("Sabalan Pipeline", "XP5_004");
-    //    MapFileNames.Add("Strike at Karkand", "XP1_001");
-    //    MapFileNames.Add("Sharqi Peninsula", "XP1_003");
-    //    MapFileNames.Add("Wake Island", "XP1_004");
-    //    MapFileNames.Add("Talah Market", "XP4_Rubble");
-
-
-
-
-
-
-
-
-
-
-    //OnMapProhibitedWeapons_Zavod_311 = new List<string>();
-    //OnMapProhibitedWeapons_Lancang_Dam = new List<string>();
-    //OnMapProhibitedWeapons_Flood_Zone = new List<string>();
-    //OnMapProhibitedWeapons_Golmud_Railway = new List<string>();
-    //OnMapProhibitedWeapons_Paracel_Storm = new List<string>();
-    //OnMapProhibitedWeapons_Operation_Locker = new List<string>();
-    //OnMapProhibitedWeapons_Hainan_Resort = new List<string>();
-    //OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>();
-    //OnMapProhibitedWeapons_Rogue_Transmission = new List<string>();
-    //OnMapProhibitedWeapons_Dawnbreaker = new List<string>();
-    //OnMapProhibitedWeapons_Silk_Road = new List<string>();
-    //OnMapProhibitedWeapons_Altai_Range = new List<string>();
-    //OnMapProhibitedWeapons_Guilin_Peaks = new List<string>();
-    //OnMapProhibitedWeapons_Dragon_Pass = new List<string>();
-    //OnMapProhibitedWeapons_Firestorm = new List<string>();
-    //OnMapProhibitedWeapons_Metro = new List<string>();
-    //OnMapProhibitedWeapons_Oman = new List<string>();
-    //OnMapProhibitedWeapons_Caspian = new List<string>();
-
-
-
-
-
-
-    
-            
 
 
 
@@ -757,10 +680,77 @@ private void InitValidWeaponList()
     foreach (Weapon weapon in weapons)
     {
         ValidWeaponList.Add(FWeaponName(weapon.Name));
+
+        if (weapon.Damage == DamageTypes.Handgun)   // Create List of Pistols
+        {
+            HandgunList.Add(FWeaponName(weapon.Name));
+        }
+
+        if (weapon.Damage == DamageTypes.SniperRifle) // Create List of Bolt Action Rifles
+        {
+            BoltActionList.Add(FWeaponName(weapon.Name));
+        }
+
+        if (weapon.Damage == DamageTypes.DMR)       // Create List of Auto Sniper Rifles
+        {
+            AutoSniperList.Add(FWeaponName(weapon.Name));
+        }
+
+        if (weapon.Damage == DamageTypes.Shotgun)       // Create List of Shotguns
+        {
+            ShotgunList.Add(FWeaponName(weapon.Name));
+        }
+
+        if (weapon.Damage == DamageTypes.Melee)       // Create List of Melee type Weapons ( Melee, Defigbrilator, ???)
+        {
+            MeleeList.Add(FWeaponName(weapon.Name));
+        }
+
     }
+       
     isInitValidWeaponList = true;
     WritePluginConsole("[InitValidWeaponList] Weaponlist Contains " + (ValidWeaponList.Count).ToString() + " Weapons", "DEBUG", 6);
 }
+
+private void InitWeaponDictionarys()
+{
+
+    foreach (string _tmpWeapon in MeleeList) // Add Melees to each Dictionary
+    {
+        if (!Allow_Handguns.ContainsKey(_tmpWeapon)) Allow_Handguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
+        if (!Allow_Shotguns.ContainsKey(_tmpWeapon)) Allow_Shotguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
+        if (!Allow_Autosniper.ContainsKey(_tmpWeapon)) Allow_Autosniper.Add(_tmpWeapon, enumBoolYesNo.Yes);
+        if (!Allow_Boltaction.ContainsKey(_tmpWeapon)) Allow_Boltaction.Add(_tmpWeapon, enumBoolYesNo.Yes);
+    }
+       
+    foreach (string _tmpWeapon in HandgunList)  // HANDGUNS
+    {
+        if (!Allow_Handguns.ContainsKey(_tmpWeapon)) Allow_Handguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
+
+    }
+
+    foreach (string _tmpWeapon in ShotgunList) // Shotguns
+    {
+        if (!Allow_Shotguns.ContainsKey(_tmpWeapon)) Allow_Shotguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
+
+    }
+
+    foreach (string _tmpWeapon in BoltActionList) // Bolt Action Sniper Rifles
+    {
+        if (!Allow_Boltaction.ContainsKey(_tmpWeapon)) Allow_Boltaction.Add(_tmpWeapon, enumBoolYesNo.Yes);
+
+    }
+
+    foreach (string _tmpWeapon in AutoSniperList) // DMR, Autosniper 
+    {
+        if (!Allow_Autosniper.ContainsKey(_tmpWeapon)) Allow_Autosniper.Add(_tmpWeapon, enumBoolYesNo.Yes);
+
+    }
+
+    isInitWeaponDictionarys = true;
+
+}
+
 
 
 
@@ -859,8 +849,13 @@ private void PluginCommand(string cmdspeaker, string cmd) // Routine zur Bereits
             WritePluginConsole("Start test...", "TRY", 0);
 
             WritePluginConsole("Current ServerUptime is: " + ServerUptime, "TRY", 0);
-            WritePluginConsole("Current Winning Team is: Team " + GetWinningTeamID().ToString(), "TRY", 0); 
+            WritePluginConsole("Current Winning Team is: Team " + GetWinningTeamID().ToString(), "TRY", 0);
 
+            foreach (string pistol in HandgunList)
+            {
+                WritePluginConsole("HANDGUN: " + pistol, "DEBUG", 0);
+
+            }
 
             //foreach (KeyValuePair<string, string> tmpVar in tmpPluginVariables)
             //{
@@ -2575,7 +2570,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.2.9";
+	return "0.0.3.0";
 }
 
 public string GetPluginAuthor() {
@@ -2790,6 +2785,13 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.3.0 (23-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Get List of Pistols from PRoCon now<br/>
+    - Added some methods for future Gamemodes<br/>
+    - Edited Battlelog client. Now it sends header with each request<br/>
+</blockquote>
+
 <blockquote><h4>0.0.2.9 (22-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Reduced Update check on one per hour<br/>
@@ -3205,41 +3207,55 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                 lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
                 if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
                 if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
-                //PISTOLS
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~  PISTOLS  ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-
-                if (game_version == "BF4")
-                {
-
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SW40", typeof(enumBoolYesNo), pom_allowPistol_SW40));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
-                }
-
-                if (game_version == "BF3")
-                {
                 
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18)); // G17 & G18 Because there is only one weaponconde for it
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                
+                
+                //PISTOLS OLD VERSION !!!!!!!!!!!!!!!!!!
+                //lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ OLD PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                //if (game_version == "BF4")
+                //{
+
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SW40", typeof(enumBoolYesNo), pom_allowPistol_SW40));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                //}
+
+                //if (game_version == "BF3")
+                //{
+                
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18)); // G17 & G18 Because there is only one weaponconde for it
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
                     
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                //}
+
+                // NEW VERSION ( 0.0.3.0 )
+
+                if (!isInitWeaponDictionarys) InitWeaponDictionarys();
+                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Handguns)
+                {
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
+
                 }
 
                            
@@ -3247,10 +3263,13 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
             }
 
+            // NOTICE FOR FUTURE USE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            //if (!Allow_Shotguns.ContainsKey(_tmpWeapon)) Allow_Shotguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
+            //if (!Allow_Autosniper.ContainsKey(_tmpWeapon)) Allow_Autosniper.Add(_tmpWeapon, enumBoolYesNo.Yes);
+            //if (!Allow_Boltaction.ContainsKey(_tmpWeapon)) Allow_Boltaction.Add(_tmpWeapon, enumBoolYesNo.Yes);
 
-
-
-
+            // NOTICE FOR FUTURE USE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
             if (advanced_mode == enumBoolYesNo.Yes)
@@ -4318,97 +4337,119 @@ public void SetPluginVariable(string strVariable, string strValue) {
     {
         pom_ActionTbanTime = Convert.ToInt32(strValue);
     }
+    // NEW PISTOLS ( 0.0.3.0 )
 
 
-    if (Regex.Match(strVariable, @"POM_Allow M9").Success)
+    if (Regex.Match(strVariable, @"POM_Allow").Success)
     {
-        if (strValue == "Yes") pom_allowPistol_M9 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_M9 = enumBoolYesNo.No;
+        if (!isInitWeaponDictionarys) InitWeaponDictionarys(); // Init Dictionarys if not done yet !
+        string tmpVar = strVariable.Replace("POM_Allow " , "");      // Remove POM Indexer
+
+        //if (!Allow_Handguns.ContainsKey(tmpVar)) Allow_Handguns.Add(tmpVar, enumBoolYesNo.No);  // Create entry if not exist
+                
+        if (Allow_Handguns.ContainsKey(tmpVar))
+        {
+            if (strValue == "Yes") Allow_Handguns[tmpVar] = enumBoolYesNo.Yes;
+            if (strValue == "No") Allow_Handguns[tmpVar] = enumBoolYesNo.No;
+        }
+
+        
     }
 
-    if (Regex.Match(strVariable, @"POM_Allow QSZ-92").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_QSZ92 = enumBoolYesNo.No;
-    }
+  
 
-    if (Regex.Match(strVariable, @"POM_Allow MP-443").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_MP443 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_MP443 = enumBoolYesNo.No;
-    }
 
-    if (Regex.Match(strVariable, @"POM_Allow SHORTY 12G").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_Shorty = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_Shorty = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow G18").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_Glock18 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_Glock18 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow FN57").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_FN57 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_FN57 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow M1911").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_M1911 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_M1911 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow 93R").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_93R = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_93R = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow CZ-75").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_CZ75 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_CZ75 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow .44 MAGNUM").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_Taurus44 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow COMPACT 45").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_HK45C = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_HK45C = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow P226").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_P226 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_P226 = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow M412 REX").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_MP412Rex = enumBoolYesNo.No;
-    }
-
-    if (Regex.Match(strVariable, @"POM_Allow SW40").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_SW40 = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_SW40 = enumBoolYesNo.No;
-    }
     
-    if (Regex.Match(strVariable, @"POM_Allow KNIFE").Success)
-    {
-        if (strValue == "Yes") pom_allowPistol_Meele = enumBoolYesNo.Yes;
-        if (strValue == "No") pom_allowPistol_Meele = enumBoolYesNo.No;
-    }
+    //// OLD PISTOLS
+    //if (Regex.Match(strVariable, @"POM_Allow M9").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_M9 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_M9 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow QSZ-92").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_QSZ92 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow MP-443").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_MP443 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_MP443 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow SHORTY 12G").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_Shorty = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_Shorty = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow G18").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_Glock18 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_Glock18 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow FN57").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_FN57 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_FN57 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow M1911").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_M1911 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_M1911 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow 93R").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_93R = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_93R = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow CZ-75").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_CZ75 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_CZ75 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow .44 MAGNUM").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_Taurus44 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow COMPACT 45").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_HK45C = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_HK45C = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow P226").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_P226 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_P226 = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow M412 REX").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_MP412Rex = enumBoolYesNo.No;
+    //}
+
+    //if (Regex.Match(strVariable, @"POM_Allow SW40").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_SW40 = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_SW40 = enumBoolYesNo.No;
+    //}
+    
+    //if (Regex.Match(strVariable, @"POM_Allow KNIFE").Success)
+    //{
+    //    if (strValue == "Yes") pom_allowPistol_Meele = enumBoolYesNo.Yes;
+    //    if (strValue == "No") pom_allowPistol_Meele = enumBoolYesNo.No;
+    //}
 
     
 
@@ -5629,46 +5670,56 @@ private bool isprohibitedWeapon(string weapon)
             WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
             List<string> tmp_pistols = new List<string>();
 
-            if (game_version == "BF4")     // BF4 PISTOLS AND KNIFE
-            {
+            //if (game_version == "BF4")     // BF4 PISTOLS AND KNIFE
+            //{
 
-                if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
-                if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
-                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
-                if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
-                if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
-                if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
-                if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
-                if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
-                if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
-                if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-                if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
-                if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
-                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
-                if (pom_allowPistol_SW40 == enumBoolYesNo.Yes) tmp_pistols.Add("SW40");         //SW40
-                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
-                tmp_pistols.Add("Medkit"); // to fix a BUG with kill weapon Medkit
-                tmp_pistols.Add("Death");  // to fix the Problem with exploding tonns
-            }
-
-
+            //    if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
+            //    if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
+            //    if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
+            //    if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
+            //    if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
+            //    if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
+            //    if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
+            //    if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
+            //    if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
+            //    if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
+            //    if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
+            //    if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
+            //    if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
+            //    if (pom_allowPistol_SW40 == enumBoolYesNo.Yes) tmp_pistols.Add("SW40");         //SW40
+            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
+            //    tmp_pistols.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+            //    tmp_pistols.Add("Death");  // to fix the Problem with exploding tonns
+            //}
 
 
 
-            if (game_version == "BF3")     // BF3 PISTOLS AND KNIFE                     CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK
-            {
-                if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
-                if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP443/MP443");            //MP-443
-                if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
-                if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
-                if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
-                if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-                if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP412Rex/MP412REX");         //M412 REX
+
+
+            //if (game_version == "BF3")     // BF3 PISTOLS AND KNIFE                     CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK
+            //{
+            //    if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
+            //    if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP443/MP443");            //MP-443
+            //    if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
+            //    if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
+            //    if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
+            //    if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
+            //    if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP412Rex/MP412REX");         //M412 REX
                 
-                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife");   
-                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");
-                if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife_RazorBlade");
+            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife");   
+            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");
+            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife_RazorBlade");
+            //}
+
+            foreach (KeyValuePair<string,enumBoolYesNo> pistol in Allow_Handguns)
+            {
+                if (pistol.Value == enumBoolYesNo.Yes) tmp_pistols.Add(pistol.Key);
+
             }
+
+            tmp_pistols.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+            tmp_pistols.Add("Death");  // to fix the Problem with exploding tonns
+
 
 
             if (!tmp_pistols.Contains(weapon))
@@ -6251,6 +6302,11 @@ public class BattlelogClient : ExtraServerFuncs
         {
           if (client == null)
             client = new WebClient();
+
+          client.Headers["User-Agent"] =
+          "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) " +
+          "(compatible; MSIE 6.0; Windows NT 5.1; " +
+          ".NET CLR 1.1.4322; .NET CLR 2.0.50727)";
 
           html_data = client.DownloadString(url);
           return html_data;
