@@ -59,7 +59,8 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     private bool isInitValidWeaponList = false;
     private bool isInitWeaponDictionarys = false;
     private bool isInitMapList = false;
-
+    private bool isInstalledUMM = false;
+    private enumBoolYesNo useUmm = enumBoolYesNo.Yes;
     List<string> ValidWeaponList;
     List<string> GameModeList;
     List<string> MapNameList;
@@ -512,6 +513,31 @@ private void InitMapList()
 
     isInitMapList = true;
 }
+
+
+public bool IsUMM_installed()
+{
+    if (!isInstalledUMM)
+    {
+
+        List<MatchCommand> registered = this.GetRegisteredCommands();
+        foreach (MatchCommand command in registered)
+        {
+            if (command.RegisteredClassname.CompareTo("CUltimateMapManager") == 0)
+            {
+                WritePluginConsole("^bUltimate Map Manager^n detected", "INFO", 3);
+                return true;
+            }
+
+        }
+    }
+
+    return isInstalledUMM;
+    
+
+}
+
+
 
 public bool IsExtraTaskPlanerInstalled()
 {
@@ -2033,7 +2059,21 @@ public void SetExternalPluginSetting(String pluginName, String settingName, Stri
 }
 
 
+private void Enable_UMM(bool onoff)
+{
+    if (onoff)
+    {
+        WritePluginConsole("Enable Ultimate Map Manager", "INFO", 6);
+        this.ExecuteCommand("procon.protected.plugins.enable", "CUltimateMapManager", "true"); // Send Enable Command
+    }
+    else
+    {
+        WritePluginConsole("Disable Ultimate Map Manager", "INFO", 6);
+        this.ExecuteCommand("procon.protected.plugins.enable", "CUltimateMapManager", "false"); // Send Disbale Command
+    }
 
+
+}
 
 
 
@@ -2045,7 +2085,8 @@ public void SwitchServerMode(string newServerMode)  // Switch the current Server
     if (newServerMode == "normal") 
 	{
 	serverMode = "normal";
-	WriteServerConfig
+	
+    WriteServerConfig
 	(
 		nm_Servername,
 		nm_Serverdescription,
@@ -2150,26 +2191,38 @@ public void WriteServerConfig(string newName, string Description, string Message
             if (autoconfig == enumBoolYesNo.No) tmp_autoconfig = "No";
             this.SetPluginSetting("Autoconfig", "No" );
             Thread.Sleep(1000);
-            this.ServerCommand("vars.serverName", newName);                 // SET SERVER NAME
-            this.ServerCommand("vars.serverDescription", Description);      // SET SERVER DESCRIPTION
-            this.ServerCommand("vars.serverMessage", Message);              // SET SERVER MESSAGE
-            
-            if (advanced_mode == enumBoolYesNo.Yes)
-            {
-                this.ServerCommand("vars.vehicleSpawnAllowed", enumboolToStringTrueFalse(VehicleSpawnAllowed));
-                this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
-                this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
 
+            if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes && serverMode == "normal"))
+            {
+                Enable_UMM(false);
+                this.ServerCommand("vars.serverName", newName);                 // SET SERVER NAME
+                this.ServerCommand("vars.serverDescription", Description);      // SET SERVER DESCRIPTION
+                this.ServerCommand("vars.serverMessage", Message);              // SET SERVER MESSAGE
+
+                if (advanced_mode == enumBoolYesNo.Yes)
+                {
+                    this.ServerCommand("vars.vehicleSpawnAllowed", enumboolToStringTrueFalse(VehicleSpawnAllowed));
+                    this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
+                    this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
+
+                    if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
+                }
+
+
+                Thread.Sleep(1000);
+                this.WriteMapList(NewMaplist);
+            }
+            else
+            {
+                Enable_UMM(true);
                 if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
             }
-
     
 
 
 
             
-            Thread.Sleep(1000);
-            this.WriteMapList(NewMaplist);
+           
             Thread.Sleep(1000);
             this.SetPluginSetting("Autoconfig", tmp_autoconfig );
         }));
@@ -2570,7 +2623,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.3.0";
+	return "0.0.3.1";
 }
 
 public string GetPluginAuthor() {
@@ -2785,6 +2838,12 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.3.1 (23-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Support for Ultimate Map Manager !! NOT TESTED AT THE MOMENT, BECAUSE I DO NOT GET A COPY FROM DEVELOPER<br/>
+	- Please give me feedback if it works<br/>
+</blockquote>
+
 <blockquote><h4>0.0.3.0 (23-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Get List of Pistols from PRoCon now<br/>
@@ -2990,6 +3049,19 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
             }
             //######## Status
 
+            //######## Ultimate Map Manager
+            isInstalledUMM = IsUMM_installed(); // Check if UMM is Installed
+
+            if (isInstalledUMM)
+            {
+                lstReturn.Add(new CPluginVariable("0.1 Ultimate Map Manager Compatibilty|Use UMM for Normal Mode", typeof(enumBoolYesNo), useUmm));
+                
+            }
+
+            
+            
+            //######## Ultimate Map Manager
+
 
             lstReturn.Add(new CPluginVariable("1.Basic Settings|Private Mode", typeof(enumBoolYesNo), pm_isEnabled));
             if (advanced_mode == enumBoolYesNo.Yes || fm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Flagrun Mode", typeof(enumBoolYesNo), fm_isEnabled));
@@ -3054,20 +3126,33 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
 
 
             if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Rules", typeof(string[]), nm_Rules.ToArray()));
-            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), nm_Servername));
-            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Description", typeof(string), nm_Serverdescription));
-            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Message", typeof(string), nm_ServerMessage));
-            if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), nm_VehicleSpawnAllowed));
 
-
-
-
-            if (nm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+            if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
             {
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Time", typeof(int), nm_VehicleSpawnCount));
+
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), nm_Servername));
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Description", typeof(string), nm_Serverdescription));
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Message", typeof(string), nm_ServerMessage));
+                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), nm_VehicleSpawnAllowed));
+
+
+
+
+                if (nm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                {
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Time", typeof(int), nm_VehicleSpawnCount));
+                }
+                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Player Spawn Time", typeof(int), nm_PlayerSpawnCount));
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
+
+
             }
-            if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Player Spawn Time", typeof(int), nm_PlayerSpawnCount));
-            lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
+            else
+            {
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|UMM was Enabled for Normal Mode", typeof(string), ""));
+                lstReturn.Add(new CPluginVariable("2.Normal Mode|Disabled Normal Mode Config !!!", typeof(string), ""));
+            }
+
             if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
             
 
@@ -3466,6 +3551,24 @@ public void SetPluginVariable(string strVariable, string strValue) {
         cmd_KickAll = strValue;
     }
 
+    // UMM Variables
+
+    
+    if (Regex.Match(strVariable, @"Use UMM for Normal Mode").Success)
+    {
+        if (strValue == "Yes")
+        {
+            useUmm = enumBoolYesNo.Yes;
+            if ( serverMode == "normal" ) Enable_UMM(true);
+        }
+        if (strValue == "No")
+        {
+            useUmm = enumBoolYesNo.No;
+            if (serverMode == "normal") Enable_UMM(false);
+        }
+    }
+    
+    
     // VARS
 
 
@@ -4625,6 +4728,9 @@ public void OnPluginLoaded(string strHostName, string strPort, string strPRoConV
                                              "OnPlayerTeamChange"
                                              );
     // EXTRA TASK MANAGER 
+
+    isInstalledUMM = IsUMM_installed();
+    
     Thread startup_sleep = new Thread(new ThreadStart(delegate()
     {
         Thread.Sleep(2000);
@@ -4693,8 +4799,18 @@ public void InitPlugin()
     {
         Thread thread_PluginEnable = new Thread(new ThreadStart(delegate()
         {
-            Thread.Sleep(4000);
+                        
+            Thread.Sleep(2000);
+            if (stop_init) return; // Chek if Plugin gets Disabled and stop working
             
+            Enable_UMM(true);
+            Thread.Sleep(500);
+            isInstalledUMM = IsUMM_installed();
+
+            if (isInstalledUMM) Enable_UMM(false);
+
+            Thread.Sleep(2000);
+
             if (stop_init) return; // Chek if Plugin gets Disabled and stop working
 
             if (thermsofuse == "YES")
@@ -5297,7 +5413,11 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         currentTeamScores = serverInfo.TeamScores;
         
        
+
             //serverInfo.RoundTime;
+
+        if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes && serverMode == "normal")) Enable_UMM(false);
+    
         if (taskPlanerUpdateNeeded) SendTaskPlanerInfo();    
 
         ServerInfoCounter++; // Einen durchlauf zaelen
