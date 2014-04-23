@@ -5427,7 +5427,7 @@ public override void OnServerInfo(CServerInfo serverInfo) {
         {
             isNewVersion(GetPluginVersion()); // Check on Update
 
-            if ((GetCurrentServermode() == "unknown" && startup_mode != "none" && plugin_loaded) || (!ServerUptimePluginHasReInit && ServerUptime <= 300))
+            if (/*(GetCurrentServermode() == "unknown" && startup_mode != "none" && plugin_loaded) ||*/ (!ServerUptimePluginHasReInit && ServerUptime <= 300 && plugin_loaded))
             {
                 
                 WritePluginConsole("DETECTED UNKNOWN SERVER CONFIG", "INFO", 2);
