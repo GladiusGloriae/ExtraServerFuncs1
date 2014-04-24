@@ -75,25 +75,7 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     Dictionary<string, List<string>> ModeProhibitedWeapons = new Dictionary<string,List<string>>();
     Dictionary<string, List<string>> MapProhibitedWeapons = new Dictionary<string, List<string>>();
 
-    //List<string> OnMapProhibitedWeapons_Zavod_311;
-    //List<string> OnMapProhibitedWeapons_Lancang_Dam;
-    //List<string> OnMapProhibitedWeapons_Flood_Zone;
-    //List<string> OnMapProhibitedWeapons_Golmud_Railway;
-    //List<string> OnMapProhibitedWeapons_Paracel_Storm;
-    //List<string> OnMapProhibitedWeapons_Operation_Locker;
-    //List<string> OnMapProhibitedWeapons_Hainan_Resort;
-    //List<string> OnMapProhibitedWeapons_Siege_of_Shanghai;
-    //List<string> OnMapProhibitedWeapons_Rogue_Transmission;
-    //List<string> OnMapProhibitedWeapons_Dawnbreaker;
-    //List<string> OnMapProhibitedWeapons_Silk_Road;
-    //List<string> OnMapProhibitedWeapons_Altai_Range;
-    //List<string> OnMapProhibitedWeapons_Guilin_Peaks;
-    //List<string> OnMapProhibitedWeapons_Dragon_Pass;
-    //List<string> OnMapProhibitedWeapons_Firestorm;
-    //List<string> OnMapProhibitedWeapons_Metro;
-    //List<string> OnMapProhibitedWeapons_Oman;
-    //List<string> OnMapProhibitedWeapons_Caspian;
-
+  
 // Update Check Variables
 private    Match match;
 private    Match onlineversion;
@@ -138,6 +120,12 @@ private enumBoolYesNo pm_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo fm_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo kom_isEnabled = enumBoolYesNo.No;
 private enumBoolYesNo pom_isEnabled = enumBoolYesNo.No;
+
+private enumBoolYesNo sm_isEnabled = enumBoolYesNo.No;
+private enumBoolYesNo bam_isEnabled = enumBoolYesNo.No;
+private enumBoolYesNo dmr_isEnabled = enumBoolYesNo.No;
+
+
 private enumBoolYesNo mWhitelist_isEnabled  = enumBoolYesNo.No;
 private enumBoolYesNo showweaponcode = enumBoolYesNo.No;
 private enumBoolYesNo agresive_startup = enumBoolYesNo.No;
@@ -223,6 +211,11 @@ private volatile string pm_commandEnable = "private";    // PRIVATE MODE Command
 private volatile string fm_commandEnable = "flagrun";
 private volatile string kom_commandEnable = "knife";
 private volatile string pom_commandEnable = "pistol";
+
+private volatile string sgm_commandEnable = "shotgun";
+private volatile string bam_commandEnable = "boltaction";
+private volatile string dmr_commandEnable = "autosniper";
+        
 private volatile string switchnow_cmd = "switchnow";     // SWITCHNOW Command
 private volatile string rules_command = "rules";         // !rules Command
 private volatile string cmd_KickAll = "kickall";         // Command to kick all players
@@ -256,16 +249,24 @@ private volatile string msg_privatemode =       "PRIVATE MODE";
 private string msg_flagrunmode =        "FLAGRUN MODE";
 private string msg_knifemode =          "KNIFE ONLY MODE";
 private string msg_pistolmode =         "PISTOL ONLY MODE";
+
+private string msg_shotgunmode =        "SHOTGUN ONLY MODE";
+private string msg_boltaction =         "BOLTACTION ONLY MODE";
+private string msg_autosniper =         "DMR(AUTOSNIPER) ONLY MODE";
+
 private string msg_warnBanner =         "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+
 private string msg_prohibitedWeapon =   "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_prohibitedWeaponLastWarn = "NEXT TIME %kickban%";
 private string msg_prohibitedWeaponKick = "KICKED %Killer% for using %Weapon%";
 private string msg_prohibitedWeaponKickPlayer = "%kickban%ED you for using %Weapon%";
 private string msg_countdown =           "SERVER SWITCH TO %nextServermode% IN";
+
 private string msg_FlagrunWarn =        "%Killer%, DO NOT KILL AGAIN!";
 private string msg_FlagrunLastWarn =    "NEXT TIME %kickban%!!!";
 private string msg_FlagrunKick = "kicked %Killer% for Kill";
 private string msg_fmKick =             "kicked you for kills on a Flagrun Server";
+
 private string msg_KnifeKick = "KICKED %Killer% for using %Weapon%";
 private string msg_komKick = "kicked you for kills with %Weapon% on KNIFE ONLY MODE";
 private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
@@ -275,6 +276,23 @@ private string msg_pomKick = "kicked you for kills with %Weapon% on PISTOL ONLY 
 private string msg_PistolKick = "KICKED %Killer% for using %Weapon%";
 private string msg_PistolWarn =         "%Killer%, DO NOT USE %Weapon% AGAIN!";
 private string msg_PistolLastWarn =     "NEXT TIME %kickban%!!!";
+
+private string msg_smKick = "kicked you for kills with %Weapon% on SHOTGUN ONLY MODE";
+private string msg_ShotgunKick = "KICKED %Killer% for using %Weapon%";
+private string msg_ShotgunWarn = "%Killer%, DO NOT USE %Weapon% AGAIN!";
+private string msg_ShotgunLastWarn = "NEXT TIME %kickban%!!!";
+
+private string msg_baKick = "kicked you for kills with %Weapon% on BOLTACTION ONLY MODE";
+private string msg_BoltActionKick = "KICKED %Killer% for using %Weapon%";
+private string msg_BoltActionWarn = "%Killer%, DO NOT USE %Weapon% AGAIN!";
+private string msg_BoltActionLastWarn = "NEXT TIME %kickban%!!!";
+
+private string msg_dmrKick = "kicked you for kills with %Weapon% on PISTOL ONLY MODE";
+private string msg_DmrKick = "KICKED %Killer% for using %Weapon%";
+private string msg_DmrWarn = "%Killer%, DO NOT USE %Weapon% AGAIN!";
+private string msg_DmrLastWarn = "NEXT TIME %kickban%!!!";
+        
+        
 private string msg_ActionTypeKick =     "KICK";
 private string msg_ActionTypeBan =      "BAN";
 
@@ -366,6 +384,63 @@ private int pom_max_Warns = 2;
 private string pom_PlayerAction = "pb_tban";
 private int pom_ActionTbanTime = 60;
 
+// SHOTGUN ONLY VARS
+List<string> smPRoConConfig = new List<string>();
+private List<string> sm_ClanWhitelist;
+private List<string> sm_PlayerWhitelist;
+private string sm_Servername = "Servername - SHOTGUN ONLY";
+private string sm_Serverdescription = "Server is in SHOTGUN ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string sm_ServerMessage = "Your Server Message";
+private enumBoolYesNo sm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int sm_VehicleSpawnCount = 100;
+private int sm_PlayerSpawnCount = 100;
+private List<string> sm_Rules;
+private List<string> sm_MapList;
+private int sm_max_Warns = 2;
+private string sm_PlayerAction = "pb_tban";
+private int sm_ActionTbanTime = 60;
+
+// BOLTACTION ONLY VARS
+List<string> bamPRoConConfig = new List<string>();
+private List<string> bam_ClanWhitelist;
+private List<string> bam_PlayerWhitelist;
+private string bam_Servername = "Servername - BOLTACTION ONLY";
+private string bam_Serverdescription = "Server is in BOLTACTION ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string bam_ServerMessage = "Your Server Message";
+private enumBoolYesNo bam_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int bam_VehicleSpawnCount = 100;
+private int bam_PlayerSpawnCount = 100;
+private List<string> bam_Rules;
+private List<string> bam_MapList;
+private int bam_max_Warns = 2;
+private string bam_PlayerAction = "pb_tban";
+private int bam_ActionTbanTime = 60;
+
+// AUTOSNIPER ONLY VARS
+List<string> dmrPRoConConfig = new List<string>();
+private List<string> dmr_ClanWhitelist;
+private List<string> dmr_PlayerWhitelist;
+private string dmr_Servername = "Servername - AUTOSNIPER ONLY";
+private string dmr_Serverdescription = "Server is in AUTOSNIPER ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
+private string dmr_ServerMessage = "Your Server Message";
+private enumBoolYesNo dmr_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+private int dmr_VehicleSpawnCount = 100;
+private int dmr_PlayerSpawnCount = 100;
+private List<string> dmr_Rules;
+private List<string> dmr_MapList;
+private int dmr_max_Warns = 2;
+private string dmr_PlayerAction = "pb_tban";
+private int dmr_ActionTbanTime = 60;
+
+
+
+
+
+
+
+
+
+
 
 // New Weapon Dictionarys for Pistol, Shotgun, DMR, Sniper ( 0.0.3.0 )
 Dictionary<string, enumBoolYesNo> Allow_Handguns = new Dictionary<string, enumBoolYesNo>();
@@ -374,22 +449,22 @@ Dictionary<string, enumBoolYesNo> Allow_Autosniper = new Dictionary<string, enum
 Dictionary<string, enumBoolYesNo> Allow_Boltaction = new Dictionary<string, enumBoolYesNo>();
 
         
-// OLD HANDGUN LISTS        
-private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
-private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
-private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
-private enumBoolYesNo pom_allowPistol_Shorty = enumBoolYesNo.No;            //SHORTY 12G
-private enumBoolYesNo pom_allowPistol_Glock18 = enumBoolYesNo.Yes;          //G18
-private enumBoolYesNo pom_allowPistol_FN57 = enumBoolYesNo.Yes;             //FN57
-private enumBoolYesNo pom_allowPistol_M1911 = enumBoolYesNo.Yes;            //M1911
-private enumBoolYesNo pom_allowPistol_93R = enumBoolYesNo.Yes;              //93R
-private enumBoolYesNo pom_allowPistol_CZ75 = enumBoolYesNo.Yes;             //CZ-75
-private enumBoolYesNo pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;         //.44 MAGNUM
-private enumBoolYesNo pom_allowPistol_HK45C = enumBoolYesNo.Yes;            //COMPACT 45
-private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P226
-private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
-private enumBoolYesNo pom_allowPistol_SW40 = enumBoolYesNo.Yes;             //SW40
-private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
+//// OLD HANDGUN LISTS        
+//private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
+//private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
+//private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
+//private enumBoolYesNo pom_allowPistol_Shorty = enumBoolYesNo.No;            //SHORTY 12G
+//private enumBoolYesNo pom_allowPistol_Glock18 = enumBoolYesNo.Yes;          //G18
+//private enumBoolYesNo pom_allowPistol_FN57 = enumBoolYesNo.Yes;             //FN57
+//private enumBoolYesNo pom_allowPistol_M1911 = enumBoolYesNo.Yes;            //M1911
+//private enumBoolYesNo pom_allowPistol_93R = enumBoolYesNo.Yes;              //93R
+//private enumBoolYesNo pom_allowPistol_CZ75 = enumBoolYesNo.Yes;             //CZ-75
+//private enumBoolYesNo pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;         //.44 MAGNUM
+//private enumBoolYesNo pom_allowPistol_HK45C = enumBoolYesNo.Yes;            //COMPACT 45
+//private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P226
+//private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
+//private enumBoolYesNo pom_allowPistol_SW40 = enumBoolYesNo.Yes;             //SW40
+//private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
 
 private string LogFileName =  @"Plugins\ExtraServerFuncs.log";
     
@@ -1580,8 +1655,23 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
     if (serverMode == "pistol" && pom_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
     if (serverMode == "pistol" && pom_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
+    if (serverMode == "shotgun" && sm_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    if (serverMode == "shotgun" && sm_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "shotgun" && sm_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "shotgun" && sm_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "shotgun" && sm_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
+    if (serverMode == "boltaction" && bam_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    if (serverMode == "boltaction" && bam_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "boltaction" && bam_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "boltaction" && bam_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "boltaction" && bam_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
+    if (serverMode == "autosniper" && dmr_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
+    if (serverMode == "autosniper" && dmr_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "autosniper" && dmr_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "autosniper" && dmr_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
+    if (serverMode == "autosniper" && dmr_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
 
 
 
@@ -1634,51 +1724,7 @@ public String R(string text)  //Replacements for String Text Messages VERBESSERU
         }
     }
 
-
-
-
-
-
-    //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) // MAPLIST PROHIBITET WEAPONLISTS
-    //{
-    //    if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(lastUsedWeapon))
- 
-    //     || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(lastUsedWeapon))
-
-    //     || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(lastUsedWeapon))
-    //     || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(lastUsedWeapon))
-
-    //        )
-    //    {
-    //        if (g_PlayerAction == "kick" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeKick);
-    //        if (g_PlayerAction == "tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-    //        if (g_PlayerAction == "pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-    //        if (g_PlayerAction == "pb_tban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-    //        if (g_PlayerAction == "pb_pban" && text.Contains("%kickban%")) text = text.Replace("%kickban%", msg_ActionTypeBan);
-                     
-    //    }
-    //}
-
-
-
-
-
-
-
+    
     return text;
 
 
@@ -1691,6 +1737,10 @@ public string R_SM(string servermode)
     if (servermode == "flagrun") return msg_flagrunmode;
     if (servermode == "knife") return msg_knifemode;
     if (servermode == "pistol") return msg_pistolmode;
+    if (servermode == "shotgun") return msg_shotgunmode;
+    if (servermode == "boltaction") return msg_boltaction;
+    if (servermode == "autosniper") return msg_autosniper;
+
     return servermode;
 }
 
@@ -1754,14 +1804,48 @@ private void pom_Action(string name)
     if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_pomKick));
 
 }
-   
+
+private void sm_Action(string name)
+{
+    WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("pom_PlayerAction = " + sm_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_smKick));
+    if (g_PlayerAction == "tban") tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_smKick));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_smKick));
+
+}
+
+private void bam_Action(string name)
+{
+    WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("pom_PlayerAction = " + bam_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_baKick));
+    if (g_PlayerAction == "tban") tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_baKick));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_baKick));
+
+}
+
+private void dmr_Action(string name)
+{
+    WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
+    WritePluginConsole("pom_PlayerAction = " + dmr_PlayerAction + " name = " + name, "FUNCTION", 6);
+    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_dmrKick));
+    if (g_PlayerAction == "tban") tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
+    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_dmrKick));
+    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
+    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_dmrKick));
+
+}
+
+
+
 
 
     
-    
-//        private string msg_komKick = "kicked you for kills with %Weapon% on KNIFE ONLY MODE";
-//private string msg_KnifeWarn =          "%Killer%, DO NOT USE %Weapon% AGAIN!";
-//private string msg_KnifeLastWarn =      "NEXT TIME %kickban%!!!";
 
 
 public String E(String text)
@@ -5790,46 +5874,7 @@ private bool isprohibitedWeapon(string weapon)
             WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
             List<string> tmp_pistols = new List<string>();
 
-            //if (game_version == "BF4")     // BF4 PISTOLS AND KNIFE
-            //{
-
-            //    if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
-            //    if (pom_allowPistol_QSZ92 == enumBoolYesNo.Yes) tmp_pistols.Add("QSZ92");           //QSZ-92
-            //    if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("MP443");            //MP-443
-            //    if (pom_allowPistol_Shorty == enumBoolYesNo.Yes) tmp_pistols.Add("SerbuShorty");            //SHORTY 12G
-            //    if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
-            //    if (pom_allowPistol_FN57 == enumBoolYesNo.Yes) tmp_pistols.Add("FN57");             //FN57
-            //    if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
-            //    if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
-            //    if (pom_allowPistol_CZ75 == enumBoolYesNo.Yes) tmp_pistols.Add("CZ75");             //CZ-75
-            //    if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-            //    if (pom_allowPistol_HK45C == enumBoolYesNo.Yes) tmp_pistols.Add("HK45C");            //COMPACT 45
-            //    if (pom_allowPistol_P226 == enumBoolYesNo.Yes) tmp_pistols.Add("P226");             //P226
-            //    if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("MP412Rex");         //M412 REX
-            //    if (pom_allowPistol_SW40 == enumBoolYesNo.Yes) tmp_pistols.Add("SW40");         //SW40
-            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");            //Knife BF4 + BF3
-            //    tmp_pistols.Add("Medkit"); // to fix a BUG with kill weapon Medkit
-            //    tmp_pistols.Add("Death");  // to fix the Problem with exploding tonns
-            //}
-
-
-
-
-
-            //if (game_version == "BF3")     // BF3 PISTOLS AND KNIFE                     CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK CHECK
-            //{
-            //    if (pom_allowPistol_M9 == enumBoolYesNo.Yes) tmp_pistols.Add("M9");             //M9
-            //    if (pom_allowPistol_MP443 == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP443/MP443");            //MP-443
-            //    if (pom_allowPistol_Glock18 == enumBoolYesNo.Yes) tmp_pistols.Add("Glock18");          //G18
-            //    if (pom_allowPistol_M1911 == enumBoolYesNo.Yes) tmp_pistols.Add("M1911");            //M1911
-            //    if (pom_allowPistol_93R == enumBoolYesNo.Yes) tmp_pistols.Add("M93R");              //93R
-            //    if (pom_allowPistol_Taurus44 == enumBoolYesNo.Yes) tmp_pistols.Add("Taurus44");         //.44 MAGNUM
-            //    if (pom_allowPistol_MP412Rex == enumBoolYesNo.Yes) tmp_pistols.Add("Weapons/MP412Rex/MP412REX");         //M412 REX
-                
-            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife");   
-            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Melee");
-            //    if (pom_allowPistol_Meele == enumBoolYesNo.Yes) tmp_pistols.Add("Knife_RazorBlade");
-            //}
+    
 
             foreach (KeyValuePair<string,enumBoolYesNo> pistol in Allow_Handguns)
             {
@@ -5844,50 +5889,121 @@ private bool isprohibitedWeapon(string weapon)
 
             if (!tmp_pistols.Contains(weapon))
             {
-                
+
                 WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED PISTOL! " + weapon, "DEBUG", 8);
                 isProhibitedWeapon_Result = "pistol";
                 return true;
+
+            }
+            else
+            {
+                return false;
                 
+            }
+            
+        }
+
+
+        if (serverMode == "shotgun")  // SHOTGUN ONLY MODE
+        {
+            WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
+            List<string> tmp_Weapons = new List<string>();
+
+
+
+            foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Shotguns)
+            {
+                if (tmpWeapon.Value == enumBoolYesNo.Yes) tmp_Weapons.Add(tmpWeapon.Key);
+
+            }
+
+            tmp_Weapons.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+            tmp_Weapons.Add("Death");  // to fix the Problem with exploding tonns
+
+
+            if (!tmp_Weapons.Contains(weapon))
+            {
+
+                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED SHOTGUN! " + weapon, "DEBUG", 8);
+                isProhibitedWeapon_Result = "shotgun";
+                return true;
+
+            }
+            else
+            {
+                return false;
+
             }
 
         }
 
-
-        ////MAP LIST PROHIBITED WEAPONS ------- OLD !!!!!!!!!!!!
-        //if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
-        //{
-        //    if ((ToFriendlyMapName(currentMapFileName) == "Zavod 311" && OnMapProhibitedWeapons_Zavod_311.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Lancang Dam" && OnMapProhibitedWeapons_Lancang_Dam.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Flood Zone" && OnMapProhibitedWeapons_Flood_Zone.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Golmud Railway" && OnMapProhibitedWeapons_Golmud_Railway.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Paracel Storm") && (OnMapProhibitedWeapons_Paracel_Storm.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Operation Locker" && OnMapProhibitedWeapons_Operation_Locker.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Hainan Resort" && OnMapProhibitedWeapons_Hainan_Resort.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Siege of Shanghai" && OnMapProhibitedWeapons_Siege_of_Shanghai.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Rogue Transmission" && OnMapProhibitedWeapons_Rogue_Transmission.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Dawnbreaker" && OnMapProhibitedWeapons_Dawnbreaker.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Silk Road" && OnMapProhibitedWeapons_Silk_Road.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Altai Range" && OnMapProhibitedWeapons_Altai_Range.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Guilin Peaks" && OnMapProhibitedWeapons_Guilin_Peaks.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Dragon Pass" && OnMapProhibitedWeapons_Dragon_Pass.Contains(weapon))
-
-        //     || (ToFriendlyMapName(currentMapFileName) == "Firestorm 2014" && OnMapProhibitedWeapons_Firestorm.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Operation Metro 2014" && OnMapProhibitedWeapons_Metro.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Gulf of Oman 2014" && OnMapProhibitedWeapons_Oman.Contains(weapon))
-        //     || (ToFriendlyMapName(currentMapFileName) == "Caspian Border 2014" && OnMapProhibitedWeapons_Caspian.Contains(weapon))
-
-        //        )
+        if (serverMode == "boltaction")  // BOLTACTION ONLY MODE
+        {
+            WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
+            List<string> tmp_Weapons = new List<string>();
 
 
 
-        //    {
-                
-        //        WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  Map prohibited Weapon match  Current Map: " + ToFriendlyMapName(currentMapFileName) + " Current Weapon: " + weapon, "DEBUG", 8);
-        //        isProhibitedWeapon_Result = "maplist";
-        //        return true;
-        //    }
-        //}
+            foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Boltaction)
+            {
+                if (tmpWeapon.Value == enumBoolYesNo.Yes) tmp_Weapons.Add(tmpWeapon.Key);
+
+            }
+
+            tmp_Weapons.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+            tmp_Weapons.Add("Death");  // to fix the Problem with exploding tonns
+
+
+            if (!tmp_Weapons.Contains(weapon))
+            {
+
+                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED BOLT ACTION SNIPER RIFLE! " + weapon, "DEBUG", 8);
+                isProhibitedWeapon_Result = "boltaction";
+                return true;
+
+            }
+            else
+            {
+                return false;
+
+            }
+
+        }
+
+        if (serverMode == "autosniper")  // AUTOSNIPER ONLY MODE
+        {
+            WritePluginConsole("[isprohibitedWeapon] Check Weapon: " + weapon, "DEBUG", 8);
+            List<string> tmp_Weapons = new List<string>();
+
+
+
+            foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Autosniper)
+            {
+                if (tmpWeapon.Value == enumBoolYesNo.Yes) tmp_Weapons.Add(tmpWeapon.Key);
+
+            }
+
+            tmp_Weapons.Add("Medkit"); // to fix a BUG with kill weapon Medkit
+            tmp_Weapons.Add("Death");  // to fix the Problem with exploding tonns
+
+
+            if (!tmp_Weapons.Contains(weapon))
+            {
+
+                WritePluginConsole("[isprohibitedWeapon] is ^1^bTRUE^0^n  PROHIBITED  AUTOSNIPER RIFLE! " + weapon, "DEBUG", 8);
+                isProhibitedWeapon_Result = "autosniper";
+                return true;
+
+            }
+            else
+            {
+                return false;
+
+            }
+
+        }
+
+    
 
 
         //MAP LIST PROHIBITED WEAPONS - NEW
@@ -6001,7 +6117,7 @@ private void PlayerWarn(string name,string weapon)
 
 
         // KNIFE ONLY MODE
-        if (isProhibitedWeapon_Result == "knife")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
+        if (isProhibitedWeapon_Result == "knife")   
         {
             KillPlayer(name);
             WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + kom_max_Warns.ToString(), "KILL", 2);
@@ -6034,7 +6150,7 @@ private void PlayerWarn(string name,string weapon)
 
 
         // PISTOL ONLY MODE
-        if (isProhibitedWeapon_Result == "pistol")   // Muss noch angepasst werden - KNIFE braucht nen eingenen bereich
+        if (isProhibitedWeapon_Result == "pistol") 
         {
             KillPlayer(name);
             WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + pom_max_Warns.ToString(), "KILL", 2);
@@ -6063,13 +6179,104 @@ private void PlayerWarn(string name,string weapon)
 
             }
 
+        }
+
+
+        // SHOTGUN ONLY MODE
+        if (isProhibitedWeapon_Result == "shotgun")
+        {
+            KillPlayer(name);
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + sm_max_Warns.ToString(), "KILL", 2);
+            if (warns < sm_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_ShotgunWarn));
+                SendPlayerYellV(name, (R(msg_ShotgunWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+
+            if (warns == sm_max_Warns) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_ShotgunWarn));
+                SendGlobalMessage(R(msg_ShotgunLastWarn));
+                SendPlayerYellV(name, (R(msg_ShotgunWarn + " " + msg_ShotgunLastWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > sm_max_Warns) // Maximale Warnungen ??schritten
+            {
+                if (!isInWhitelist(name)) sm_Action(name);
+                SendGlobalMessage(R(msg_ShotgunKick));
+
+            }
+
+        }
+
+        // BOLTACTION ONLY MODE
+        if (isProhibitedWeapon_Result == "boltaction")
+        {
+            KillPlayer(name);
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + sm_max_Warns.ToString(), "KILL", 2);
+            if (warns < bam_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_BoltActionWarn));
+                SendPlayerYellV(name, (R(msg_BoltActionWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+
+            if (warns == bam_max_Warns) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_BoltActionWarn));
+                SendGlobalMessage(R(msg_BoltActionLastWarn));
+                SendPlayerYellV(name, (R(msg_BoltActionWarn + " " + msg_BoltActionLastWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > sm_max_Warns) // Maximale Warnungen ??schritten
+            {
+                if (!isInWhitelist(name)) bam_Action(name);
+                SendGlobalMessage(R(msg_BoltActionKick));
+
+            }
+
+        }
+
+        // AUTOSNIPER ONLY MODE
+        if (isProhibitedWeapon_Result == "autosniper")
+        {
+            KillPlayer(name);
+            WritePluginConsole("^7WARNED:^1^b " + lastKiller + "^5^n for using ^1^b[ " + weapon + " ]^5^n WARN ^1^b" + warns.ToString() + "^5^n of ^1^b" + sm_max_Warns.ToString(), "KILL", 2);
+            if (warns < dmr_max_Warns)
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_DmrWarn));
+                SendPlayerYellV(name, (R(msg_DmrWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+
+            if (warns == sm_max_Warns) // Maximale Warnungen erreicht
+            {
+                SendGlobalMessage(msg_warnBanner);
+                SendGlobalMessage(R(msg_DmrWarn));
+                SendGlobalMessage(R(msg_DmrLastWarn));
+                SendPlayerYellV(name, (R(msg_DmrWarn + " " + msg_DmrLastWarn)), yell_Time);
+                SendGlobalMessage(msg_warnBanner);
+            }
+
+            if (warns > sm_max_Warns) // Maximale Warnungen ??schritten
+            {
+                if (!isInWhitelist(name)) dmr_Action(name);
+                SendGlobalMessage(R(msg_DmrKick));
+
+            }
+
         }               
-
-
-        
-
-
-
 
 
 
