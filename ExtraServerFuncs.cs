@@ -60,7 +60,7 @@ using CapturableEvent = PRoCon.Core.Events.CapturableEvents;
     private bool isInitWeaponDictionarys = false;
     private bool isInitMapList = false;
     private bool isInstalledUMM = false;
-    private enumBoolYesNo useUmm = enumBoolYesNo.Yes;
+    private enumBoolYesNo useUmm = enumBoolYesNo.No;
     List<string> ValidWeaponList;
     List<string> GameModeList;
     List<string> MapNameList;
@@ -212,7 +212,7 @@ private volatile string fm_commandEnable = "flagrun";
 private volatile string kom_commandEnable = "knife";
 private volatile string pom_commandEnable = "pistol";
 
-private volatile string sgm_commandEnable = "shotgun";
+private volatile string sm_commandEnable = "shotgun";
 private volatile string bam_commandEnable = "boltaction";
 private volatile string dmr_commandEnable = "autosniper";
         
@@ -386,48 +386,48 @@ private int pom_ActionTbanTime = 60;
 
 // SHOTGUN ONLY VARS
 List<string> smPRoConConfig = new List<string>();
-private List<string> sm_ClanWhitelist;
-private List<string> sm_PlayerWhitelist;
+private List<string> sm_ClanWhitelist = new List<string>();
+private List<string> sm_PlayerWhitelist = new List<string>();
 private string sm_Servername = "Servername - SHOTGUN ONLY";
 private string sm_Serverdescription = "Server is in SHOTGUN ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
 private string sm_ServerMessage = "Your Server Message";
 private enumBoolYesNo sm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
 private int sm_VehicleSpawnCount = 100;
 private int sm_PlayerSpawnCount = 100;
-private List<string> sm_Rules;
-private List<string> sm_MapList;
+private List<string> sm_Rules = new List<string>();
+private List<string> sm_MapList = new List<string>();
 private int sm_max_Warns = 2;
 private string sm_PlayerAction = "pb_tban";
 private int sm_ActionTbanTime = 60;
 
 // BOLTACTION ONLY VARS
 List<string> bamPRoConConfig = new List<string>();
-private List<string> bam_ClanWhitelist;
-private List<string> bam_PlayerWhitelist;
+private List<string> bam_ClanWhitelist = new List<string>();
+private List<string> bam_PlayerWhitelist = new List<string>();
 private string bam_Servername = "Servername - BOLTACTION ONLY";
 private string bam_Serverdescription = "Server is in BOLTACTION ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
 private string bam_ServerMessage = "Your Server Message";
 private enumBoolYesNo bam_VehicleSpawnAllowed = enumBoolYesNo.Yes;
 private int bam_VehicleSpawnCount = 100;
 private int bam_PlayerSpawnCount = 100;
-private List<string> bam_Rules;
-private List<string> bam_MapList;
+private List<string> bam_Rules = new List<string>();
+private List<string> bam_MapList = new List<string>();
 private int bam_max_Warns = 2;
 private string bam_PlayerAction = "pb_tban";
 private int bam_ActionTbanTime = 60;
 
 // AUTOSNIPER ONLY VARS
 List<string> dmrPRoConConfig = new List<string>();
-private List<string> dmr_ClanWhitelist;
-private List<string> dmr_PlayerWhitelist;
+private List<string> dmr_ClanWhitelist = new List<string>();
+private List<string> dmr_PlayerWhitelist = new List<string>();
 private string dmr_Servername = "Servername - AUTOSNIPER ONLY";
 private string dmr_Serverdescription = "Server is in AUTOSNIPER ONLY MODE!! Do not use any other weapon! Play fair and have fun.";
 private string dmr_ServerMessage = "Your Server Message";
 private enumBoolYesNo dmr_VehicleSpawnAllowed = enumBoolYesNo.Yes;
 private int dmr_VehicleSpawnCount = 100;
 private int dmr_PlayerSpawnCount = 100;
-private List<string> dmr_Rules;
-private List<string> dmr_MapList;
+private List<string> dmr_Rules = new List<string>();
+private List<string> dmr_MapList = new List<string>();
 private int dmr_max_Warns = 2;
 private string dmr_PlayerAction = "pb_tban";
 private int dmr_ActionTbanTime = 60;
@@ -447,24 +447,7 @@ Dictionary<string, enumBoolYesNo> Allow_Handguns = new Dictionary<string, enumBo
 Dictionary<string, enumBoolYesNo> Allow_Shotguns = new Dictionary<string, enumBoolYesNo>();
 Dictionary<string, enumBoolYesNo> Allow_Autosniper = new Dictionary<string, enumBoolYesNo>();
 Dictionary<string, enumBoolYesNo> Allow_Boltaction = new Dictionary<string, enumBoolYesNo>();
-
         
-//// OLD HANDGUN LISTS        
-//private enumBoolYesNo pom_allowPistol_M9 = enumBoolYesNo.Yes;               //M9
-//private enumBoolYesNo pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;            //QSZ-92
-//private enumBoolYesNo pom_allowPistol_MP443 = enumBoolYesNo.Yes;            //MP-443
-//private enumBoolYesNo pom_allowPistol_Shorty = enumBoolYesNo.No;            //SHORTY 12G
-//private enumBoolYesNo pom_allowPistol_Glock18 = enumBoolYesNo.Yes;          //G18
-//private enumBoolYesNo pom_allowPistol_FN57 = enumBoolYesNo.Yes;             //FN57
-//private enumBoolYesNo pom_allowPistol_M1911 = enumBoolYesNo.Yes;            //M1911
-//private enumBoolYesNo pom_allowPistol_93R = enumBoolYesNo.Yes;              //93R
-//private enumBoolYesNo pom_allowPistol_CZ75 = enumBoolYesNo.Yes;             //CZ-75
-//private enumBoolYesNo pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;         //.44 MAGNUM
-//private enumBoolYesNo pom_allowPistol_HK45C = enumBoolYesNo.Yes;            //COMPACT 45
-//private enumBoolYesNo pom_allowPistol_P226 = enumBoolYesNo.Yes;             //P226
-//private enumBoolYesNo pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;         //M412 REX
-//private enumBoolYesNo pom_allowPistol_SW40 = enumBoolYesNo.Yes;             //SW40
-//private enumBoolYesNo pom_allowPistol_Meele = enumBoolYesNo.Yes;            //Knife
 
 private string LogFileName =  @"Plugins\ExtraServerFuncs.log";
     
@@ -501,7 +484,18 @@ public ExtraServerFuncs() {
     fm_Rules.Add("############# FLAGRUN #############");
     fm_Rules.Add("DO NOT KILL - KILL = KICK or BAN");
     fm_Rules.Add("NO FLAGCAMPING");
-        
+
+    
+    sm_Rules.Add("########### SHOTGUN ONLY ###########");
+    sm_Rules.Add("SHOTGUN ONLY! DO NOT USE ANY OTHER WEAPON");
+
+    bam_Rules.Add("########### BOLT ACTION ONLY ###########");
+    bam_Rules.Add("BOLT ACTION ONLY! DO NOT USE ANY OTHER WEAPON");
+
+    dmr_Rules.Add("########### AUTOSNIPER(DMR) ONLY ###########");
+    dmr_Rules.Add("AUTOSNIPER(DMR) ONLY! DO NOT USE ANY OTHER WEAPON");
+
+    
     g_prohibitedWeapons = new List<string>();
     g_prohibitedWeapons.Add("READ PLUGIN DESCRIPTION");
     g_prohibitedWeapons.Add("TO KNOW HOW U GET THE WEAPONCODES EASY");
@@ -530,9 +524,12 @@ public ExtraServerFuncs() {
     fm_MapList.Add("MP_Flooded ConquestLarge0 2"); // Floodzone
     fm_MapList.Add("MP_Journey ConquestLarge0 2"); // Goldmud
 
+    sm_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
+    bam_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
+    dmr_MapList.Add("MP_Prison TeamDeathMatch0 2");  // Spind
+
+
     tmpPluginVariables = new Dictionary<string, string>();
-    
-    
     
     MapFileNames = new Dictionary<string, string>();  // Map Names an Filenames
 
@@ -643,6 +640,11 @@ public void ExtraTaskPlaner_Callback(string command)
     if (fm_isEnabled == enumBoolYesNo.Yes && command == "Define flagrun mode as next") PreSwitchServerMode("flagrun");
     if (kom_isEnabled == enumBoolYesNo.Yes && command == "Define knife only mode as next") PreSwitchServerMode("knife");
     if (pom_isEnabled == enumBoolYesNo.Yes && command == "Define pistol only mode as next") PreSwitchServerMode("pistol");
+    if (sm_isEnabled == enumBoolYesNo.Yes && command == "Define shotgun only mode as next") PreSwitchServerMode("shotgun"); ;
+    if (bam_isEnabled == enumBoolYesNo.Yes && command == "Define boltaction only mode as next") PreSwitchServerMode("boltaction"); ;
+    if (dmr_isEnabled == enumBoolYesNo.Yes && command == "Define autosniper only mode as next") PreSwitchServerMode("autosniper"); ;
+
+
 
 
     if (command == "Switch to normal mode")
@@ -676,6 +678,24 @@ public void ExtraTaskPlaner_Callback(string command)
         if (playerCount > 1) StartSwitchCountdown();
     }
 
+    if (sm_isEnabled == enumBoolYesNo.Yes && command == "Switch to shotgun only mode")
+    {
+        PreSwitchServerMode("shotgun");
+        if (playerCount > 1) StartSwitchCountdown();
+    }
+
+
+    if (bam_isEnabled == enumBoolYesNo.Yes && command == "Switch to boltaction only mode")
+    {
+        PreSwitchServerMode("boltaction");
+        if (playerCount > 1) StartSwitchCountdown();
+    }
+
+    if (dmr_isEnabled == enumBoolYesNo.Yes && command == "Switch to autosniper only mode")
+    {
+        PreSwitchServerMode("autosniper");
+        if (playerCount > 1) StartSwitchCountdown();
+    }
 
 
 
@@ -745,6 +765,9 @@ private void SendTaskPlanerInfo()
     if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define flagrun mode as next");
     if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define knife only mode as next");
     if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define pistol only mode as next");
+    if (sm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define shotgun only mode as next");
+    if (bam_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define boltaction only mode as next");
+    if (dmr_isEnabled == enumBoolYesNo.Yes) Commands.Add("Define autosniper only mode as next");
 
     Commands.Add("Switch to normal mode");
 
@@ -752,8 +775,12 @@ private void SendTaskPlanerInfo()
     if (fm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to flagrun mode");
     if (kom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to knife only mode");
     if (pom_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to pistol only mode");
+    if (sm_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to shotgun only mode");
+    if (bam_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to boltaction only mode");
+    if (dmr_isEnabled == enumBoolYesNo.Yes) Commands.Add("Switch to autosniper only mode");
 
 
+    
     //Variables.Add("Sample Variable");        I dont want to give out any Variable to Task Manager
 
 
@@ -778,6 +805,8 @@ private void InitValidWeaponList()
     
     WeaponDictionary weapons = GetWeaponDefines();  // Create a List of Weapons to Validate the WeaponCodes in prohibited Weapon Lists
     ValidWeaponList = new List<string>();
+    
+    
     foreach (Weapon weapon in weapons)
     {
         ValidWeaponList.Add(FWeaponName(weapon.Name));
@@ -815,6 +844,7 @@ private void InitValidWeaponList()
 
 private void InitWeaponDictionarys()
 {
+    if (!isInitValidWeaponList) InitValidWeaponList();
 
     foreach (string _tmpWeapon in MeleeList) // Add Melees to each Dictionary
     {
@@ -1797,11 +1827,11 @@ private void pom_Action(string name)
 {
     WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
     WritePluginConsole("pom_PlayerAction = " + pom_PlayerAction + " name = " + name, "FUNCTION", 6);
-    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_pomKick));
-    if (g_PlayerAction == "tban") tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
-    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_pomKick));
-    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
-    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_pomKick));
+    if (kom_PlayerAction == "kick") kickPlayer(name, R(msg_pomKick));
+    if (kom_PlayerAction == "tban") tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
+    if (kom_PlayerAction == "pban") pbanPlayer(name, R(msg_pomKick));
+    if (kom_PlayerAction == "pb_tban") pb_tbanPlayer(name, pom_ActionTbanTime, R(msg_pomKick));
+    if (kom_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_pomKick));
 
 }
 
@@ -1809,11 +1839,11 @@ private void sm_Action(string name)
 {
     WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
     WritePluginConsole("pom_PlayerAction = " + sm_PlayerAction + " name = " + name, "FUNCTION", 6);
-    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_smKick));
-    if (g_PlayerAction == "tban") tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
-    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_smKick));
-    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
-    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_smKick));
+    if (sm_PlayerAction == "kick") kickPlayer(name, R(msg_smKick));
+    if (sm_PlayerAction == "tban") tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
+    if (sm_PlayerAction == "pban") pbanPlayer(name, R(msg_smKick));
+    if (sm_PlayerAction == "pb_tban") pb_tbanPlayer(name, sm_ActionTbanTime, R(msg_smKick));
+    if (sm_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_smKick));
 
 }
 
@@ -1821,11 +1851,11 @@ private void bam_Action(string name)
 {
     WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
     WritePluginConsole("pom_PlayerAction = " + bam_PlayerAction + " name = " + name, "FUNCTION", 6);
-    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_baKick));
-    if (g_PlayerAction == "tban") tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
-    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_baKick));
-    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
-    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_baKick));
+    if (bam_PlayerAction == "kick") kickPlayer(name, R(msg_baKick));
+    if (bam_PlayerAction == "tban") tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
+    if (bam_PlayerAction == "pban") pbanPlayer(name, R(msg_baKick));
+    if (bam_PlayerAction == "pb_tban") pb_tbanPlayer(name, bam_ActionTbanTime, R(msg_baKick));
+    if (bam_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_baKick));
 
 }
 
@@ -1833,11 +1863,11 @@ private void dmr_Action(string name)
 {
     WritePluginConsole("Called pom_Action(" + name + ")", "FUNCTION", 6);
     WritePluginConsole("pom_PlayerAction = " + dmr_PlayerAction + " name = " + name, "FUNCTION", 6);
-    if (g_PlayerAction == "kick") kickPlayer(name, R(msg_dmrKick));
-    if (g_PlayerAction == "tban") tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
-    if (g_PlayerAction == "pban") pbanPlayer(name, R(msg_dmrKick));
-    if (g_PlayerAction == "pb_tban") pb_tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
-    if (g_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_dmrKick));
+    if (dmr_PlayerAction == "kick") kickPlayer(name, R(msg_dmrKick));
+    if (dmr_PlayerAction == "tban") tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
+    if (dmr_PlayerAction == "pban") pbanPlayer(name, R(msg_dmrKick));
+    if (dmr_PlayerAction == "pb_tban") pb_tbanPlayer(name, dmr_ActionTbanTime, R(msg_dmrKick));
+    if (dmr_PlayerAction == "pb_pban") pb_pbanPlayer(name, R(msg_dmrKick));
 
 }
 
@@ -2148,6 +2178,9 @@ private void Enable_UMM(bool onoff)
     if (onoff)
     {
         WritePluginConsole("Enable Ultimate Map Manager", "INFO", 6);
+        SetExternalPluginSetting("CUltimateMapManager", "Enable in-game admin commands?", "Yes"); // forcing needed Settings of UMM
+        SetExternalPluginSetting("CUltimateMapManager", "Enable server name change for each map list?", "Yes");
+
         this.ExecuteCommand("procon.protected.plugins.enable", "CUltimateMapManager", "true"); // Send Enable Command
     }
     else
@@ -2262,6 +2295,59 @@ if (newServerMode == "knife")
 }
 
 
+if (newServerMode == "shotgun")
+{
+    serverMode = "shotgun";
+
+    WriteServerConfig
+    (
+        sm_Servername,
+        sm_Serverdescription,
+        sm_ServerMessage,
+        sm_MapList,
+        sm_VehicleSpawnAllowed,
+        sm_VehicleSpawnCount,
+        sm_PlayerSpawnCount,
+        smPRoConConfig // REWORK !!!!!
+    );
+}
+
+if (newServerMode == "autosniper")
+{
+    serverMode = "autosniper";
+
+    WriteServerConfig
+    (
+        dmr_Servername,
+        dmr_Serverdescription,
+        dmr_ServerMessage,
+        dmr_MapList,
+        dmr_VehicleSpawnAllowed,
+        dmr_VehicleSpawnCount,
+        dmr_PlayerSpawnCount,
+        dmrPRoConConfig // REWORK !!!!!
+    );
+}
+
+if (newServerMode == "boltaction")
+{
+    serverMode = "boltaction";
+
+    WriteServerConfig
+    (
+        bam_Servername,
+        bam_Serverdescription,
+        bam_ServerMessage,
+        bam_MapList,
+        bam_VehicleSpawnAllowed,
+        bam_VehicleSpawnCount,
+        bam_PlayerSpawnCount,
+        bamPRoConConfig // REWORK !!!!!
+    );
+}
+
+
+
 
 
 }
@@ -2276,23 +2362,24 @@ public void WriteServerConfig(string newName, string Description, string Message
             this.SetPluginSetting("Autoconfig", "No" );
             Thread.Sleep(1000);
 
+            this.ServerCommand("vars.serverDescription", Description);      // SET SERVER DESCRIPTION
+            this.ServerCommand("vars.serverMessage", Message);              // SET SERVER MESSAGE
+
+            if (advanced_mode == enumBoolYesNo.Yes)
+            {
+                this.ServerCommand("vars.vehicleSpawnAllowed", enumboolToStringTrueFalse(VehicleSpawnAllowed));
+                this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
+                this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
+
+                if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
+            }
+
+
             if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes && serverMode == "normal"))
             {
                 Enable_UMM(false);
                 this.ServerCommand("vars.serverName", newName);                 // SET SERVER NAME
-                this.ServerCommand("vars.serverDescription", Description);      // SET SERVER DESCRIPTION
-                this.ServerCommand("vars.serverMessage", Message);              // SET SERVER MESSAGE
-
-                if (advanced_mode == enumBoolYesNo.Yes)
-                {
-                    this.ServerCommand("vars.vehicleSpawnAllowed", enumboolToStringTrueFalse(VehicleSpawnAllowed));
-                    this.ServerCommand("vars.vehicleSpawnDelay", VehicleSpawnTime.ToString());
-                    this.ServerCommand("vars.playerRespawnTime", PlayerSpawnTime.ToString());
-
-                    if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
-                }
-
-
+                
                 Thread.Sleep(1000);
                 this.WriteMapList(NewMaplist);
             }
@@ -2301,11 +2388,7 @@ public void WriteServerConfig(string newName, string Description, string Message
                 Enable_UMM(true);
                 if (expert_mode == enumBoolYesNo.Yes) WritePRoConConfig(PRoConConfig);
             }
-    
-
-
-
-            
+               
            
             Thread.Sleep(1000);
             this.SetPluginSetting("Autoconfig", tmp_autoconfig );
@@ -2560,10 +2643,71 @@ private bool isInWhitelist(string wlPlayer)   // Erweitern!!! Die Gamemodes m??n
         }
 
 
+        // Shotgun Only Mode Whitelist
+        if (serverMode == "shotgun") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check SHOTGUN ONLY MODE Player Whitelist...", "Info", 5);
+            if (sm_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in SHOTGUN ONLY MODE Player Whitelist", "Info", 2);
+                return true;
+            }
 
+            if (sm_ClanWhitelist.Count >= 1 && sm_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
 
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check SHOTGUN ONLY MODE Clan Whitelist...", "Info", 5);
+                if (sm_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in SHOTGUN ONLY MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
 
+        // BoltAction Only Mode Whitelist
+        if (serverMode == "boltaction") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check BOLTACTION ONLY MODE Player Whitelist...", "Info", 5);
+            if (bam_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in BOLTACTION ONLY MODE Player Whitelist", "Info", 2);
+                return true;
+            }
 
+            if (bam_ClanWhitelist.Count >= 1 && pom_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
+
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check BOLTACTION ONLY MODE Clan Whitelist...", "Info", 5);
+                if (bam_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in BOLTACTION ONLY MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
+
+        // Autosniper (DMR) Only Mode Whitelist
+        if (serverMode == "autosniper") // Is PRIVATE MODE Enabled
+        {
+            WritePluginConsole("Check AUTOSNIPER (DMR) ONLY MODE Player Whitelist...", "Info", 5);
+            if (dmr_PlayerWhitelist.Contains(wlPlayer)) // Is Player in Player Whitelist
+            {
+                WritePluginConsole(wlPlayer + " is in AUTOSNIPER (DMR) ONLY MODE Player Whitelist", "Info", 2);
+                return true;
+            }
+
+            if (dmr_ClanWhitelist.Count >= 1 && dmr_ClanWhitelist[0] != "")	// Is Clan Whitelist NOT Empty
+            {
+
+                WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " Check AUTOSNIPER (DMR) ONLY MODE Clan Whitelist...", "Info", 5);
+                if (dmr_ClanWhitelist.Contains(players.GetPlayerClanTag(wlPlayer)))	// Get Player Clantag from Battlelog and check if it is in Clan Whitelist
+                {
+                    WritePluginConsole(wlPlayer + " has Clantag: " + players.GetPlayerClanTag(wlPlayer) + " is in AUTOSNIPER (DMR) ONLY MODE Clan Whitelist", "Info", 2);
+                    return true;
+                }
+            }
+        }
 
 
 	WritePluginConsole(wlPlayer + " is not in Whitelist", "Info", 2);
@@ -2707,7 +2851,7 @@ public string GetPluginName() {
 }
 
 public string GetPluginVersion() {
-	return "0.0.3.1";
+	return "0.0.3.2";
 }
 
 public string GetPluginAuthor() {
@@ -2922,6 +3066,16 @@ In this option you can set the Debug Level. Do not do this if you have no proble
 
 
 <h2>Changelog</h2>
+<blockquote><h4>0.0.3.2 (27-04-2014)</h4>
+	- ALPHA TESTING STATE<br/>
+    - Added Shotgun only mode<br/>
+    - Added Bolt Action only mode<br/>
+    - Added Autosniper(DMR) only mode<br/>
+	- Fixed a problem with player warn and kick methods<br/>
+    - Fixed known problems with UMM<br/>
+</blockquote>
+
+
 <blockquote><h4>0.0.3.1 (23-04-2014)</h4>
 	- ALPHA TESTING STATE<br/>
     - Added Support for Ultimate Map Manager !! NOT TESTED AT THE MOMENT, BECAUSE I DO NOT GET A COPY FROM DEVELOPER<br/>
@@ -3098,123 +3252,149 @@ return Description;
 
 public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigenden Plugin variablen
     {     // Optionen zum erstellen der Konfigvariablen / dem Usermen??
-        
-        List<CPluginVariable> lstReturn = new List<CPluginVariable>();
-        var random = new Random();
 
-
-        // BASIC SETTINGS ##################################################################################################################
-
-
-
-        lstReturn.Add(new CPluginVariable("1.Basic Settings|I have read the Terms of Use YES / NO", typeof(string), thermsofuse));
-        
-
-
-        if (thermsofuse == "YES")
+        try
         {
-            
 
-            //######## Status
-            if (plugin_loaded)
+            List<CPluginVariable> lstReturn = new List<CPluginVariable>();
+            var random = new Random();
+
+
+            // BASIC SETTINGS ##################################################################################################################
+
+
+
+            lstReturn.Add(new CPluginVariable("1.Basic Settings|I have read the Terms of Use YES / NO", typeof(string), thermsofuse));
+
+
+
+            if (thermsofuse == "YES")
             {
-                string Server_mode_def = "enum.server_mode_" + random.Next(100000, 999999) + "(...";
-                foreach (string tmpComm in Commands)
+
+
+                //######## Status
+                if (plugin_loaded)
                 {
-                    Server_mode_def += "|" + tmpComm;
+                    string Server_mode_def = "enum.server_mode_" + random.Next(100000, 999999) + "(...";
+                    foreach (string tmpComm in Commands)
+                    {
+                        Server_mode_def += "|" + tmpComm;
+
+                    }
+                    Server_mode_def += ")";
+
+
+                    lstReturn.Add(new CPluginVariable("0. Current Server State|Current Servermode", typeof(string), serverMode));
+                    if (IsSwitchDefined()) lstReturn.Add(new CPluginVariable("0. Current Server State|Next Servermode", typeof(string), next_serverMode));
+                    lstReturn.Add(new CPluginVariable("0. Current Server State|Select Servermode", Server_mode_def, "..."));
+                }
+                //######## Status
+
+                //######## Ultimate Map Manager
+                isInstalledUMM = IsUMM_installed(); // Check if UMM is Installed
+
+                if (isInstalledUMM)
+                {
+                    lstReturn.Add(new CPluginVariable("1.1 Ultimate Map Manager Compatibilty|Use UMM for Normal Mode", typeof(enumBoolYesNo), useUmm));
 
                 }
-                Server_mode_def += ")";
 
-
-                lstReturn.Add(new CPluginVariable("0. Current Server State|Current Servermode", typeof(string), serverMode));
-                if (IsSwitchDefined()) lstReturn.Add(new CPluginVariable("0. Current Server State|Next Servermode", typeof(string), next_serverMode));
-                lstReturn.Add(new CPluginVariable("0. Current Server State|Select Servermode", Server_mode_def, "..."));
-            }
-            //######## Status
-
-            //######## Ultimate Map Manager
-            isInstalledUMM = IsUMM_installed(); // Check if UMM is Installed
-
-            if (isInstalledUMM)
-            {
-                lstReturn.Add(new CPluginVariable("0.1 Ultimate Map Manager Compatibilty|Use UMM for Normal Mode", typeof(enumBoolYesNo), useUmm));
-                
-            }
-
-            
-            
-            //######## Ultimate Map Manager
-
-
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Private Mode", typeof(enumBoolYesNo), pm_isEnabled));
-            if (advanced_mode == enumBoolYesNo.Yes || fm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Flagrun Mode", typeof(enumBoolYesNo), fm_isEnabled));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Knife Only Mode", typeof(enumBoolYesNo), kom_isEnabled));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Pistol Only Mode", typeof(enumBoolYesNo), pom_isEnabled));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Whitelist", typeof(enumBoolYesNo), mWhitelist_isEnabled));
-            if (mWhitelist_isEnabled == enumBoolYesNo.Yes)
-            {
-                lstReturn.Add(new CPluginVariable("1.Basic Settings|Clan_Whitelist", typeof(string[]), m_ClanWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("1.Basic Settings|Player_Whitelist", typeof(string[]), m_PlayerWhitelist.ToArray()));
-            }
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Auto Whitelist ProconAccounts", typeof(enumBoolYesNo), Auto_Whitelist_Admins));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Prevent ProconAccounts from warn", typeof(enumBoolYesNo), Prevent_Admins_Warn));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Prevent Whitelist Players from warn", typeof(enumBoolYesNo), Prevent_WlistPlayers_Warn));
-                        
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Prohibited Weapons", typeof(enumBoolYesNo), g_prohibitedWeapons_enable));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Use Map Prohibited Weapons", typeof(enumBoolYesNo), map_prohibitedWeapons_enable));
+                //######## Ultimate Map Manager
 
 
 
 
 
-            if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|General Prohibited Weapons List", typeof(string[]), g_prohibitedWeapons.ToArray()));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Private Mode", typeof(enumBoolYesNo), pm_isEnabled));
+                if (advanced_mode == enumBoolYesNo.Yes || fm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Flagrun Mode", typeof(enumBoolYesNo), fm_isEnabled));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Knife Only Mode", typeof(enumBoolYesNo), kom_isEnabled));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Pistol Only Mode", typeof(enumBoolYesNo), pom_isEnabled));
 
-            if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes || map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
-            {
-                
-                lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Max Player Warns", typeof(int), g_max_Warns));
-                lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Player Action", "enum.g_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
-                if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon TBan Minutes", typeof(int), g_ActionTbanTime));
-            }
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Shotgun Only Mode", typeof(enumBoolYesNo), sm_isEnabled));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|BoltAction Only Mode", typeof(enumBoolYesNo), bam_isEnabled));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Autosniper Only Mode", typeof(enumBoolYesNo), dmr_isEnabled));
 
-            
-            startup_mode_def = "enum.startup_mode_" + random.Next(100000, 999999) + "(none|autodetect|normal";
-            if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
-            if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
-            if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knife";
-            if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistol";
-            startup_mode_def = startup_mode_def + ")";
-            
-            
-            
-            
-            if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
-            if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Aggressive Startup", typeof(enumBoolYesNo), agresive_startup));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Countdown Timer", typeof(int), countdown_time));
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Weaponcodes", typeof(enumBoolYesNo), showweaponcode));			
 
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Enable Server Rules", typeof(enumBoolYesNo), rules_enable));
-            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules in...", "enum.rules_method(chat|yell|both)", rules_method));
-            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules on first spawn", typeof(enumBoolYesNo), rules_firstjoin));
-            if (rules_enable == enumBoolYesNo.Yes && advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules Time", typeof(int), rules_time));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Whitelist", typeof(enumBoolYesNo), mWhitelist_isEnabled));
+                if (mWhitelist_isEnabled == enumBoolYesNo.Yes)
+                {
+                    lstReturn.Add(new CPluginVariable("1.Basic Settings|Clan_Whitelist", typeof(string[]), m_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("1.Basic Settings|Player_Whitelist", typeof(string[]), m_PlayerWhitelist.ToArray()));
+                }
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Auto Whitelist ProconAccounts", typeof(enumBoolYesNo), Auto_Whitelist_Admins));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Prevent ProconAccounts from warn", typeof(enumBoolYesNo), Prevent_Admins_Warn));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Prevent Whitelist Players from warn", typeof(enumBoolYesNo), Prevent_WlistPlayers_Warn));
 
-            
-            lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Autoconfig", typeof(enumBoolYesNo), autoconfig));
-            if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", typeof(string), ""));
-            
-            
-
-            // NORMAL MODE SETTING ##################################################################################################################
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Use General Prohibited Weapons", typeof(enumBoolYesNo), g_prohibitedWeapons_enable));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Use Map Prohibited Weapons", typeof(enumBoolYesNo), map_prohibitedWeapons_enable));
 
 
 
-            if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Rules", typeof(string[]), nm_Rules.ToArray()));
 
-            if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
-            {
 
-                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), nm_Servername));
+                if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|General Prohibited Weapons List", typeof(string[]), g_prohibitedWeapons.ToArray()));
+
+                if (g_prohibitedWeapons_enable == enumBoolYesNo.Yes || map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+                {
+
+                    lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Max Player Warns", typeof(int), g_max_Warns));
+                    lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon Player Action", "enum.g_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", g_PlayerAction));
+                    if (g_PlayerAction == "tban" || g_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("1.Basic Settings|Prohibited Weapon TBan Minutes", typeof(int), g_ActionTbanTime));
+                }
+
+
+                startup_mode_def = "enum.startup_mode_" + random.Next(100000, 999999) + "(none|autodetect|normal";
+                if (pm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|private";
+                if (fm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|flagrun";
+                if (kom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|knife";
+                if (pom_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|pistol";
+                if (sm_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|shotgun";
+                if (bam_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|boltaction";
+                if (dmr_isEnabled == enumBoolYesNo.Yes) startup_mode_def = startup_mode_def + "|autosniper";
+                startup_mode_def = startup_mode_def + ")";
+
+
+
+
+                if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Startup Mode", startup_mode_def, startup_mode));
+                if (nm_Servername != "Your Server Name") lstReturn.Add(new CPluginVariable("1.Basic Settings|Aggressive Startup", typeof(enumBoolYesNo), agresive_startup));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Countdown Timer", typeof(int), countdown_time));
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Weaponcodes", typeof(enumBoolYesNo), showweaponcode));
+
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Enable Server Rules", typeof(enumBoolYesNo), rules_enable));
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules in...", "enum.rules_method(chat|yell|both)", rules_method));
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules on first spawn", typeof(enumBoolYesNo), rules_firstjoin));
+                if (rules_enable == enumBoolYesNo.Yes && advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Show Rules Time", typeof(int), rules_time));
+
+
+                lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Autoconfig", typeof(enumBoolYesNo), autoconfig));
+                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("1.Basic Settings|Plugin Command", typeof(string), ""));
+
+
+
+                // NORMAL MODE SETTING ##################################################################################################################
+
+
+
+                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Rules", typeof(string[]), nm_Rules.ToArray()));
+
+
+
+
+                if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
+                {
+
+                    lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), nm_Servername));
+                    
+
+
+                }
+                else
+                {
+                    lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Name", typeof(string), "SETTING IS LOCKED WHILE USING UMM"));
+                     
+                }
+
                 lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Description", typeof(string), nm_Serverdescription));
                 lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Server Message", typeof(string), nm_ServerMessage));
                 if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), nm_VehicleSpawnAllowed));
@@ -3227,357 +3407,513 @@ public List<CPluginVariable> GetDisplayPluginVariables() // Liste der Anzuzeigen
                     if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Vehicle Spawn Time", typeof(int), nm_VehicleSpawnCount));
                 }
                 if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_Player Spawn Time", typeof(int), nm_PlayerSpawnCount));
-                lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
 
-
-            }
-            else
-            {
-                lstReturn.Add(new CPluginVariable("2.Normal Mode|UMM was Enabled for Normal Mode", typeof(string), ""));
-                lstReturn.Add(new CPluginVariable("2.Normal Mode|Disabled Normal Mode Config !!!", typeof(string), ""));
-            }
-
-            if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
-            
-
-            
-            
-            // PRIVATE MODE SETTING ##################################################################################################################    
-            
-            
-
-            
-            
-            if (pm_isEnabled == enumBoolYesNo.Yes) // PRIVATE MODE
-            {
-
-                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Rules", typeof(string[]), pm_Rules.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Name", typeof(string), pm_Servername));
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Description", typeof(string), pm_Serverdescription));
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Message", typeof(string), pm_ServerMessage));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), pm_VehicleSpawnAllowed));
-
-                if (pm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
                 {
-                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Vehicle Spawn Time", typeof(int), pm_VehicleSpawnCount));
-                }
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Player Spawn Time", typeof(int), pm_PlayerSpawnCount));
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_MapList", typeof(string[]), pm_MapList.ToArray()));
 
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_ClanWhitelist", typeof(string[]), pm_ClanWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PlayerWhitelist", typeof(string[]), pm_PlayerWhitelist.ToArray()));
-                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PRoCon Config", typeof(string[]), pmPRoConConfig.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Autokick All on enable", typeof(enumBoolYesNo), autoKickAll));
-            }
-
-            
-            
-            
-            // FLAGRUN MODE SETTING ##################################################################################################################    
-
-
-
-
-
-            if (fm_isEnabled == enumBoolYesNo.Yes) // FLAGRUN MODE
-            {
-
-                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Rules", typeof(string[]), fm_Rules.ToArray()));
-
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Name", typeof(string), fm_Servername));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Description", typeof(string), fm_Serverdescription));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Message", typeof(string), fm_ServerMessage));
-                 if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), fm_VehicleSpawnAllowed));
-
-                 if (fm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
-                 {
-                     if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Vehicle Spawn Time", typeof(int), fm_VehicleSpawnCount));
-                 }
-                 if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Spawn Time", typeof(int), fm_PlayerSpawnCount));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_MapList", typeof(string[]), fm_MapList.ToArray()));
-
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_ClanWhitelist", typeof(string[]), fm_ClanWhitelist.ToArray()));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PlayerWhitelist", typeof(string[]), fm_PlayerWhitelist.ToArray()));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Max Player Warns", typeof(int), fm_max_Warns));
-                 lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", fm_PlayerAction));
-                 if (fm_PlayerAction == "tban" || fm_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_TBan Minutes", typeof(int), fm_ActionTbanTime));
-                 if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PRoCon Config", typeof(string[]), fmPRoConConfig.ToArray()));
-                
-
-                 
-            }
-
-            // KNIFE ONLY MODE SETTING ##################################################################################################################    
-
-
-
-
-
-            if (kom_isEnabled == enumBoolYesNo.Yes) // KNIFE ONLY MODE
-            {
-
-                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Rules", typeof(string[]), kom_Rules.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Name", typeof(string), kom_Servername));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Description", typeof(string), kom_Serverdescription));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Message", typeof(string), kom_ServerMessage));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), kom_VehicleSpawnAllowed));
-
-                if (kom_VehicleSpawnAllowed == enumBoolYesNo.Yes)
-                {
-                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Vehicle Spawn Time", typeof(int), kom_VehicleSpawnCount));
-                }
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Spawn Time", typeof(int), kom_PlayerSpawnCount));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_MapList", typeof(string[]), kom_MapList.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_ClanWhitelist", typeof(string[]), kom_ClanWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PlayerWhitelist", typeof(string[]), kom_PlayerWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Max Player Warns", typeof(int), kom_max_Warns));
-                lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Action", "enum.kom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", kom_PlayerAction));
-                if (kom_PlayerAction == "tban" || kom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_TBan Minutes", typeof(int), kom_ActionTbanTime));
-                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PRoCon Config", typeof(string[]), komPRoConConfig.ToArray()));
-
-
-
-            }
-
-
-
-
-
-            // PISTOL ONLY MODE SETTING ##################################################################################################################    
-
-
-
-
-
-            if (pom_isEnabled == enumBoolYesNo.Yes) // PISTOL ONLY MODE
-            {
-
-                if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Rules", typeof(string[]), pom_Rules.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Name", typeof(string), pom_Servername));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Description", typeof(string), pom_Serverdescription));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Message", typeof(string), pom_ServerMessage));
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), pom_VehicleSpawnAllowed));
-
-                if (pom_VehicleSpawnAllowed == enumBoolYesNo.Yes)
-                {
-                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Time", typeof(int), pom_VehicleSpawnCount));
-                }
-                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Spawn Time", typeof(int), pom_PlayerSpawnCount));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_MapList", typeof(string[]), pom_MapList.ToArray()));
-
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_ClanWhitelist", typeof(string[]), pom_ClanWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PlayerWhitelist", typeof(string[]), pom_PlayerWhitelist.ToArray()));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
-                if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
-                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
-                
-                
-                
-                //PISTOLS OLD VERSION !!!!!!!!!!!!!!!!!!
-                //lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ OLD PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-
-                //if (game_version == "BF4")
-                //{
-
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SW40", typeof(enumBoolYesNo), pom_allowPistol_SW40));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
-                //}
-
-                //if (game_version == "BF3")
-                //{
-                
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18)); // G17 & G18 Because there is only one weaponconde for it
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
-                    
-                //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
-                //}
-
-                // NEW VERSION ( 0.0.3.0 )
-
-                if (!isInitWeaponDictionarys) InitWeaponDictionarys();
-                lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-
-                foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Handguns)
-                {
-                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
+                    lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string[]), nm_MapList.ToArray()));
 
                 }
-
-                           
-
-
-            }
-
-            // NOTICE FOR FUTURE USE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            
-            //if (!Allow_Shotguns.ContainsKey(_tmpWeapon)) Allow_Shotguns.Add(_tmpWeapon, enumBoolYesNo.Yes);
-            //if (!Allow_Autosniper.ContainsKey(_tmpWeapon)) Allow_Autosniper.Add(_tmpWeapon, enumBoolYesNo.Yes);
-            //if (!Allow_Boltaction.ContainsKey(_tmpWeapon)) Allow_Boltaction.Add(_tmpWeapon, enumBoolYesNo.Yes);
-
-            // NOTICE FOR FUTURE USE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-            if (advanced_mode == enumBoolYesNo.Yes)
-            {
-                // COMMANDS ##################################################################################################################
-                lstReturn.Add(new CPluginVariable("4.Plugin Commands|NM_Command Enable", typeof(string), nm_commandEnable));
-                if (pm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|PM_Command Enable", typeof(string), pm_commandEnable));
-                if (kom_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|KOM_Command Enable", typeof(string), kom_commandEnable));
-                if (pom_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|POM_Command Enable", typeof(string), pom_commandEnable));
-                if (fm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|FM_Command Enable", typeof(string), fm_commandEnable));
-                lstReturn.Add(new CPluginVariable("4.Plugin Commands|Switchnow_Command", typeof(string), switchnow_cmd));
-                lstReturn.Add(new CPluginVariable("4.Plugin Commands|Command_Kick All", typeof(string), cmd_KickAll));
-
-
-                // MESSAGES ##################################################################################################################
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PlayerInfo", typeof(string), player_message));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_AdminInfo_switchnow", typeof(string), admin_message));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_SwitchNow", typeof(string), msg_switchnow));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PM Player Kick", typeof(string), msg_pmKick));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_NOT Initiator", typeof(string), msg_notInitiator));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_Switch not defined", typeof(string), msg_switchnotdefined));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_NORMAL MODE", typeof(string), msg_normalmode));
-                lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PRIVATE MODE", typeof(string), msg_privatemode));
-
-            }
-
-            // Special Settings
-            lstReturn.Add(new CPluginVariable("7. Special Settings|Debug level", fDebugLevel.GetType(), fDebugLevel));
-            lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Advanced Mode", typeof(enumBoolYesNo), advanced_mode));
-            if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Expert Mode", typeof(enumBoolYesNo), expert_mode));
-            
-
-            // Map Prohibited Weapons ####################################################################################################
-            
-            
-            // NEW VERSION SICE 0.0.2.3
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) 
-            {
-
-                if (!isInitMapList) InitMapList();
-                if (isInitMapList)
+                else
                 {
-                    
-                    string enumAddMapNames = "enum.AddMapNames_" + random.Next(100000, 999999) + "(...";
-                    string enumRemoveMapNames = "enum.RemoveMapNames_" + random.Next(100000, 999999) + "(...";
-                    foreach (string map in MapNameList)
+                   lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_MapList", typeof(string), "SETTING IS LOCKED WHILE USING UMM"));
+                }
+                
+                
+                if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("2.Normal Mode|NM_PRoCon Config", typeof(string[]), nmPRoConConfig.ToArray()));
+
+
+
+
+                // PRIVATE MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (pm_isEnabled == enumBoolYesNo.Yes) // PRIVATE MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Rules", typeof(string[]), pm_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Name", typeof(string), pm_Servername));
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Description", typeof(string), pm_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Server Message", typeof(string), pm_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), pm_VehicleSpawnAllowed));
+
+                    if (pm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
                     {
-                        if (!MapProhibitedWeapons.ContainsKey(map))
-                        {
-                            enumAddMapNames = enumAddMapNames + "|" + map;
-                        }
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Vehicle Spawn Time", typeof(int), pm_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Player Spawn Time", typeof(int), pm_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_MapList", typeof(string[]), pm_MapList.ToArray()));
 
-                        if (MapProhibitedWeapons.ContainsKey(map))
-                        {
-                            enumRemoveMapNames = enumRemoveMapNames + "|" + map;
-                        }
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_ClanWhitelist", typeof(string[]), pm_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PlayerWhitelist", typeof(string[]), pm_PlayerWhitelist.ToArray()));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_PRoCon Config", typeof(string[]), pmPRoConConfig.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.1_Private Mode|PM_Autokick All on enable", typeof(enumBoolYesNo), autoKickAll));
+                }
 
 
 
+
+                // FLAGRUN MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (fm_isEnabled == enumBoolYesNo.Yes) // FLAGRUN MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Rules", typeof(string[]), fm_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Name", typeof(string), fm_Servername));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Description", typeof(string), fm_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Server Message", typeof(string), fm_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), fm_VehicleSpawnAllowed));
+
+                    if (fm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                    {
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Vehicle Spawn Time", typeof(int), fm_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Spawn Time", typeof(int), fm_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_MapList", typeof(string[]), fm_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_ClanWhitelist", typeof(string[]), fm_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PlayerWhitelist", typeof(string[]), fm_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Max Player Warns", typeof(int), fm_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_Player Action", "enum.fm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", fm_PlayerAction));
+                    if (fm_PlayerAction == "tban" || fm_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_TBan Minutes", typeof(int), fm_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.2_Flagrun Mode|FM_PRoCon Config", typeof(string[]), fmPRoConConfig.ToArray()));
+
+
+
+                }
+
+                // KNIFE ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (kom_isEnabled == enumBoolYesNo.Yes) // KNIFE ONLY MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Rules", typeof(string[]), kom_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Name", typeof(string), kom_Servername));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Description", typeof(string), kom_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Server Message", typeof(string), kom_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), kom_VehicleSpawnAllowed));
+
+                    if (kom_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                    {
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Vehicle Spawn Time", typeof(int), kom_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Spawn Time", typeof(int), kom_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_MapList", typeof(string[]), kom_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_ClanWhitelist", typeof(string[]), kom_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PlayerWhitelist", typeof(string[]), kom_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Max Player Warns", typeof(int), kom_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_Player Action", "enum.kom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", kom_PlayerAction));
+                    if (kom_PlayerAction == "tban" || kom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_TBan Minutes", typeof(int), kom_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.3_Knife only Mode|KOM_PRoCon Config", typeof(string[]), komPRoConConfig.ToArray()));
+
+
+
+                }
+
+
+
+
+
+                // PISTOL ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (pom_isEnabled == enumBoolYesNo.Yes) // PISTOL ONLY MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Rules", typeof(string[]), pom_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Name", typeof(string), pom_Servername));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Description", typeof(string), pom_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Server Message", typeof(string), pom_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), pom_VehicleSpawnAllowed));
+
+                    if (pom_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                    {
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Vehicle Spawn Time", typeof(int), pom_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Spawn Time", typeof(int), pom_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_MapList", typeof(string[]), pom_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_ClanWhitelist", typeof(string[]), pom_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PlayerWhitelist", typeof(string[]), pom_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Max Player Warns", typeof(int), pom_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Player Action", "enum.pom_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", pom_PlayerAction));
+                    if (pom_PlayerAction == "tban" || pom_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_TBan Minutes", typeof(int), pom_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_PRoCon Config", typeof(string[]), pomPRoConConfig.ToArray()));
+
+
+
+                    //PISTOLS OLD VERSION !!!!!!!!!!!!!!!!!!
+                    //lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ OLD PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                    //if (game_version == "BF4")
+                    //{
+
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow QSZ-92", typeof(enumBoolYesNo), pom_allowPistol_QSZ92));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SHORTY 12G", typeof(enumBoolYesNo), pom_allowPistol_Shorty));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow FN57", typeof(enumBoolYesNo), pom_allowPistol_FN57));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow CZ-75", typeof(enumBoolYesNo), pom_allowPistol_CZ75));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow COMPACT 45", typeof(enumBoolYesNo), pom_allowPistol_HK45C));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow P226", typeof(enumBoolYesNo), pom_allowPistol_P226));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow SW40", typeof(enumBoolYesNo), pom_allowPistol_SW40));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                    //}
+
+                    //if (game_version == "BF3")
+                    //{
+
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M9", typeof(enumBoolYesNo), pom_allowPistol_M9));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow MP-443", typeof(enumBoolYesNo), pom_allowPistol_MP443));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow G18", typeof(enumBoolYesNo), pom_allowPistol_Glock18)); // G17 & G18 Because there is only one weaponconde for it
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M1911", typeof(enumBoolYesNo), pom_allowPistol_M1911));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow 93R", typeof(enumBoolYesNo), pom_allowPistol_93R));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow .44 MAGNUM", typeof(enumBoolYesNo), pom_allowPistol_Taurus44));
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow M412 REX", typeof(enumBoolYesNo), pom_allowPistol_MP412Rex));
+
+                    //    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow KNIFE", typeof(enumBoolYesNo), pom_allowPistol_Meele));
+                    //}
+
+                    // NEW VERSION ( 0.0.3.0 )
+
+                    if (!isInitWeaponDictionarys) InitWeaponDictionarys();
+                    lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|~~~~~~~~~~~~~~ PISTOLS LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                    foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Handguns)
+                    {
+                        lstReturn.Add(new CPluginVariable("3.4_Pistol only Mode|POM_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
 
                     }
-                    enumAddMapNames = enumAddMapNames + ")";
-                    enumRemoveMapNames = enumRemoveMapNames + ")";
 
-                    lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", enumAddMapNames, ""));
-                    lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Remove Map...", enumRemoveMapNames, ""));
+
+
+
                 }
 
-                if (MapProhibitedWeapons.Count > 0)
+                // SHOTGUN ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (sm_isEnabled == enumBoolYesNo.Yes) // SHOTGUN ONLY MODE
                 {
-                    foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Rules", typeof(string[]), sm_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Server Name", typeof(string), sm_Servername));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Server Description", typeof(string), sm_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Server Message", typeof(string), sm_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), sm_VehicleSpawnAllowed));
+
+                    if (sm_VehicleSpawnAllowed == enumBoolYesNo.Yes)
                     {
-                        string tmpvar = "6.1 On Map prohibited Weapons|" + entry.Key;
-                        lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Vehicle Spawn Time", typeof(int), sm_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Player Spawn Time", typeof(int), sm_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_MapList", typeof(string[]), sm_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_ClanWhitelist", typeof(string[]), sm_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_PlayerWhitelist", typeof(string[]), sm_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Max Player Warns", typeof(int), sm_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Player Action", "enum.sm_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", sm_PlayerAction));
+                    if (sm_PlayerAction == "tban" || sm_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_TBan Minutes", typeof(int), sm_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_PRoCon Config", typeof(string[]), smPRoConConfig.ToArray()));
+
+
+
+
+
+                    if (!isInitWeaponDictionarys) InitWeaponDictionarys();
+                    lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|~~~~~~~~~~~~~~ SHOTGUN LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                    foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Shotguns)
+                    {
+                        lstReturn.Add(new CPluginVariable("3.5_Shotgun only Mode|SOM_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
 
                     }
+
+
+
+
                 }
+
+
+                // BOLTACTION ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (bam_isEnabled == enumBoolYesNo.Yes) // BOLTACTION ONLY MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Rules", typeof(string[]), bam_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Server Name", typeof(string), bam_Servername));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Server Description", typeof(string), bam_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Server Message", typeof(string), bam_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Vehicle Spawn Allowed", typeof(enumBoolYesNo), bam_VehicleSpawnAllowed));
+
+                    if (bam_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                    {
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Vehicle Spawn Time", typeof(int), bam_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Player Spawn Time", typeof(int), bam_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_MapList", typeof(string[]), bam_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_ClanWhitelist", typeof(string[]), bam_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_PlayerWhitelist", typeof(string[]), bam_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Max Player Warns", typeof(int), bam_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Player Action", "enum.bam_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", bam_PlayerAction));
+                    if (bam_PlayerAction == "tban" || bam_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_TBan Minutes", typeof(int), bam_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_PRoCon Config", typeof(string[]), bamPRoConConfig.ToArray()));
+
+
+
+
+
+                    if (!isInitWeaponDictionarys) InitWeaponDictionarys();
+                    lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|~~~~~~~~~~~~~~ BoltAction Rifles LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                    foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Boltaction)
+                    {
+                        lstReturn.Add(new CPluginVariable("3.6_BoltAction only Mode|BAM_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
+
+                    }
+
+
+
+
+                }
+
+                // AUTOSNIPER ONLY MODE SETTING ##################################################################################################################    
+
+
+
+
+
+                if (dmr_isEnabled == enumBoolYesNo.Yes) // AUTOSNIPER ONLY MODE
+                {
+
+                    if (rules_enable == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Rules", typeof(string[]), dmr_Rules.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Server Name", typeof(string), dmr_Servername));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Server Description", typeof(string), dmr_Serverdescription));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Server Message", typeof(string), dmr_ServerMessage));
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Vehicle Spawn Allowed", typeof(enumBoolYesNo), dmr_VehicleSpawnAllowed));
+
+                    if (dmr_VehicleSpawnAllowed == enumBoolYesNo.Yes)
+                    {
+                        if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Vehicle Spawn Time", typeof(int), dmr_VehicleSpawnCount));
+                    }
+                    if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Player Spawn Time", typeof(int), dmr_PlayerSpawnCount));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_MapList", typeof(string[]), dmr_MapList.ToArray()));
+
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_ClanWhitelist", typeof(string[]), dmr_ClanWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_PlayerWhitelist", typeof(string[]), dmr_PlayerWhitelist.ToArray()));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Max Player Warns", typeof(int), dmr_max_Warns));
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Player Action", "enum.dmr_PlayerAction(kick|tban|pban|pb_tban|pb_pban)", dmr_PlayerAction));
+                    if (dmr_PlayerAction == "tban" || dmr_PlayerAction == "pb_tban") lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_TBan Minutes", typeof(int), dmr_ActionTbanTime));
+                    if (expert_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_PRoCon Config", typeof(string[]), dmrPRoConConfig.ToArray()));
+
+
+
+
+
+                    if (!isInitWeaponDictionarys) InitWeaponDictionarys();
+                    lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|~~~~~~~~~~~~~~ Autosniper(DMR) Rifles LIST ~~~~~~~~~~~~~~", typeof(string), "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+
+                    foreach (KeyValuePair<string, enumBoolYesNo> tmpWeapon in Allow_Autosniper)
+                    {
+                        lstReturn.Add(new CPluginVariable("3.7_Autosniper(DMR) only Mode|DMR_Allow " + tmpWeapon.Key, typeof(enumBoolYesNo), tmpWeapon.Value));
+
+                    }
+
+
+
+
+                }
+
+
+
+
+                if (advanced_mode == enumBoolYesNo.Yes)
+                {
+                    // COMMANDS ##################################################################################################################
+                    lstReturn.Add(new CPluginVariable("4.Plugin Commands|NM_Command Enable", typeof(string), nm_commandEnable));
+                    if (pm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|PM_Command Enable", typeof(string), pm_commandEnable));
+                    if (kom_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|KOM_Command Enable", typeof(string), kom_commandEnable));
+                    if (pom_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|POM_Command Enable", typeof(string), pom_commandEnable));
+                    if (fm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|FM_Command Enable", typeof(string), fm_commandEnable));
+
+                    if (sm_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|SOM_Command Enable", typeof(string), sm_commandEnable));
+                    if (bam_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|BAM_Command Enable", typeof(string), bam_commandEnable));
+                    if (dmr_isEnabled == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("4.Plugin Commands|DMR_Command Enable", typeof(string), dmr_commandEnable));
+
+                    lstReturn.Add(new CPluginVariable("4.Plugin Commands|Switchnow_Command", typeof(string), switchnow_cmd));
+                    lstReturn.Add(new CPluginVariable("4.Plugin Commands|Command_Kick All", typeof(string), cmd_KickAll));
+
+
+                    // MESSAGES ##################################################################################################################
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PlayerInfo", typeof(string), player_message));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_AdminInfo_switchnow", typeof(string), admin_message));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_SwitchNow", typeof(string), msg_switchnow));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PM Player Kick", typeof(string), msg_pmKick));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_NOT Initiator", typeof(string), msg_notInitiator));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_Switch not defined", typeof(string), msg_switchnotdefined));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_NORMAL MODE", typeof(string), msg_normalmode));
+                    lstReturn.Add(new CPluginVariable("5.Plugin Messages|MSG_PRIVATE MODE", typeof(string), msg_privatemode));
+
+                }
+
+                // Special Settings
+                lstReturn.Add(new CPluginVariable("7. Special Settings|Debug level", fDebugLevel.GetType(), fDebugLevel));
+                lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Advanced Mode", typeof(enumBoolYesNo), advanced_mode));
+                if (advanced_mode == enumBoolYesNo.Yes) lstReturn.Add(new CPluginVariable("7. Special Settings|Enable Expert Mode", typeof(enumBoolYesNo), expert_mode));
+
+
+                // Map Prohibited Weapons ####################################################################################################
+
+
+                // NEW VERSION SICE 0.0.2.3
+                if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+                {
+
+                    if (!isInitMapList) InitMapList();
+                    if (isInitMapList)
+                    {
+
+                        string enumAddMapNames = "enum.AddMapNames_" + random.Next(100000, 999999) + "(...";
+                        string enumRemoveMapNames = "enum.RemoveMapNames_" + random.Next(100000, 999999) + "(...";
+                        foreach (string map in MapNameList)
+                        {
+                            if (!MapProhibitedWeapons.ContainsKey(map))
+                            {
+                                enumAddMapNames = enumAddMapNames + "|" + map;
+                            }
+
+                            if (MapProhibitedWeapons.ContainsKey(map))
+                            {
+                                enumRemoveMapNames = enumRemoveMapNames + "|" + map;
+                            }
+
+
+
+
+                        }
+                        enumAddMapNames = enumAddMapNames + ")";
+                        enumRemoveMapNames = enumRemoveMapNames + ")";
+
+                        lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Add Map...", enumAddMapNames, ""));
+                        lstReturn.Add(new CPluginVariable("6.1 On Map prohibited Weapons|Remove Map...", enumRemoveMapNames, ""));
+                    }
+
+                    if (MapProhibitedWeapons.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, List<string>> entry in MapProhibitedWeapons)
+                        {
+                            string tmpvar = "6.1 On Map prohibited Weapons|" + entry.Key;
+                            lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                        }
+                    }
+
+
+
+                }
+
+
+
+
+
+                // MODE PROHIBITED WEAPONS
+                if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes)
+                {
+
+                    if (!isInitMapList) InitMapList();
+                    if (isInitMapList)
+                    {
+
+                        string enumAddGameModes = "enum.AddGameModes_" + random.Next(100000, 999999) + "(...";
+                        string enumRemoveGameModes = "enum.RemoveGameModes_" + random.Next(100000, 999999) + "(...";
+                        foreach (string gameMode in GameModeList)
+                        {
+                            if (!ModeProhibitedWeapons.ContainsKey(gameMode))
+                            {
+                                enumAddGameModes = enumAddGameModes + "|" + gameMode;
+                            }
+
+                            if (ModeProhibitedWeapons.ContainsKey(gameMode))
+                            {
+                                enumRemoveGameModes = enumRemoveGameModes + "|" + gameMode;
+                            }
+
+
+
+
+                        }
+                        enumAddGameModes = enumAddGameModes + ")";
+                        enumRemoveGameModes = enumRemoveGameModes + ")";
+
+                        lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Add Game Mode...", enumAddGameModes, ""));
+                        lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Remove Game Mode...", enumRemoveGameModes, ""));
+                    }
+
+                    if (ModeProhibitedWeapons.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, List<string>> entry in ModeProhibitedWeapons)
+                        {
+                            string tmpvar = "6.2 Gamemode prohibited Weapons|" + entry.Key;
+                            lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
+
+                        }
+                    }
+
+
+
+                }
+
+
 
 
 
             }
+            return lstReturn;
+        }
+        catch (Exception e)
+        {
+            WritePluginConsole("Caught Exception in GetDisplayPluginVariables()", "ERROR", 2);
+            WritePluginConsole(e.Message, "ERROR", 2);
+            throw;
+        }
 
-
-
-
-
-            // MODE PROHIBITED WEAPONS
-            if (map_prohibitedWeapons_enable == enumBoolYesNo.Yes) 
-            {
-                
-                if (!isInitMapList) InitMapList();
-                if (isInitMapList)
-                {
-                    
-                    string enumAddGameModes = "enum.AddGameModes_" + random.Next(100000,999999) + "(...";
-                    string enumRemoveGameModes = "enum.RemoveGameModes_" + random.Next(100000, 999999) + "(...";
-                    foreach (string gameMode in GameModeList)
-                    {
-                        if (!ModeProhibitedWeapons.ContainsKey(gameMode))
-                        {
-                            enumAddGameModes = enumAddGameModes + "|" + gameMode;
-                        }
-
-                        if (ModeProhibitedWeapons.ContainsKey(gameMode))
-                        {
-                            enumRemoveGameModes = enumRemoveGameModes + "|" + gameMode;
-                        }
-
-
-
-
-                    }
-                    enumAddGameModes = enumAddGameModes + ")";
-                    enumRemoveGameModes = enumRemoveGameModes + ")";
-
-                    lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Add Game Mode...", enumAddGameModes, ""));
-                    lstReturn.Add(new CPluginVariable("6.2 Gamemode prohibited Weapons|Remove Game Mode...", enumRemoveGameModes, ""));
-                }
-
-                if (ModeProhibitedWeapons.Count > 0)
-                {
-                    foreach (KeyValuePair<string, List<string>> entry in ModeProhibitedWeapons)
-                    {
-                        string tmpvar = "6.2 Gamemode prohibited Weapons|" + entry.Key;
-                        lstReturn.Add(new CPluginVariable(tmpvar, typeof(string[]), (entry.Value).ToArray()));
-
-                    }
-                }
-
-
-
-            }
-
-
-
-                                  
-
-		}
-		return lstReturn;
+        return new List<CPluginVariable>(); // Return Value if Exeption
 	}
 
 
@@ -3892,11 +4228,11 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
 
     }
-    
 
 
-	
-    if (Regex.Match(strVariable, @"NM_Server Name").Success)
+
+
+    if (Regex.Match(strVariable, @"NM_Server Name").Success && !(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
     {
         nm_Servername = strValue;
     }
@@ -3967,7 +4303,11 @@ public void SetPluginVariable(string strVariable, string strValue) {
 
     if (Regex.Match(strVariable, @"NM_MapList").Success)
     {
-        nm_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        if (!(isInstalledUMM && useUmm == enumBoolYesNo.Yes))
+        {
+            nm_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        }
+        
     }
 
 
@@ -4543,129 +4883,463 @@ public void SetPluginVariable(string strVariable, string strValue) {
         
     }
 
+    // SHOTGUN ONLY MODE VARIABLEN
+    if (Regex.Match(strVariable, @"Shotgun Only Mode").Success)
+    {
+        UnRegisterAllCommands();
+        if (strValue == "Yes") sm_isEnabled = enumBoolYesNo.Yes;
+        if (strValue == "No") sm_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
+        taskPlanerUpdateNeeded = true;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        smPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            smPRoConConfig.Add(tmpline);
+        }
+
+        
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Command Enable").Success)
+    {
+        if (strValue == "") strValue = "flagrun"; // Standardwert setzen
+        sm_commandEnable = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Rules").Success)
+    {
+        sm_Rules = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"SOM_ClanWhitelist").Success)
+    {
+        sm_ClanWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"SOM_PlayerWhitelist").Success)
+    {
+        sm_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Server Name").Success)
+    {
+        sm_Servername = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Server Description").Success)
+    {
+        sm_Serverdescription = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Server Message").Success)
+    {
+        sm_ServerMessage = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Vehicle Spawn Allowed").Success)
+    {
+        if (strValue == "Yes") sm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "No") sm_VehicleSpawnAllowed = enumBoolYesNo.No;
+        if (strValue == "True") sm_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "False") sm_VehicleSpawnAllowed = enumBoolYesNo.No;
+
+
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Vehicle Spawn Time").Success)
+    {
+
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of SOM_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of SOM_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+        sm_VehicleSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Player Spawn Time").Success)
+    {
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of SOM_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        sm_PlayerSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_MapList").Success)
+    {
+        sm_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Max Player Warns").Success)
+    {
+        sm_max_Warns = Convert.ToInt32(strValue);
+    }
+
+    if (Regex.Match(strVariable, @"SOM_Player Action").Success)
+    {
+        sm_PlayerAction = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"SOM_TBan Minutes").Success)
+    {
+        sm_ActionTbanTime = Convert.ToInt32(strValue);
+    }
+   
+
+
+    if (Regex.Match(strVariable, @"SOM_Allow").Success)
+    {
+        if (!isInitWeaponDictionarys) InitWeaponDictionarys(); // Init Dictionarys if not done yet !
+        string tmpVar = strVariable.Replace("SOM_Allow ", "");      // Remove SOM Indexer
+
+
+        if (Allow_Shotguns.ContainsKey(tmpVar))
+        {
+            if (strValue == "Yes") Allow_Shotguns[tmpVar] = enumBoolYesNo.Yes;
+            if (strValue == "No") Allow_Shotguns[tmpVar] = enumBoolYesNo.No;
+        }
+
+
+    }
+
+    // BOLT ACTION ONLY MODE VARIABLEN
+    if (Regex.Match(strVariable, @"BoltAction Only Mode").Success)
+    {
+        UnRegisterAllCommands();
+        if (strValue == "Yes") bam_isEnabled = enumBoolYesNo.Yes;
+        if (strValue == "No") bam_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
+        taskPlanerUpdateNeeded = true;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        bamPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            bamPRoConConfig.Add(tmpline);
+        }
+
+
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Command Enable").Success)
+    {
+        if (strValue == "") strValue = "flagrun"; // Standardwert setzen
+        bam_commandEnable = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Rules").Success)
+    {
+        bam_Rules = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"BAM_ClanWhitelist").Success)
+    {
+        bam_ClanWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"BAM_PlayerWhitelist").Success)
+    {
+        bam_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Server Name").Success)
+    {
+        bam_Servername = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Server Description").Success)
+    {
+        bam_Serverdescription = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Server Message").Success)
+    {
+        bam_ServerMessage = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Vehicle Spawn Allowed").Success)
+    {
+        if (strValue == "Yes") bam_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "No") bam_VehicleSpawnAllowed = enumBoolYesNo.No;
+        if (strValue == "True") bam_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "False") bam_VehicleSpawnAllowed = enumBoolYesNo.No;
+
+
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Vehicle Spawn Time").Success)
+    {
+
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of BAM_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of BAM_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+        bam_VehicleSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Player Spawn Time").Success)
+    {
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of BAM_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        bam_PlayerSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_MapList").Success)
+    {
+        bam_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Max Player Warns").Success)
+    {
+        bam_max_Warns = Convert.ToInt32(strValue);
+    }
+
+    if (Regex.Match(strVariable, @"BAM_Player Action").Success)
+    {
+        bam_PlayerAction = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"BAM_TBan Minutes").Success)
+    {
+        bam_ActionTbanTime = Convert.ToInt32(strValue);
+    }
+
+
+
+    if (Regex.Match(strVariable, @"BAM_Allow").Success)
+    {
+        if (!isInitWeaponDictionarys) InitWeaponDictionarys(); // Init Dictionarys if not done yet !
+        string tmpVar = strVariable.Replace("BAM_Allow ", "");      // Remove SOM Indexer
+
+
+        if (Allow_Boltaction.ContainsKey(tmpVar))
+        {
+            if (strValue == "Yes") Allow_Boltaction[tmpVar] = enumBoolYesNo.Yes;
+            if (strValue == "No") Allow_Boltaction[tmpVar] = enumBoolYesNo.No;
+        }
+
+
+    }
+
+
+    // AUTOSNIPER (DMR) ONLY MODE VARIABLEN
+    if (Regex.Match(strVariable, @"Autosniper Only Mode").Success)
+    {
+        UnRegisterAllCommands();
+        if (strValue == "Yes") dmr_isEnabled = enumBoolYesNo.Yes;
+        if (strValue == "No") dmr_isEnabled = enumBoolYesNo.No;
+        RegisterAllCommands();
+        taskPlanerUpdateNeeded = true;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_PRoCon Config").Success)
+    {
+
+        List<string> tmpConfigList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+        dmrPRoConConfig = new List<string>();
+        foreach (string line in tmpConfigList)
+        {
+            string tmpline = line.Replace("|", "#LISTITEM#");
+            dmrPRoConConfig.Add(tmpline);
+        }
+
+
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Command Enable").Success)
+    {
+        if (strValue == "") strValue = "flagrun"; // Standardwert setzen
+        dmr_commandEnable = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Rules").Success)
+    {
+        dmr_Rules = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"DMR_ClanWhitelist").Success)
+    {
+        dmr_ClanWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"DMR_PlayerWhitelist").Success)
+    {
+        dmr_PlayerWhitelist = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Server Name").Success)
+    {
+        dmr_Servername = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Server Description").Success)
+    {
+        dmr_Serverdescription = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Server Message").Success)
+    {
+        dmr_ServerMessage = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Vehicle Spawn Allowed").Success)
+    {
+        if (strValue == "Yes") dmr_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "No") dmr_VehicleSpawnAllowed = enumBoolYesNo.No;
+        if (strValue == "True") dmr_VehicleSpawnAllowed = enumBoolYesNo.Yes;
+        if (strValue == "False") dmr_VehicleSpawnAllowed = enumBoolYesNo.No;
+
+
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Vehicle Spawn Time").Success)
+    {
+
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of DMR_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of DMR_Vehicle Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+        dmr_VehicleSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Player Spawn Time").Success)
+    {
+        int tmpValue = Convert.ToInt32(strValue);
+
+        if (tmpValue > 100)
+        {
+            tmpValue = 100;
+            WritePluginConsole("Incorrect Value of PM_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        if (tmpValue < 5)
+        {
+            tmpValue = 5;
+            WritePluginConsole("Incorrect Value of DMR_Player Spawn Time", "ERROR", 0);
+            WritePluginConsole("this Setting have to be between 5 and 100", "ERROR", 0);
+        }
+
+
+        dmr_PlayerSpawnCount = tmpValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_MapList").Success)
+    {
+        dmr_MapList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Max Player Warns").Success)
+    {
+        dmr_max_Warns = Convert.ToInt32(strValue);
+    }
+
+    if (Regex.Match(strVariable, @"DMR_Player Action").Success)
+    {
+        dmr_PlayerAction = strValue;
+    }
+
+    if (Regex.Match(strVariable, @"DMR_TBan Minutes").Success)
+    {
+        dmr_ActionTbanTime = Convert.ToInt32(strValue);
+    }
+
+
+
+    if (Regex.Match(strVariable, @"DMR_Allow").Success)
+    {
+        if (!isInitWeaponDictionarys) InitWeaponDictionarys(); // Init Dictionarys if not done yet !
+        string tmpVar = strVariable.Replace("DMR_Allow ", "");      // Remove DMR Indexer
+
+
+        if (Allow_Autosniper.ContainsKey(tmpVar))
+        {
+            if (strValue == "Yes") Allow_Autosniper[tmpVar] = enumBoolYesNo.Yes;
+            if (strValue == "No") Allow_Autosniper[tmpVar] = enumBoolYesNo.No;
+        }
+
+
+    }
   
-
-
-    
-    //// OLD PISTOLS
-    //if (Regex.Match(strVariable, @"POM_Allow M9").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_M9 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_M9 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow QSZ-92").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_QSZ92 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_QSZ92 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow MP-443").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_MP443 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_MP443 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow SHORTY 12G").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_Shorty = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_Shorty = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow G18").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_Glock18 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_Glock18 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow FN57").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_FN57 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_FN57 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow M1911").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_M1911 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_M1911 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow 93R").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_93R = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_93R = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow CZ-75").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_CZ75 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_CZ75 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow .44 MAGNUM").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_Taurus44 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_Taurus44 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow COMPACT 45").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_HK45C = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_HK45C = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow P226").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_P226 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_P226 = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow M412 REX").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_MP412Rex = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_MP412Rex = enumBoolYesNo.No;
-    //}
-
-    //if (Regex.Match(strVariable, @"POM_Allow SW40").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_SW40 = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_SW40 = enumBoolYesNo.No;
-    //}
-    
-    //if (Regex.Match(strVariable, @"POM_Allow KNIFE").Success)
-    //{
-    //    if (strValue == "Yes") pom_allowPistol_Meele = enumBoolYesNo.Yes;
-    //    if (strValue == "No") pom_allowPistol_Meele = enumBoolYesNo.No;
-    //}
-
-    
-
-    //if (Regex.Match(strVariable, @"Operation Locker").Success) OnMapProhibitedWeapons_Operation_Locker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-
-    //List<string> tmp_WeaponList = new List<string>(CPluginVariable.DecodeStringArray(strValue));
-    //tmp_WeaponList = CheckWeaponList(tmp_WeaponList);
-    //g_prohibitedWeapons = new List<string>(tmp_WeaponList);
-
-    
-
-    //if (Regex.Match(strVariable, @"Zavod 311").Success) OnMapProhibitedWeapons_Zavod_311 = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Lancang Dam").Success) OnMapProhibitedWeapons_Lancang_Dam = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Flood Zone").Success) OnMapProhibitedWeapons_Flood_Zone = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Golmud Railway").Success) OnMapProhibitedWeapons_Golmud_Railway = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Paracel Storm").Success) OnMapProhibitedWeapons_Paracel_Storm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Hainan Resort").Success) OnMapProhibitedWeapons_Hainan_Resort = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Siege of Shanghai").Success) OnMapProhibitedWeapons_Siege_of_Shanghai = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Rogue Transmission").Success) OnMapProhibitedWeapons_Rogue_Transmission = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Dawnbreaker").Success) OnMapProhibitedWeapons_Dawnbreaker = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Silk Road").Success) OnMapProhibitedWeapons_Silk_Road = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Altai Range").Success) OnMapProhibitedWeapons_Altai_Range = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Guilin Peaks").Success) OnMapProhibitedWeapons_Guilin_Peaks = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Dragon Pass").Success) OnMapProhibitedWeapons_Dragon_Pass = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-
-    //if (Regex.Match(strVariable, @"Caspian Border 2014").Success) OnMapProhibitedWeapons_Caspian = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Firestorm 2014").Success) OnMapProhibitedWeapons_Firestorm = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Golf of Oman 2014").Success) OnMapProhibitedWeapons_Oman = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
-    //if (Regex.Match(strVariable, @"Operation Metro 2014").Success) OnMapProhibitedWeapons_Metro = new List<string>(CheckWeaponList(CPluginVariable.DecodeStringArray(strValue)));
 
     // MAP PROHIBITED WEAPONS
 
@@ -5194,9 +5868,53 @@ if (pom_isEnabled == enumBoolYesNo.Yes) this.RegisterCommand(
                     )
                 );
 
-     
- 
+    this.RegisterCommand(
+               new MatchCommand(
+                   "ExtraServerFuncs",
+                   "OnCommand_Shotgun",
+                   this.Listify<string>("@", "!", "/"),
+                   sm_commandEnable,
+                   this.Listify<MatchArgumentFormat>(),
+                   new ExecutionRequirements(
+                       ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                       "You do not have enough privileges"),
+                   "Switch to the defined Servermode instantly"
+               )
+           );
 
+    this.RegisterCommand(
+               new MatchCommand(
+                   "ExtraServerFuncs",
+                   "OnCommand_BoltAction",
+                   this.Listify<string>("@", "!", "/"),
+                   bam_commandEnable,
+                   this.Listify<MatchArgumentFormat>(),
+                   new ExecutionRequirements(
+                       ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                       "You do not have enough privileges"),
+                   "Switch to the defined Servermode instantly"
+               )
+           );
+
+    this.RegisterCommand(
+           new MatchCommand(
+               "ExtraServerFuncs",
+               "OnCommand_Autosniper",
+               this.Listify<string>("@", "!", "/"),
+               dmr_commandEnable,
+               this.Listify<MatchArgumentFormat>(),
+               new ExecutionRequirements(
+                   ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                   "You do not have enough privileges"),
+               "Switch to the defined Servermode instantly"
+           )
+       );
 
 }
 
@@ -5349,7 +6067,53 @@ private void UnRegisterAllCommands()
                 )
             );
 
+    this.UnregisterCommand(
+           new MatchCommand(
+               "ExtraServerFuncs",
+               "OnCommand_Shotgun",
+               this.Listify<string>("@", "!", "/"),
+               sm_commandEnable,
+               this.Listify<MatchArgumentFormat>(),
+               new ExecutionRequirements(
+                   ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                   "You do not have enough privileges"),
+               "Switch to the defined Servermode instantly"
+           )
+       );
 
+    this.UnregisterCommand(
+               new MatchCommand(
+                   "ExtraServerFuncs",
+                   "OnCommand_BoltAction",
+                   this.Listify<string>("@", "!", "/"),
+                   bam_commandEnable,
+                   this.Listify<MatchArgumentFormat>(),
+                   new ExecutionRequirements(
+                       ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                       "You do not have enough privileges"),
+                   "Switch to the defined Servermode instantly"
+               )
+           );
+
+    this.UnregisterCommand(
+           new MatchCommand(
+               "ExtraServerFuncs",
+               "OnCommand_Autosniper",
+               this.Listify<string>("@", "!", "/"),
+               dmr_commandEnable,
+               this.Listify<MatchArgumentFormat>(),
+               new ExecutionRequirements(
+                   ExecutionScope.Account,
+        //2,
+        //"yes", //confirmationCommand,
+                   "You do not have enough privileges"),
+               "Switch to the defined Servermode instantly"
+           )
+       );
 }
 
 public void OnCommand_Rules(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
@@ -5424,6 +6188,39 @@ public void OnCommand_Pistol(string strSpeaker, string strText, MatchCommand mtc
     lastcmdspeaker = strSpeaker;
     CancelSwitch();
     PreSwitchServerMode("pistol");
+    return;
+}
+
+public void OnCommand_Shotgun(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Shotgun()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_shotgun() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    CancelSwitch();
+    PreSwitchServerMode("shotgun");
+    return;
+}
+
+public void OnCommand_BoltAction(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_BoltAction()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_BoltAction() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    CancelSwitch();
+    PreSwitchServerMode("boltaction");
+    return;
+}
+
+public void OnCommand_Autosniper(string strSpeaker, string strText, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subMatchedScope)
+{
+    WritePluginConsole("OnCommand_Autosniper()", "DEBUG", 6);
+    WritePluginConsole("OnCommand_Autosniper() strSpeaker='" + strSpeaker + "' strText='" + strText + "'", "DEBUG", 8);
+    SwitchInitiator = strSpeaker;
+    lastcmdspeaker = strSpeaker;
+    CancelSwitch();
+    PreSwitchServerMode("autosniper");
     return;
 }
 
@@ -6237,7 +7034,7 @@ private void PlayerWarn(string name,string weapon)
                 SendGlobalMessage(msg_warnBanner);
             }
 
-            if (warns > sm_max_Warns) // Maximale Warnungen ??schritten
+            if (warns > bam_max_Warns) // Maximale Warnungen ??schritten
             {
                 if (!isInWhitelist(name)) bam_Action(name);
                 SendGlobalMessage(R(msg_BoltActionKick));
@@ -6260,7 +7057,7 @@ private void PlayerWarn(string name,string weapon)
             }
 
 
-            if (warns == sm_max_Warns) // Maximale Warnungen erreicht
+            if (warns == dmr_max_Warns) // Maximale Warnungen erreicht
             {
                 SendGlobalMessage(msg_warnBanner);
                 SendGlobalMessage(R(msg_DmrWarn));
@@ -6269,7 +7066,7 @@ private void PlayerWarn(string name,string weapon)
                 SendGlobalMessage(msg_warnBanner);
             }
 
-            if (warns > sm_max_Warns) // Maximale Warnungen ??schritten
+            if (warns > dmr_max_Warns) // Maximale Warnungen ??schritten
             {
                 if (!isInWhitelist(name)) dmr_Action(name);
                 SendGlobalMessage(R(msg_DmrKick));
